@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nishant Gupta — TechYatra | Senior .NET Developer</title>
-  <meta name="description" content="Nishant Gupta — Senior .NET Developer, Azure, Angular expert and YouTuber at TechYatra."/>
+  <meta name="description" content="Nishant Gupta — Full Stack Developer (.NET, Angular &amp; Azure) and YouTuber at TechYatra."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
   <style>
@@ -423,9 +423,14 @@ async function loadBlog() {
     grid.innerHTML = posts.map((p, i) => {
       const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
-      // Use YouTube thumbnail from coverImage OR extract videoId from content
-      const img = p.coverImage?.url
-        ? `<img class="blog-card-img" src="${p.coverImage.url}" alt="${p.title}" loading="lazy"/>`
+      // Use coverImage, OR extract YouTube thumbnail from content as fallback
+      let imgSrc = p.coverImage?.url || null;
+      if (!imgSrc && p.content?.html) {
+        const ytMatch = p.content.html.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+        if (ytMatch) imgSrc = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+      }
+      const img = imgSrc
+        ? `<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=blog-card-img-ph>📝</div>'"/>`
         : `<div class="blog-card-img-ph">📝</div>`;
       return `
         <div class="blog-card" onclick="openModal(${i})">
