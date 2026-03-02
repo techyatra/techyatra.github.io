@@ -205,6 +205,9 @@
     footer { background:var(--navy); padding:2.5rem 5rem; display:flex; justify-content:space-between; align-items:center; }
     .footer-logo { font-family:'Fraunces',serif; font-weight:800; font-size:1.2rem; color:#fff; }
     .footer-copy { font-size:0.8rem; color:rgba(255,255,255,0.4); }
+    .footer-hashnode { font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:0.5rem; }
+    .footer-hashnode a { color:rgba(255,255,255,0.8); font-weight:600; text-decoration:none; }
+    .footer-hashnode a:hover { color:#fff; }
     .footer-links { display:flex; gap:1.5rem; }
     .footer-links a { color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.82rem; font-weight:600; transition:color 0.2s; }
     .footer-links a:hover { color:#fff; }
@@ -240,7 +243,7 @@
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
-    <li><a href="#blog">Blog</a></li>
+    <li><a href="https://techyatra.hashnode.dev" target="_blank">Blog</a></li>
     <li><a href="#youtube">YouTube</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -382,7 +385,8 @@
 
 <footer>
   <div class="footer-logo">TechYatra</div>
-  <div class="footer-copy">© 2026 Nishant Gupta · Built with ❤️ and .NET</div>
+  <div class="footer-copy">© 2026 Nishant Gupta · Full Stack Developer (.NET, Angular & Azure)</div>
+  <div class="footer-hashnode">All articles also published on <a href="https://techyatra.hashnode.dev" target="_blank">techyatra.hashnode.dev ↗</a></div>
   <div class="footer-links">
     <a href="https://techyatra.hashnode.dev" target="_blank">Blog</a>
     <a href="https://www.youtube.com/@tech_yatra" target="_blank">YouTube</a>
@@ -536,49 +540,41 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 async function loadYouTube() {
   const grid = document.getElementById('yt-grid');
 
-  // These are real video IDs from your channel
-  const fallbackIds = [
-    'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
-    '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
-  ];
+  try {
+    // Use YouTube RSS feed — no API key needed, always returns latest videos
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
-  // Try YouTube Data API first (if key is set)
-  if (YT_API_KEY !== 'YOUR_YOUTUBE_API_KEY') {
-    try {
-      const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&maxResults=6&type=video`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (!data.error && data.items?.length) {
-        grid.innerHTML = data.items.map(item => buildYTCard(
-          item.id.videoId,
-          item.snippet.title,
-          `https://img.youtube.com/vi/${item.id.videoId}/hqdefault.jpg`,
-          new Date(item.snippet.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-        )).join('');
-        return;
-      }
-    } catch (e) { /* fall through to fallback */ }
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 6);
+
+    if (!entries.length) throw new Error('No entries');
+
+    grid.innerHTML = entries.map(entry => {
+      const videoId = entry.querySelector('videoId')?.textContent
+        || entry.querySelector('id')?.textContent?.split(':').pop();
+      const title = entry.querySelector('title')?.textContent || '';
+      const published = entry.querySelector('published')?.textContent || '';
+      const date = published
+        ? new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : '';
+      const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      return buildYTCard(videoId, title, thumb, date);
+    }).join('');
+
+  } catch (e) {
+    // Final fallback — hardcoded recent videos
+    const fallbackIds = [
+      'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
+      '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
+    ];
+    grid.innerHTML = fallbackIds.map(id =>
+      buildYTCard(id, 'Loading...', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
+    ).join('');
   }
-
-  // Fallback: show known videos with thumbnails from YouTube's image CDN
-  // Thumbnails ALWAYS work — they come directly from YouTube's public image CDN
-  grid.innerHTML = fallbackIds.map(id =>
-    buildYTCard(id, '', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
-  ).join('');
-
-  // Load real titles via oEmbed API (no API key needed — free and public)
-  fallbackIds.forEach(async (id) => {
-    try {
-      const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
-      if (!res.ok) return;
-      const data = await res.json();
-      const titleEl = document.querySelector(`[data-vid="${id}"] .yt-title`);
-      if (titleEl && data.title) titleEl.textContent = data.title;
-      // Also try to get better thumbnail from oEmbed
-      const thumbEl = document.querySelector(`[data-vid="${id}"] .yt-thumb img`);
-      if (thumbEl && data.thumbnail_url) thumbEl.src = data.thumbnail_url;
-    } catch (e) { /* keep placeholder title */ }
-  });
 }
 
 function buildYTCard(id, title, thumb, date) {
