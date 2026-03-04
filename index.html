@@ -633,12 +633,14 @@ async function loadBlog() {
         }
       }
     }`;
-    const res = await fetch('https://gql.hashnode.com/?nocache=' + Date.now(), {
+    const res = await fetch('https://gql.hashnode.com/', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache'
+    'Cache-Control': 'no-cache, no-store',
+    'Pragma': 'no-cache'
   },
+  cache: 'no-store',
   body: JSON.stringify({ query })
 });
     const data = await res.json();
@@ -749,12 +751,12 @@ async function loadYouTube() {
   try {
     // Use YouTube RSS feed — no API key needed, always returns latest videos
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
 
     const res = await fetch(proxyUrl);
-    const data = await res.json();
+    const text = await res.text();
     const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const xml = parser.parseFromString(text, 'text/xml');
     const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 6);
 
     if (!entries.length) throw new Error('No entries');
