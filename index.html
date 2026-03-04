@@ -633,7 +633,7 @@ async function loadBlog() {
         }
       }
     }`;
-    const res = await fetch('https://gql.hashnode.com/?t=' + Date.now(), {
+    const res = await fetch('https://gql.hashnode.com/?nocache=' + Date.now(), {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -706,9 +706,10 @@ function openModal(i) {
 
   const tags = (p.tags || []).map(t => `<span class="modal-tag">${t.name}</span>`).join('');
   const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const body = p.content?.html
-    ? `<div class="modal-article">${p.content.html}</div>`
-    : `<div class="modal-article"><p>${p.brief || ''}</p></div>`;
+  // Strip first image from content to avoid duplicate thumbnail
+let contentHtml = p.content?.html || `<p>${p.brief || ''}</p>`;
+contentHtml = contentHtml.replace(/<img[^>]*>/, '');
+const body = `<div class="modal-article">${contentHtml}</div>`;
 
   const hashnodeUrl = p.url || `https://techyatra.hashnode.dev/${p.slug}`;
   const readFullBtn = `<a href="${hashnodeUrl}" target="_blank" class="modal-read-full">Read Full Article on Hashnode ↗</a>`;
