@@ -3,6 +3,9 @@
 <head data-theme="light">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <title>Nishant Gupta — TechYatra | Senior .NET Developer</title>
   <meta name="description" content="Nishant Gupta — Full Stack Developer (.NET, Angular &amp; Azure) and YouTuber at TechYatra."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -630,11 +633,14 @@ async function loadBlog() {
         }
       }
     }`;
-    const res = await fetch('https://gql.hashnode.com/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
-    });
+    const res = await fetch('https://gql.hashnode.com/?t=' + Date.now(), {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache'
+  },
+  body: JSON.stringify({ query })
+});
     const data = await res.json();
     const edges = data?.data?.publication?.posts?.edges;
 
