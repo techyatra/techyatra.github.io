@@ -167,20 +167,18 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     #blog { background:var(--bg2); }
     /* ── Blog Grid ─────────────────────────────── */
     .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
-    .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; max-height:280px; }
-    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; position:relative; min-height:280px; overflow:hidden; }
-    .blog-grid .blog-card.featured .blog-card-img { width:100%; height:100%; object-fit:cover; object-position:center; position:absolute; inset:0; }
-    .blog-grid .blog-card.featured .blog-card-img-ph { width:100%; height:280px; }
+    .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; align-items:stretch; }
+    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; position:relative; overflow:hidden; min-height:240px; }
+    .blog-grid .blog-card.featured .blog-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center center; }
+    .blog-grid .blog-card.featured .blog-card-img-ph { position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:3rem; background:linear-gradient(135deg,#dbeafe,#eff6ff); }
     .blog-grid .blog-card.featured .blog-body { padding:2rem 2.2rem; justify-content:center; }
     .blog-grid .blog-card.featured .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
     .blog-grid .blog-card.featured .blog-excerpt { -webkit-line-clamp:4; font-size:0.88rem; }
     .blog-grid .blog-card.featured .featured-badge { display:inline-block; }
     /* mobile: stack featured card */
     @media (max-width:768px) {
-      .blog-grid .blog-card.featured { flex-direction:column; max-height:none; }
-      .blog-grid .blog-card.featured .blog-img-wrap { width:100%; }
-      .blog-grid .blog-card.featured .blog-card-img { height:195px; }
-      .blog-grid .blog-card.featured .blog-card-img-ph { height:195px; }
+      .blog-grid .blog-card.featured { flex-direction:column; }
+      .blog-grid .blog-card.featured .blog-img-wrap { width:100%; min-height:0; padding-bottom:56.25%; }
       .blog-grid .blog-card.featured .blog-body { padding:1.4rem 1.5rem; }
     }
 
@@ -868,7 +866,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 // Also runs in parallel with blog load via Promise.all
 async function loadYouTube() {
   const grid = document.getElementById('yt-grid');
-  grid.innerHTML = ytSkeletons(); // Show skeleton immediately
+  grid.innerHTML = ytSkeletons();
 
   try {
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
@@ -878,19 +876,16 @@ async function loadYouTube() {
     const text = await res.text();
     const parser = new DOMParser();
     const xml = parser.parseFromString(text, 'text/xml');
-    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 6);
 
+    // Get more entries upfront so we have enough after filtering
+    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 20);
     if (!entries.length) throw new Error('No entries');
 
-    // Filter out YouTube Shorts:
-    // Signal 1: title contains #shorts or #short (case-insensitive)
-    // Signal 2: media:content aspect ratio — Shorts are portrait (height > width)
-    const filtered = entries.filter(entry => {
+    // Step 1 — Quick client-side filter: drop obvious Shorts by title tag or portrait dimensions
+    const candidates = entries.filter(entry => {
       const title = (entry.querySelector('title')?.textContent || '').toLowerCase();
-      if (title.includes('#short')) return false; // catches #shorts and #short
-
-      // Check media:content dimensions — Shorts are 9:16 (portrait)
-      const media = entry.querySelector('content') || entry.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+      if (title.includes('#short')) return false;
+      const media = entry.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
       if (media) {
         const w = parseInt(media.getAttribute('width') || '0');
         const h = parseInt(media.getAttribute('height') || '0');
@@ -899,10 +894,38 @@ async function loadYouTube() {
       return true;
     });
 
-    const videos = filtered.slice(0, 6);
-    if (!videos.length) throw new Error('No non-short videos');
+    // Step 2 — Fetch duration for each candidate via YouTube oEmbed
+    // oEmbed doesn't give duration directly, so we use noembed.com which includes it.
+    // We check in parallel, keeping only videos > 180 seconds (3 minutes).
+    const MIN_SECONDS = 180;
 
-    grid.innerHTML = videos.map(entry => {
+    const withDuration = await Promise.all(
+      candidates.slice(0, 12).map(async entry => {
+        const videoId = entry.querySelector('videoId')?.textContent
+          || entry.querySelector('id')?.textContent?.split(':').pop();
+        const title = entry.querySelector('title')?.textContent || '';
+        const published = entry.querySelector('published')?.textContent || '';
+
+        try {
+          // noembed returns duration_seconds for YouTube videos
+          const oembed = await fetch(
+            `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
+          );
+          const meta = await oembed.json();
+          const duration = meta.duration || meta.duration_seconds || 0;
+          // noembed may not always have duration; if missing, keep the video (assume long)
+          if (duration > 0 && duration < MIN_SECONDS) return null;
+        } catch {
+          // If fetch fails, keep the video (don't discard on error)
+        }
+        return entry;
+      })
+    );
+
+    const longVideos = withDuration.filter(Boolean).slice(0, 6);
+    if (!longVideos.length) throw new Error('No long videos found');
+
+    grid.innerHTML = longVideos.map(entry => {
       const videoId = entry.querySelector('videoId')?.textContent
         || entry.querySelector('id')?.textContent?.split(':').pop();
       const title = entry.querySelector('title')?.textContent || '';
@@ -915,7 +938,6 @@ async function loadYouTube() {
     }).join('');
 
   } catch (e) {
-    // Fallback to hardcoded recent video IDs
     const fallbackIds = [
       'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
       '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
