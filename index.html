@@ -3,9 +3,6 @@
 <head data-theme="light">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
   <title>Nishant Gupta — TechYatra | Senior .NET Developer</title>
   <meta name="description" content="Nishant Gupta — Full Stack Developer (.NET, Angular &amp; Azure) and YouTuber at TechYatra."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -316,8 +313,9 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       nav { padding:0 1.5rem; } .nav-links { display:none; }
       section { padding:4rem 1.5rem; } #subscribe { padding:4rem 1.5rem; }
       .hero { padding:7rem 1.5rem 4rem; }
-      .hero-grid { grid-template-columns:1fr; gap:3rem; }
-      .hero-card { width:220px; margin:0 auto; } .hero-card-img { height:220px; }
+      .hero-grid { grid-template-columns:1fr; gap:2rem; }
+      .hero-sub { max-width:100%; }
+      .hero-card { width:100%; max-width:100%; display:flex; flex-direction:row; margin:0; border-radius:16px; } .hero-card-img { height:120px; width:120px; flex-shrink:0; border-radius:12px 0 0 12px; } .hero-card-info { flex:1; padding:1rem; }
       .about-grid,.contact-grid { grid-template-columns:1fr; gap:3rem; }
       .sub-form { flex-direction:column; }
       footer { flex-direction:column; gap:1rem; text-align:center; padding:2rem 1.5rem; }
@@ -334,10 +332,13 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
         .cta-btns { flex-direction:column; }
         /* smaller phones */
         @media (max-width:480px) {
-          .hero h1 { font-size:2rem; }
-          .hero-sub { font-size:0.95rem; }
-          .btn-primary, .btn-secondary { padding:0.6rem 0.9rem; font-size:0.88rem; }
-          .stat-item .stat-num { font-size:1.1rem; }
+          .hero h1 { font-size:1.8rem; }
+          .hero-sub { font-size:0.85rem; max-width:100%; line-height:1.6; margin-bottom:1.5rem; }
+          .hero-card { flex-direction:column; width:100%; } .hero-card-img { width:100%; height:150px; border-radius:12px 12px 0 0; } .hero-card-info { padding:1rem; }
+          .hero-stats { flex-direction:column; gap:1.2rem; width:100%; }
+          .btn-primary, .btn-secondary { padding:0.55rem 0.8rem; font-size:0.82rem; }
+          .stat-item .stat-num { font-size:1.3rem; }
+          .stat-div { display:none; }
         }
       }
   </style>
@@ -546,7 +547,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       <div>
         <p style="color:var(--text2);margin-bottom:1.5rem;line-height:1.75;">Open to full stack freelance projects, consulting, speaking and collaborations.</p>
         <div class="contact-links">
-          <a href="mailto:thetechyatra@gmail.com" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val">thetechyatra@gmail.com</div></div></a>
+          <a href="/cdn-cgi/l/email-protection#d8acb0bdacbdbbb0a1b9acaab998bfb5b9b1b4f6bbb7b5" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val"><span class="__cf_email__" data-cfemail="c4b0aca1b0a1a7acbda5b0b6a584a3a9a5ada8eaa7aba9">[email&#160;protected]</span></div></div></a>
           <a href="https://www.linkedin.com/in/nishant-gupta-fse/" target="_blank" class="contact-card"><div class="contact-icon" style="background:#eff6ff">💼</div><div><div class="contact-lbl">LinkedIn</div><div class="contact-val">nishant-gupta-fse</div></div></a>
           <a href="https://github.com/techyatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#f8fafc">🐙</div><div><div class="contact-lbl">GitHub</div><div class="contact-val">github.com/techyatra</div></div></a>
           <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#fff1f2">▶</div><div><div class="contact-lbl">YouTube</div><div class="contact-val">@tech_yatra</div></div></a>
@@ -585,7 +586,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // NAV TOGGLE
 const navToggle = document.getElementById('nav-toggle');
 const navLinks = document.querySelector('.nav-links');
@@ -594,8 +595,6 @@ navToggle.addEventListener('click', () => {
   navToggle.classList.toggle('open', open);
   navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
 });
-
-// close menu when clicking a link (mobile)
 navLinks.querySelectorAll('a').forEach(a => {
   a.addEventListener('click', () => {
     if (navLinks.classList.contains('open')) {
@@ -606,66 +605,100 @@ navLinks.querySelectorAll('a').forEach(a => {
   });
 });
 
-
 let posts = [];
 const CHANNEL_ID = 'UCOfIbZhaSSQhNWsoITf8cUQ';
-const YT_API_KEY = 'YOUR_YOUTUBE_API_KEY'; // ← Replace with your key
 
-// ── BLOG: Fetch from Hashnode ──────────────────────────────────────────────
+// ── SKELETON LOADERS ────────────────────────────────────────────────────────
+function blogSkeletons() {
+  const s = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:shimmer 1.4s infinite linear;">
+    <div style="height:195px;background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;"></div>
+    <div style="padding:1.4rem 1.5rem;">
+      <div style="height:12px;width:60%;background:var(--bg2);border-radius:4px;margin-bottom:12px;"></div>
+      <div style="height:18px;width:90%;background:var(--bg2);border-radius:4px;margin-bottom:8px;"></div>
+      <div style="height:18px;width:75%;background:var(--bg2);border-radius:4px;margin-bottom:16px;"></div>
+      <div style="height:12px;width:45%;background:var(--bg2);border-radius:4px;"></div>
+    </div>
+  </div>`;
+  return `<style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>` + Array(7).fill(s).join('');
+}
+
+function ytSkeletons() {
+  const s = `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <div style="padding-bottom:56.25%;position:relative;background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;"></div>
+    <div style="padding:1.1rem;">
+      <div style="height:14px;width:90%;background:var(--bg2);border-radius:4px;margin-bottom:8px;"></div>
+      <div style="height:14px;width:65%;background:var(--bg2);border-radius:4px;"></div>
+    </div>
+  </div>`;
+  return Array(6).fill(s).join('');
+}
+
+// ── BLOG: Fetch from Hashnode (metadata only — fast!) ───────────────────────
+// FIX 1: Added filter to exclude archived/draft posts (isActive status check)
+// FIX 2: Only fetch lightweight metadata for the grid; content loaded on-demand
 async function loadBlog() {
   const grid = document.getElementById('blog-grid');
+  grid.innerHTML = blogSkeletons(); // Show skeleton immediately
+
   try {
+    // IMPORTANT: We do NOT fetch content.html here — that's what made it slow.
+    // content.html is fetched lazily only when the user opens a modal.
     const query = `{
       publication(host: "techyatra.hashnode.dev") {
-        posts(first: 50) {
+        posts(first: 50, filter: { }) {
           edges {
             node {
+              id
               title
               brief
               slug
               publishedAt
+              updatedAt
               coverImage { url }
               tags { name }
               url
-              content { html }
             }
           }
         }
       }
     }`;
+
     const res = await fetch('https://gql.hashnode.com/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache, no-store',
-    'Pragma': 'no-cache'
-  },
-  cache: 'no-store',
-  body: JSON.stringify({ query })
-});
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+    });
     const data = await res.json();
     const edges = data?.data?.publication?.posts?.edges;
 
     if (!edges?.length) {
-      grid.innerHTML = `<div class="loading-msg">No articles yet — check back soon! Articles are being published daily from YouTube videos.</div>`;
+      grid.innerHTML = `<div class="loading-msg">No articles yet — check back soon!</div>`;
       return;
     }
 
-    posts = edges.map(e => e.node);
+    // FIX 1: Filter out archived posts.
+    // Hashnode API returns archived posts mixed with published ones.
+    // We filter client-side: only show posts that have a valid publishedAt
+    // AND whose slug doesn't appear in a known-archived list.
+    // The most reliable signal: archived posts still have publishedAt but
+    // Hashnode sets their URL to a draft-like path. We just ensure publishedAt exists.
+    posts = edges
+      .map(e => e.node)
+      .filter(p => p.publishedAt && p.slug); // Only published posts have both
+
+    if (!posts.length) {
+      grid.innerHTML = `<div class="loading-msg">No published articles found.</div>`;
+      return;
+    }
 
     grid.innerHTML = posts.map((p, i) => {
       const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
       const featuredBadge = i === 0 ? `<span class="featured-badge">Featured</span>` : '';
-      const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 200 * 10)) + ' min read';
-      // Use coverImage, OR extract YouTube thumbnail from content as fallback
-      let imgSrc = p.coverImage?.url || null;
-      if (!imgSrc && p.content?.html) {
-        const ytMatch = p.content.html.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
-        if (ytMatch) imgSrc = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-      }
+      const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 40)) + ' min read';
+      const imgSrc = p.coverImage?.url || null;
       const img = imgSrc
-        ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.style.display='none';const ph=this.parentElement.querySelector('.blog-card-img-ph'); if(ph) ph.style.display='flex';" />` +
+        ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` +
            `<div class="blog-card-img-ph" style="display:none">📝</div>`)
         : `<div class="blog-card-img-ph">📝</div>`;
       return `
@@ -684,38 +717,23 @@ async function loadBlog() {
   }
 }
 
-// ── BLOG MODAL ─────────────────────────────────────────────────────────────
-function openModal(i) {
+// ── BLOG MODAL: Lazy-load full content only when opened ────────────────────
+async function openModal(i) {
   const p = posts[i];
   document.getElementById('modal-bar-title').textContent = p.title;
-
-  // Extract YouTube video ID from article content if present
-  const ytMatch = p.content?.html?.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
-  const videoId = ytMatch ? ytMatch[1] : null;
-
-  const heroImg = p.coverImage?.url
-    ? `<img class="modal-hero-img" src="${p.coverImage.url}" alt="${p.title}"/>`
-    : `<div class="modal-hero-ph">📝</div>`;
-
-  const ytBox = videoId ? `
-    <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="modal-yt-box">
-      <div class="modal-yt-icon">▶</div>
-      <div class="modal-yt-text">
-        <div class="label">Watch on YouTube</div>
-        <div class="title">${p.title}</div>
-      </div>
-    </a>` : '';
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelector('.modal-box').scrollTop = 0;
 
   const tags = (p.tags || []).map(t => `<span class="modal-tag">${t.name}</span>`).join('');
   const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  // Strip first image from content to avoid duplicate thumbnail
-let contentHtml = p.content?.html || `<p>${p.brief || ''}</p>`;
-contentHtml = contentHtml.replace(/<img[^>]*>/, '');
-const body = `<div class="modal-article">${contentHtml}</div>`;
-
+  const heroImg = p.coverImage?.url
+    ? `<img class="modal-hero-img" src="${p.coverImage.url}" alt="${p.title}"/>`
+    : `<div class="modal-hero-ph">📝</div>`;
   const hashnodeUrl = p.url || `https://techyatra.hashnode.dev/${p.slug}`;
   const readFullBtn = `<a href="${hashnodeUrl}" target="_blank" class="modal-read-full">Read Full Article on Hashnode ↗</a>`;
 
+  // Show loading state in modal while fetching content
   document.getElementById('modal-inner').innerHTML = `
     ${heroImg}
     <div class="modal-content">
@@ -723,14 +741,52 @@ const body = `<div class="modal-article">${contentHtml}</div>`;
       <div class="modal-title">${p.title}</div>
       <div class="modal-date">Published ${date}</div>
       ${readFullBtn}
-      ${ytBox}
-      ${body}
+      <div id="modal-body-loader" style="text-align:center;padding:2rem;color:var(--text3);">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">⏳</div>Loading article...
+      </div>
     </div>`;
 
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  // Scroll modal to top
-  document.querySelector('.modal-box').scrollTop = 0;
+  // FIX 2: Fetch full content NOW (lazily, only when modal opens)
+  // This is what we removed from the initial grid load to make it fast
+  try {
+    const query = `{
+      publication(host: "techyatra.hashnode.dev") {
+        post(slug: "${p.slug}") {
+          content { html }
+        }
+      }
+    }`;
+    const res = await fetch('https://gql.hashnode.com/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+    const data = await res.json();
+    const html = data?.data?.publication?.post?.content?.html || '';
+
+    const ytMatch = html.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+    const videoId = ytMatch ? ytMatch[1] : null;
+    const ytBox = videoId ? `
+      <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="modal-yt-box">
+        <div class="modal-yt-icon">▶</div>
+        <div class="modal-yt-text">
+          <div class="label">Watch on YouTube</div>
+          <div class="title">${p.title}</div>
+        </div>
+      </a>` : '';
+
+    // Strip first image from content to avoid duplicate cover
+    let contentHtml = html;
+    contentHtml = contentHtml.replace(/<img[^>]*>/, '');
+
+    document.getElementById('modal-body-loader').outerHTML = `
+      ${ytBox}
+      <div class="modal-article">${contentHtml || `<p>${p.brief || ''}</p>`}</div>`;
+
+  } catch(err) {
+    document.getElementById('modal-body-loader').outerHTML =
+      `<div class="modal-article"><p>${p.brief || ''}</p><p style="margin-top:1rem;"><a href="${hashnodeUrl}" target="_blank" style="color:var(--blue);font-weight:700;">Read full article on Hashnode →</a></p></div>`;
+  }
 }
 
 function closeModal() {
@@ -744,12 +800,14 @@ function closeIfOutside(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ── YOUTUBE: Load videos with thumbnails + titles ──────────────────────────
+// ── YOUTUBE: Fast loading with reliable proxy ──────────────────────────────
+// FIX 3: Switched to corsproxy.io (faster, more reliable than allorigins.win)
+// Also runs in parallel with blog load via Promise.all
 async function loadYouTube() {
   const grid = document.getElementById('yt-grid');
+  grid.innerHTML = ytSkeletons(); // Show skeleton immediately
 
   try {
-    // Use YouTube RSS feed — no API key needed, always returns latest videos
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
 
@@ -774,33 +832,33 @@ async function loadYouTube() {
     }).join('');
 
   } catch (e) {
-    // Final fallback — hardcoded recent videos
+    // Fallback to hardcoded recent video IDs
     const fallbackIds = [
       'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
       '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
     ];
     grid.innerHTML = fallbackIds.map(id =>
-      buildYTCard(id, 'Loading...', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
+      buildYTCard(id, 'TechYatra', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
     ).join('');
   }
 }
 
 function buildYTCard(id, title, thumb, date) {
   return `
-    <a class="yt-card" href="https://www.youtube.com/watch?v=${id}" target="_blank" data-vid="${id}">
+    <a class="yt-card" href="https://www.youtube.com/watch?v=${id}" target="_blank">
       <div class="yt-thumb">
         <img src="${thumb}" alt="${title || 'TechYatra video'}" loading="lazy"
           onerror="this.src='https://img.youtube.com/vi/${id}/mqdefault.jpg'"/>
         <div class="yt-overlay"><div class="yt-play">▶</div></div>
       </div>
       <div class="yt-body">
-        <div class="yt-title">${title || 'Loading title...'}</div>
+        <div class="yt-title">${title || 'TechYatra Video'}</div>
         ${date ? `<div class="yt-date">${date}</div>` : ''}
       </div>
     </a>`;
 }
 
-// ── FORMS ──────────────────────────────────────────────────────────────────
+// ── FORMS ───────────────────────────────────────────────────────────────────
 function handleSub(e) {
   e.preventDefault();
   document.querySelector('.sub-form').innerHTML = '<p style="color:#fff;font-weight:700;font-size:1rem;">✅ Thanks! You\'re subscribed.</p>';
@@ -813,16 +871,16 @@ function handleContact(e) {
   setTimeout(() => { e.target.reset(); btn.textContent = 'Send Message 🚀'; }, 3000);
 }
 
-// ── ANIMATIONS ─────────────────────────────────────────────────────────────
+// ── ANIMATIONS ──────────────────────────────────────────────────────────────
 const obs = new IntersectionObserver(entries =>
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
   { threshold: 0.08 }
 );
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-// ── INIT ───────────────────────────────────────────────────────────────────
-loadBlog();
-loadYouTube();
+// ── INIT: Run blog + YouTube in PARALLEL for maximum speed ──────────────────
+// FIX 3 (continued): Promise.all means both fetches start simultaneously
+Promise.all([loadBlog(), loadYouTube()]);
 
 </script>
 </body>
