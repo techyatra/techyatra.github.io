@@ -168,8 +168,8 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     /* ── Blog Grid ─────────────────────────────── */
     .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
     .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; max-height:280px; }
-    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; }
-    .blog-grid .blog-card.featured .blog-card-img { width:100%; height:280px; object-position:top; }
+    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; position:relative; min-height:280px; overflow:hidden; }
+    .blog-grid .blog-card.featured .blog-card-img { width:100%; height:100%; object-fit:cover; object-position:center; position:absolute; inset:0; }
     .blog-grid .blog-card.featured .blog-card-img-ph { width:100%; height:280px; }
     .blog-grid .blog-card.featured .blog-body { padding:2rem 2.2rem; justify-content:center; }
     .blog-grid .blog-card.featured .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
@@ -186,7 +186,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
 
     .blog-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.28s cubic-bezier(.4,0,.2,1); cursor:pointer; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(15,31,64,0.07); }
     .blog-card:hover { border-color:#93c5fd; transform:translateY(-5px); box-shadow:0 12px 40px rgba(59,130,246,0.13); }
-    .blog-card-img { width:100%; height:195px; object-fit:cover; object-position:top; display:block; background:var(--bg3); transition:transform 0.4s ease; }
+    .blog-card-img { width:100%; height:195px; object-fit:cover; object-position:center; display:block; background:var(--bg3); transition:transform 0.4s ease; }
     .blog-card:hover .blog-card-img { transform:scale(1.03); }
     .blog-card-img-ph { width:100%; height:195px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
     .blog-img-wrap { overflow:hidden; position:relative; flex-shrink:0; }
@@ -882,7 +882,27 @@ async function loadYouTube() {
 
     if (!entries.length) throw new Error('No entries');
 
-    grid.innerHTML = entries.map(entry => {
+    // Filter out YouTube Shorts:
+    // Signal 1: title contains #shorts or #short (case-insensitive)
+    // Signal 2: media:content aspect ratio — Shorts are portrait (height > width)
+    const filtered = entries.filter(entry => {
+      const title = (entry.querySelector('title')?.textContent || '').toLowerCase();
+      if (title.includes('#short')) return false; // catches #shorts and #short
+
+      // Check media:content dimensions — Shorts are 9:16 (portrait)
+      const media = entry.querySelector('content') || entry.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+      if (media) {
+        const w = parseInt(media.getAttribute('width') || '0');
+        const h = parseInt(media.getAttribute('height') || '0');
+        if (w > 0 && h > 0 && h > w) return false; // portrait = Short
+      }
+      return true;
+    });
+
+    const videos = filtered.slice(0, 6);
+    if (!videos.length) throw new Error('No non-short videos');
+
+    grid.innerHTML = videos.map(entry => {
       const videoId = entry.querySelector('videoId')?.textContent
         || entry.querySelector('id')?.textContent?.split(':').pop();
       const title = entry.querySelector('title')?.textContent || '';
