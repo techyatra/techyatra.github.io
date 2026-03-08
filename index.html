@@ -1044,9 +1044,39 @@ function buildYTCard(id, title, thumb, date) {
 }
 
 // ── FORMS ───────────────────────────────────────────────────────────────────
-function handleSub(e) {
+async function handleSub(e) {
   e.preventDefault();
-  document.querySelector('.sub-form').innerHTML = '<p style="color:#fff;font-weight:700;font-size:1rem;">✅ Thanks! You\'re subscribed.</p>';
+  const input = e.target.querySelector('.sub-input');
+  const btn = e.target.querySelector('.btn-white');
+  const email = input.value.trim();
+  if (!email) return;
+
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/newsletter_subscribers`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=ignore-duplicates'
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (res.ok || res.status === 409) {
+      document.querySelector('.sub-form').innerHTML =
+        '<p style="color:#fff;font-weight:700;font-size:1rem;">✅ Thanks! You\'re subscribed.</p>';
+    } else {
+      throw new Error('Failed');
+    }
+  } catch {
+    btn.textContent = 'Subscribe →';
+    btn.disabled = false;
+    input.placeholder = 'Something went wrong, try again';
+  }
 }
 
 function handleContact(e) {
