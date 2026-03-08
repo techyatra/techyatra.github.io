@@ -167,13 +167,22 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     #blog { background:var(--bg2); }
     /* ── Blog Grid ─────────────────────────────── */
     .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
-    .blog-grid .blog-card:first-child { grid-column:1 / -1; flex-direction:row; max-height:280px; }
-    .blog-grid .blog-card:first-child .blog-card-img { width:45%; height:280px; flex-shrink:0; object-position:top; }
-    .blog-grid .blog-card:first-child .blog-card-img-ph { width:45%; height:280px; flex-shrink:0; }
-    .blog-grid .blog-card:first-child .blog-body { padding:2rem 2.2rem; justify-content:center; }
-    .blog-grid .blog-card:first-child .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
-    .blog-grid .blog-card:first-child .blog-excerpt { -webkit-line-clamp:4; font-size:0.88rem; }
-    .blog-grid .blog-card:first-child .featured-badge { display:inline-block; }
+    .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; max-height:280px; }
+    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; }
+    .blog-grid .blog-card.featured .blog-card-img { width:100%; height:280px; object-position:top; }
+    .blog-grid .blog-card.featured .blog-card-img-ph { width:100%; height:280px; }
+    .blog-grid .blog-card.featured .blog-body { padding:2rem 2.2rem; justify-content:center; }
+    .blog-grid .blog-card.featured .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
+    .blog-grid .blog-card.featured .blog-excerpt { -webkit-line-clamp:4; font-size:0.88rem; }
+    .blog-grid .blog-card.featured .featured-badge { display:inline-block; }
+    /* mobile: stack featured card */
+    @media (max-width:768px) {
+      .blog-grid .blog-card.featured { flex-direction:column; max-height:none; }
+      .blog-grid .blog-card.featured .blog-img-wrap { width:100%; }
+      .blog-grid .blog-card.featured .blog-card-img { height:195px; }
+      .blog-grid .blog-card.featured .blog-card-img-ph { height:195px; }
+      .blog-grid .blog-card.featured .blog-body { padding:1.4rem 1.5rem; }
+    }
 
     .blog-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.28s cubic-bezier(.4,0,.2,1); cursor:pointer; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(15,31,64,0.07); }
     .blog-card:hover { border-color:#93c5fd; transform:translateY(-5px); box-shadow:0 12px 40px rgba(59,130,246,0.13); }
@@ -320,10 +329,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       .sub-form { flex-direction:column; }
       footer { flex-direction:column; gap:1rem; text-align:center; padding:2rem 1.5rem; }
       .blog-grid { grid-template-columns:1fr; }
-      .blog-grid .blog-card:first-child { flex-direction:column; max-height:none; }
-      .blog-grid .blog-card:first-child .blog-card-img { width:100%; height:195px; }
-      .blog-grid .blog-card:first-child .blog-card-img-ph { width:100%; height:195px; }
-      .blog-grid .blog-card:first-child .blog-body { padding:1.4rem 1.5rem; }
+      /* featured card mobile handled above */
       .modal-content { padding:1.5rem; }
       .modal-title { font-size:1.4rem; }
 
@@ -341,6 +347,14 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
           .stat-div { display:none; }
         }
       }
+
+    /* PAGINATION */
+    .pagination { display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-top:2.5rem; flex-wrap:wrap; }
+    .page-btn { min-width:40px; height:40px; padding:0 0.6rem; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--text2); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+    .page-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-pale); }
+    .page-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 2px 8px rgba(26,86,219,0.3); }
+    .page-btn:disabled { opacity:0.4; cursor:not-allowed; pointer-events:none; }
+    .page-ellipsis { color:var(--text3); font-size:0.9rem; padding:0 0.2rem; }
   </style>
 </head>
 <body>
@@ -511,7 +525,8 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     <h2 class="section-title">Latest Articles</h2>
     <p class="section-desc">Technical deep-dives on .NET, Azure, SQL Server — generated from my YouTube videos. Click any article to read it here.</p>
     <div class="blog-grid" id="blog-grid"><div class="loading-msg">⏳ Loading articles...</div></div>
-    <div style="text-align:center;margin-top:2.5rem;"><a href="https://techyatra.hashnode.dev" target="_blank" class="btn-secondary">View All Articles →</a></div>
+    <div class="pagination" id="blog-pagination"></div>
+    <div style="text-align:center;margin-top:2rem;"><a href="https://techyatra.hashnode.dev" target="_blank" class="btn-secondary">View All Articles →</a></div>
   </div>
 </section>
 
@@ -634,18 +649,22 @@ function ytSkeletons() {
 }
 
 // ── BLOG: Fetch from Hashnode (metadata only — fast!) ───────────────────────
-// FIX 1: Added filter to exclude archived/draft posts (isActive status check)
-// FIX 2: Only fetch lightweight metadata for the grid; content loaded on-demand
+// FIX 1: Archived posts filtered out
+// FIX 2: Metadata-only fetch for grid; content loaded lazily on modal open
+// FIX: Pagination — 7 posts per page, featured layout on first post of each page
+
+const POSTS_PER_PAGE = 7;
+let allPosts = [];
+let currentPage = 1;
+
 async function loadBlog() {
   const grid = document.getElementById('blog-grid');
-  grid.innerHTML = blogSkeletons(); // Show skeleton immediately
+  grid.innerHTML = blogSkeletons();
 
   try {
-    // IMPORTANT: We do NOT fetch content.html here — that's what made it slow.
-    // content.html is fetched lazily only when the user opens a modal.
     const query = `{
       publication(host: "techyatra.hashnode.dev") {
-        posts(first: 50, filter: { }) {
+        posts(first: 50) {
           edges {
             node {
               id
@@ -653,7 +672,6 @@ async function loadBlog() {
               brief
               slug
               publishedAt
-              updatedAt
               coverImage { url }
               tags { name }
               url
@@ -666,7 +684,7 @@ async function loadBlog() {
     const res = await fetch('https://gql.hashnode.com/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query })
+      body: JSON.stringify({ query })
     });
     const data = await res.json();
     const edges = data?.data?.publication?.posts?.edges;
@@ -676,50 +694,97 @@ async function loadBlog() {
       return;
     }
 
-    // FIX 1: Filter out archived posts.
-    // Hashnode API returns archived posts mixed with published ones.
-    // We filter client-side: only show posts that have a valid publishedAt
-    // AND whose slug doesn't appear in a known-archived list.
-    // The most reliable signal: archived posts still have publishedAt but
-    // Hashnode sets their URL to a draft-like path. We just ensure publishedAt exists.
-    posts = edges
-      .map(e => e.node)
-      .filter(p => p.publishedAt && p.slug); // Only published posts have both
+    // Filter: only published posts have both publishedAt and slug
+    allPosts = edges.map(e => e.node).filter(p => p.publishedAt && p.slug);
 
-    if (!posts.length) {
+    if (!allPosts.length) {
       grid.innerHTML = `<div class="loading-msg">No published articles found.</div>`;
       return;
     }
 
-    grid.innerHTML = posts.map((p, i) => {
-      const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
-      const featuredBadge = i === 0 ? `<span class="featured-badge">Featured</span>` : '';
-      const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 40)) + ' min read';
-      const imgSrc = p.coverImage?.url || null;
-      const img = imgSrc
-        ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` +
-           `<div class="blog-card-img-ph" style="display:none">📝</div>`)
-        : `<div class="blog-card-img-ph">📝</div>`;
-      return `
-        <div class="blog-card" onclick="openModal(${i})">
-          <div class="blog-img-wrap">${img}</div>
-          <div class="blog-body">
-            <div class="blog-tags">${tags}${featuredBadge}</div>
-            <div class="blog-title">${p.title}</div>
-            <div class="blog-excerpt">${p.brief || ''}</div>
-            <div class="blog-meta"><span>${date} · ${readTime}</span><span class="blog-read">Read article</span></div>
-          </div>
-        </div>`;
-    }).join('');
+    renderPage(1);
+
   } catch (e) {
-    grid.innerHTML = `<div class="loading-msg">Could not load articles. <a href="https://techyatra.hashnode.dev" target="_blank" style="color:var(--blue);font-weight:700;">Visit blog directly →</a></div>`;
+    document.getElementById('blog-grid').innerHTML =
+      `<div class="loading-msg">Could not load articles. <a href="https://techyatra.hashnode.dev" target="_blank" style="color:var(--blue);font-weight:700;">Visit blog directly →</a></div>`;
   }
+}
+
+function renderPage(page) {
+  currentPage = page;
+  const grid = document.getElementById('blog-grid');
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+  const start = (page - 1) * POSTS_PER_PAGE;
+  const pagePosts = allPosts.slice(start, start + POSTS_PER_PAGE);
+
+  grid.innerHTML = pagePosts.map((p, i) => {
+    const globalIndex = start + i;
+    const isFeatured = i === 0; // First post on every page gets featured layout
+    const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
+    const featuredBadge = isFeatured ? `<span class="featured-badge">Featured</span>` : '';
+    const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 40)) + ' min read';
+    const imgSrc = p.coverImage?.url || null;
+    const img = imgSrc
+      ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` +
+         `<div class="blog-card-img-ph" style="display:none">📝</div>`)
+      : `<div class="blog-card-img-ph">📝</div>`;
+    return `
+      <div class="blog-card${isFeatured ? ' featured' : ''}" onclick="openModal(${globalIndex})">
+        <div class="blog-img-wrap">${img}</div>
+        <div class="blog-body">
+          <div class="blog-tags">${tags}${featuredBadge}</div>
+          <div class="blog-title">${p.title}</div>
+          <div class="blog-excerpt">${p.brief || ''}</div>
+          <div class="blog-meta"><span>${date} · ${readTime}</span><span class="blog-read">Read article</span></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  renderPagination(page, totalPages);
+
+  // Scroll to blog section top smoothly when changing pages (except first load)
+  if (page > 1 || currentPage !== 1) {
+    document.getElementById('blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function renderPagination(current, total) {
+  const container = document.getElementById('blog-pagination');
+  if (total <= 1) { container.innerHTML = ''; return; }
+
+  let html = '';
+
+  // Prev button
+  html += `<button class="page-btn" onclick="renderPage(${current - 1})" ${current === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+  // Page number buttons with ellipsis
+  const pages = [];
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+      pages.push(i);
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...');
+    }
+  }
+
+  pages.forEach(p => {
+    if (p === '...') {
+      html += `<span class="page-ellipsis">…</span>`;
+    } else {
+      html += `<button class="page-btn${p === current ? ' active' : ''}" onclick="renderPage(${p})">${p}</button>`;
+    }
+  });
+
+  // Next button
+  html += `<button class="page-btn" onclick="renderPage(${current + 1})" ${current === total ? 'disabled' : ''}>Next →</button>`;
+
+  container.innerHTML = html;
 }
 
 // ── BLOG MODAL: Lazy-load full content only when opened ────────────────────
 async function openModal(i) {
-  const p = posts[i];
+  const p = allPosts[i];
   document.getElementById('modal-bar-title').textContent = p.title;
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -733,7 +798,6 @@ async function openModal(i) {
   const hashnodeUrl = p.url || `https://techyatra.hashnode.dev/${p.slug}`;
   const readFullBtn = `<a href="${hashnodeUrl}" target="_blank" class="modal-read-full">Read Full Article on Hashnode ↗</a>`;
 
-  // Show loading state in modal while fetching content
   document.getElementById('modal-inner').innerHTML = `
     ${heroImg}
     <div class="modal-content">
@@ -746,8 +810,7 @@ async function openModal(i) {
       </div>
     </div>`;
 
-  // FIX 2: Fetch full content NOW (lazily, only when modal opens)
-  // This is what we removed from the initial grid load to make it fast
+  // FIX 2: Fetch full content lazily — only when modal opens
   try {
     const query = `{
       publication(host: "techyatra.hashnode.dev") {
@@ -775,7 +838,6 @@ async function openModal(i) {
         </div>
       </a>` : '';
 
-    // Strip first image from content to avoid duplicate cover
     let contentHtml = html;
     contentHtml = contentHtml.replace(/<img[^>]*>/, '');
 
@@ -799,6 +861,7 @@ function closeIfOutside(e) {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
 
 // ── YOUTUBE: Fast loading with reliable proxy ──────────────────────────────
 // FIX 3: Switched to corsproxy.io (faster, more reliable than allorigins.win)
