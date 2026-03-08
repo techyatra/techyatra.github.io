@@ -199,6 +199,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     .blog-read::after { content:'→'; transition:transform 0.2s; }
     .blog-card:hover .blog-read::after { transform:translateX(4px); }
     .blog-read { color:var(--blue); font-weight:700; }
+    .blog-views { font-size:0.72rem; color:var(--text3); font-weight:600; }
     .loading-msg { grid-column:1/-1; text-align:center; color:var(--text2); padding:3rem; }
 
     /* BLOG MODAL */
@@ -522,6 +523,9 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     <div class="chip">Blog</div>
     <h2 class="section-title">Latest Articles</h2>
     <p class="section-desc">Technical deep-dives on .NET, Azure, SQL Server — generated from my YouTube videos. Click any article to read it here.</p>
+    <div style="margin-bottom:1.5rem;">
+      <span id="blog-total-reads" style="display:none;align-items:center;gap:0.4rem;background:var(--blue-pale);color:var(--blue);font-size:0.8rem;font-weight:700;padding:0.35rem 0.9rem;border-radius:100px;border:1px solid #bfdbfe;"></span>
+    </div>
     <div class="blog-grid" id="blog-grid"><div class="loading-msg">⏳ Loading articles...</div></div>
     <div class="pagination" id="blog-pagination"></div>
     <div style="text-align:center;margin-top:2rem;"><a href="https://techyatra.hashnode.dev" target="_blank" class="btn-secondary">View All Articles →</a></div>
@@ -620,6 +624,45 @@ navLinks.querySelectorAll('a').forEach(a => {
 
 let posts = [];
 const CHANNEL_ID = 'UCOfIbZhaSSQhNWsoITf8cUQ';
+// ⚠️  REPLACE with your YouTube Data API v3 key (free — get it at console.cloud.google.com)
+const YT_API_KEY = 'AIzaSyBBPZUHyA4fhnFWEHi39NfCposrzxcc8QU';
+
+// ── READ TRACKING (Supabase — real counts across all visitors) ─────────────
+const SUPABASE_URL = 'https://dmddswshfwrwmchcttww.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_xXayU50PuutktrI5PWHxaA_Nbq2EcUl';
+
+// Fetch all read counts from Supabase in one call
+async function fetchAllReadCounts() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/article_reads?select=slug,read_count`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    const rows = await res.json();
+    const map = {};
+    let total = 0;
+    (rows || []).forEach(r => { map[r.slug] = r.read_count; total += r.read_count; });
+    return { map, total };
+  } catch { return { map: {}, total: 0 }; }
+}
+
+// Upsert: increment read count for a slug in Supabase
+async function incrementRead(slug, title) {
+  try {
+    // First try to insert; if slug exists, increment
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_read`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_slug: slug, p_title: title })
+    });
+  } catch {}
+}
 
 // ── SKELETON LOADERS ────────────────────────────────────────────────────────
 function blogSkeletons() {
@@ -708,16 +751,26 @@ async function loadBlog() {
   }
 }
 
-function renderPage(page) {
+// Global read counts cache so we don't re-fetch on every page turn
+let readCountsCache = { map: {}, total: 0 };
+
+async function renderPage(page) {
   currentPage = page;
   const grid = document.getElementById('blog-grid');
   const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
   const start = (page - 1) * POSTS_PER_PAGE;
   const pagePosts = allPosts.slice(start, start + POSTS_PER_PAGE);
 
+  // Fetch counts from Supabase (only on first render; cache for page turns)
+  if (page === 1 || !readCountsCache._loaded) {
+    readCountsCache = await fetchAllReadCounts();
+    readCountsCache._loaded = true;
+    updateTotalReadsHeading(readCountsCache.total);
+  }
+
   grid.innerHTML = pagePosts.map((p, i) => {
     const globalIndex = start + i;
-    const isFeatured = i === 0; // First post on every page gets featured layout
+    const isFeatured = i === 0;
     const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
     const featuredBadge = isFeatured ? `<span class="featured-badge">Featured</span>` : '';
@@ -727,6 +780,8 @@ function renderPage(page) {
       ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` +
          `<div class="blog-card-img-ph" style="display:none">📝</div>`)
       : `<div class="blog-card-img-ph">📝</div>`;
+    const views = readCountsCache.map[p.slug] || 0;
+    const viewsBadge = views > 0 ? `<span class="blog-views">👁 ${views.toLocaleString()}</span>` : '';
     return `
       <div class="blog-card${isFeatured ? ' featured' : ''}" onclick="openModal(${globalIndex})">
         <div class="blog-img-wrap">${img}</div>
@@ -734,16 +789,23 @@ function renderPage(page) {
           <div class="blog-tags">${tags}${featuredBadge}</div>
           <div class="blog-title">${p.title}</div>
           <div class="blog-excerpt">${p.brief || ''}</div>
-          <div class="blog-meta"><span>${date} · ${readTime}</span><span class="blog-read">Read article</span></div>
+          <div class="blog-meta"><span>${date} · ${readTime}</span><div style="display:flex;align-items:center;gap:0.7rem">${viewsBadge}<span class="blog-read">Read article</span></div></div>
         </div>
       </div>`;
   }).join('');
 
   renderPagination(page, totalPages);
 
-  // Scroll to blog section top smoothly when changing pages (except first load)
-  if (page > 1 || currentPage !== 1) {
+  if (page > 1) {
     document.getElementById('blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function updateTotalReadsHeading(total) {
+  const el = document.getElementById('blog-total-reads');
+  if (el && total > 0) {
+    el.textContent = `📖 ${total.toLocaleString()} total reads`;
+    el.style.display = 'inline-flex';
   }
 }
 
@@ -795,6 +857,31 @@ async function openModal(i) {
     : `<div class="modal-hero-ph">📝</div>`;
   const hashnodeUrl = p.url || `https://techyatra.hashnode.dev/${p.slug}`;
   const readFullBtn = `<a href="${hashnodeUrl}" target="_blank" class="modal-read-full">Read Full Article on Hashnode ↗</a>`;
+
+  // Increment read count in Supabase (fire and forget)
+  incrementRead(p.slug, p.title).then(() => {
+    // Update local cache and refresh badge on the card
+    readCountsCache.map[p.slug] = (readCountsCache.map[p.slug] || 0) + 1;
+    readCountsCache.total = (readCountsCache.total || 0) + 1;
+    // Refresh the badge on whichever card is currently visible
+    document.querySelectorAll('.blog-card').forEach(card => {
+      if (card.querySelector('.blog-title')?.textContent === p.title) {
+        let badge = card.querySelector('.blog-views');
+        const newCount = readCountsCache.map[p.slug];
+        if (badge) {
+          badge.textContent = `👁 ${newCount.toLocaleString()}`;
+        } else {
+          const metaRight = card.querySelector('.blog-meta > div');
+          if (metaRight) {
+            badge = document.createElement('span');
+            badge.className = 'blog-views';
+            badge.textContent = `👁 ${newCount.toLocaleString()}`;
+            metaRight.prepend(badge);
+          }
+        }
+    }});
+    updateTotalReadsHeading(readCountsCache.total);
+  });
 
   document.getElementById('modal-inner').innerHTML = `
     ${heroImg}
@@ -869,75 +956,68 @@ async function loadYouTube() {
   grid.innerHTML = ytSkeletons();
 
   try {
+    // Step 1: Get latest video IDs from RSS feed (no API key needed)
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
-
     const res = await fetch(proxyUrl);
     const text = await res.text();
     const parser = new DOMParser();
     const xml = parser.parseFromString(text, 'text/xml');
-
-    // Get more entries upfront so we have enough after filtering
     const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 20);
     if (!entries.length) throw new Error('No entries');
 
-    // Step 1 — Quick client-side filter: drop obvious Shorts by title tag or portrait dimensions
-    const candidates = entries.filter(entry => {
-      const title = (entry.querySelector('title')?.textContent || '').toLowerCase();
-      if (title.includes('#short')) return false;
-      const media = entry.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
-      if (media) {
-        const w = parseInt(media.getAttribute('width') || '0');
-        const h = parseInt(media.getAttribute('height') || '0');
-        if (w > 0 && h > 0 && h > w) return false; // portrait = Short
-      }
-      return true;
+    // Extract video IDs and basic metadata
+    const videos = entries.map(entry => ({
+      id: entry.querySelector('videoId')?.textContent
+          || entry.querySelector('id')?.textContent?.split(':').pop(),
+      title: entry.querySelector('title')?.textContent || '',
+      published: entry.querySelector('published')?.textContent || '',
+    })).filter(v => v.id);
+
+    // Step 2: Fetch durations via YouTube Data API v3
+    // contentDetails gives ISO 8601 duration e.g. PT5M32S
+    const ids = videos.map(v => v.id).join(',');
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ids}&key=${YT_API_KEY}`;
+    const apiRes = await fetch(apiUrl);
+    const apiData = await apiRes.json();
+
+    if (apiData.error) throw new Error('API error: ' + apiData.error.message);
+
+    // Parse ISO 8601 duration to seconds
+    function parseDuration(iso) {
+      const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (!m) return 0;
+      return (parseInt(m[1]||0)*3600) + (parseInt(m[2]||0)*60) + parseInt(m[3]||0);
+    }
+
+    // Build duration map
+    const durMap = {};
+    (apiData.items || []).forEach(item => {
+      durMap[item.id] = parseDuration(item.contentDetails?.duration || '');
     });
 
-    // Step 2 — Fetch duration for each candidate via YouTube oEmbed
-    // oEmbed doesn't give duration directly, so we use noembed.com which includes it.
-    // We check in parallel, keeping only videos > 180 seconds (3 minutes).
+    // Step 3: Filter — keep only videos longer than 3 minutes (180s)
     const MIN_SECONDS = 180;
-
-    const withDuration = await Promise.all(
-      candidates.slice(0, 12).map(async entry => {
-        const videoId = entry.querySelector('videoId')?.textContent
-          || entry.querySelector('id')?.textContent?.split(':').pop();
-        const title = entry.querySelector('title')?.textContent || '';
-        const published = entry.querySelector('published')?.textContent || '';
-
-        try {
-          // noembed returns duration_seconds for YouTube videos
-          const oembed = await fetch(
-            `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
-          );
-          const meta = await oembed.json();
-          const duration = meta.duration || meta.duration_seconds || 0;
-          // noembed may not always have duration; if missing, keep the video (assume long)
-          if (duration > 0 && duration < MIN_SECONDS) return null;
-        } catch {
-          // If fetch fails, keep the video (don't discard on error)
-        }
-        return entry;
+    const longVideos = videos
+      .filter(v => {
+        const dur = durMap[v.id] || 0;
+        // If duration missing from API response, skip the video
+        return dur >= MIN_SECONDS;
       })
-    );
+      .slice(0, 6);
 
-    const longVideos = withDuration.filter(Boolean).slice(0, 6);
     if (!longVideos.length) throw new Error('No long videos found');
 
-    grid.innerHTML = longVideos.map(entry => {
-      const videoId = entry.querySelector('videoId')?.textContent
-        || entry.querySelector('id')?.textContent?.split(':').pop();
-      const title = entry.querySelector('title')?.textContent || '';
-      const published = entry.querySelector('published')?.textContent || '';
-      const date = published
-        ? new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    grid.innerHTML = longVideos.map(v => {
+      const date = v.published
+        ? new Date(v.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         : '';
-      const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      return buildYTCard(videoId, title, thumb, date);
+      const thumb = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
+      return buildYTCard(v.id, v.title, thumb, date);
     }).join('');
 
   } catch (e) {
+    console.warn('YouTube load failed:', e.message);
     const fallbackIds = [
       'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
       '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
