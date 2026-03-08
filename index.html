@@ -34,9 +34,9 @@ img, video, iframe { max-width:100%; height:auto; }
     /* NAV */
     nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:0 5rem; height:68px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); box-shadow:0 1px 12px rgba(0,0,0,0.06); transition: all 0.3s; }
 nav .nav-logo { order:0; }
-nav .nav-toggle { order:1; }
+nav .nav-toggle { order:2; }
 nav .nav-links { order:1; }
-nav .subscribe-btn { order:2; margin-left:0.5rem; }
+nav .subscribe-btn { order:3; margin-left:0.5rem; }
     @media (max-width:768px) { .btn-primary { margin-left:0.5rem; padding:0.5rem 0.8rem; font-size:0.88rem; } .subscribe-btn { margin-left:0.5rem; } }
     [data-theme="dark"] nav { background:rgba(26,32,44,0.96); }
     .nav-logo { font-family:'Fraunces',serif; font-weight:800; font-size:1.4rem; color:var(--blue); text-decoration:none; }
@@ -84,8 +84,6 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     .hero-stats { display:inline-flex; gap:2.5rem; padding:1.5rem 2rem; background:#fff; border-radius:14px; box-shadow:var(--shadow); border:1px solid var(--border); animation:fadeInUp 0.8s ease 0.4s both; }
 [data-theme="dark"] .hero-stats { background:var(--card); }
 @media (max-width:768px) { .hero-stats { flex-direction:column; align-items:center; gap:1rem; } }
-
-    [data-theme="dark"] .hero-stats { background:var(--card); }
     .stat-item { text-align:center; }
     .stat-num { font-family:'Fraunces',serif; font-size:1.9rem; font-weight:800; color:var(--blue); line-height:1; }
     .stat-label { font-size:0.72rem; color:var(--text3); font-weight:600; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.06em; }
@@ -142,7 +140,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     .project-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1rem; }
     .project-tag { background:var(--blue-pale); color:var(--blue); font-size:0.7rem; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; }
     .project-link { color:var(--blue); font-weight:700; text-decoration:none; transition:all 0.2s; }
-    .project-link:hover { gap:0.5rem; }
+    .project-link:hover { opacity:0.75; }
 
     /* TESTIMONIALS */
     #testimonials { background:var(--bg); }
@@ -156,7 +154,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
 
     /* SKILLS */
     #skills { background:var(--bg); }
-    .skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.2rem; }
+    .skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.2rem; }
     .skill-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.4rem; transition:all 0.25s; box-shadow:var(--shadow); }
     .skill-card:hover { border-color:#bfdbfe; transform:translateY(-3px); box-shadow:var(--shadow-lg); }
     .skill-icon { font-size:1.7rem; margin-bottom:0.7rem; }
@@ -168,6 +166,8 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     #blog { background:var(--bg2); }
     /* ── Blog Grid ─────────────────────────────── */
     .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+    @media (max-width:900px) { .blog-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .blog-grid { grid-template-columns:1fr; } }
     .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; align-items:stretch; }
     .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; position:relative; overflow:hidden; min-height:240px; }
     .blog-grid .blog-card.featured .blog-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center center; }
@@ -199,7 +199,6 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     .blog-read { color:var(--blue); font-weight:700; font-size:0.75rem; display:flex; align-items:center; gap:0.3rem; }
     .blog-read::after { content:'→'; transition:transform 0.2s; }
     .blog-card:hover .blog-read::after { transform:translateX(4px); }
-    .blog-read { color:var(--blue); font-weight:700; }
     .blog-views { font-size:0.72rem; color:var(--text3); font-weight:600; }
     .loading-msg { grid-column:1/-1; text-align:center; color:var(--text2); padding:3rem; }
 
@@ -265,6 +264,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
     .sub-form { display:flex; gap:0.8rem; }
     .sub-input { flex:1; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:0.85rem 1.2rem; border-radius:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; outline:none; transition:all 0.2s; }
     .sub-input::placeholder { color:rgba(255,255,255,0.6); }
+    [data-theme="dark"] .sub-input { background:rgba(255,255,255,0.1); }
     .sub-input:focus { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.6); }
     .btn-white { background:#fff; color:var(--blue); font-weight:700; font-size:0.88rem; padding:0.85rem 1.8rem; border-radius:8px; border:none; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.2s; white-space:nowrap; }
     .btn-white:hover { background:#dbeafe; }
@@ -561,7 +561,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       <div>
         <p style="color:var(--text2);margin-bottom:1.5rem;line-height:1.75;">Open to full stack freelance projects, consulting, speaking and collaborations.</p>
         <div class="contact-links">
-          <a href="mailto:thetechyatra@gmail.com" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val"><span class="__cf_email__" data-cfemail="c4b0aca1b0a1a7acbda5b0b6a584a3a9a5ada8eaa7aba9">[email&#160;protected]</span></div></div></a>
+          <a href="mailto:thetechyatra@gmail.com" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val">thetechyatra@gmail.com</div></div></a>
           <a href="https://www.linkedin.com/in/nishant-gupta-fse/" target="_blank" class="contact-card"><div class="contact-icon" style="background:#eff6ff">💼</div><div><div class="contact-lbl">LinkedIn</div><div class="contact-val">nishant-gupta-fse</div></div></a>
           <a href="https://github.com/techyatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#f8fafc">🐙</div><div><div class="contact-lbl">GitHub</div><div class="contact-val">github.com/techyatra</div></div></a>
           <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#fff1f2">▶</div><div><div class="contact-lbl">YouTube</div><div class="contact-val">@tech_yatra</div></div></a>
