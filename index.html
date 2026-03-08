@@ -427,11 +427,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
           <div class="why-title">Developer Advocate</div>
           <div class="why-desc">230+ video tutorials, clear documentation, and developer-first thinking.</div>
         </div>
-        <div class="why-card">
-          <div class="why-icon">⚡</div>
-          <div class="why-title">Performance</div>
-          <div class="why-desc">Optimized systems for latency, cost, and scalability.</div>
-        </div>
+
       </div>
     </section>
 
@@ -564,7 +560,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       <div>
         <p style="color:var(--text2);margin-bottom:1.5rem;line-height:1.75;">Open to full stack freelance projects, consulting, speaking and collaborations.</p>
         <div class="contact-links">
-          <a href="/cdn-cgi/l/email-protection#d8acb0bdacbdbbb0a1b9acaab998bfb5b9b1b4f6bbb7b5" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val"><span class="__cf_email__" data-cfemail="c4b0aca1b0a1a7acbda5b0b6a584a3a9a5ada8eaa7aba9">[email&#160;protected]</span></div></div></a>
+          <a href="mailto:thetechyatra@gmail.com" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val"><span class="__cf_email__" data-cfemail="c4b0aca1b0a1a7acbda5b0b6a584a3a9a5ada8eaa7aba9">[email&#160;protected]</span></div></div></a>
           <a href="https://www.linkedin.com/in/nishant-gupta-fse/" target="_blank" class="contact-card"><div class="contact-icon" style="background:#eff6ff">💼</div><div><div class="contact-lbl">LinkedIn</div><div class="contact-val">nishant-gupta-fse</div></div></a>
           <a href="https://github.com/techyatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#f8fafc">🐙</div><div><div class="contact-lbl">GitHub</div><div class="contact-val">github.com/techyatra</div></div></a>
           <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#fff1f2">▶</div><div><div class="contact-lbl">YouTube</div><div class="contact-val">@tech_yatra</div></div></a>
@@ -573,6 +569,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
       <form class="contact-form" onsubmit="handleContact(event)">
         <div class="form-group"><label class="form-lbl">Your Name</label><input type="text" class="form-ctrl" placeholder="John Doe" required/></div>
         <div class="form-group"><label class="form-lbl">Email Address</label><input type="email" class="form-ctrl" placeholder="john@example.com" required/></div>
+        <div class="form-group"><label class="form-lbl">Contact Number</label><input type="tel" class="form-ctrl" placeholder="+91 98765 43210"/></div>
         <div class="form-group"><label class="form-lbl">Subject</label><input type="text" class="form-ctrl" placeholder="Project inquiry" required/></div>
         <div class="form-group"><label class="form-lbl">Message</label><textarea class="form-ctrl" placeholder="Tell me about your project..."></textarea></div>
         <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:0.9rem;">Send Message 🚀</button>
@@ -603,7 +600,7 @@ nav .subscribe-btn { order:2; margin-left:0.5rem; }
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // NAV TOGGLE
 const navToggle = document.getElementById('nav-toggle');
 const navLinks = document.querySelector('.nav-links');
@@ -1079,11 +1076,42 @@ async function handleSub(e) {
   }
 }
 
-function handleContact(e) {
+async function handleContact(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = '✅ Message Sent!';
-  setTimeout(() => { e.target.reset(); btn.textContent = 'Send Message 🚀'; }, 3000);
+  const fields = e.target.querySelectorAll('.form-ctrl');
+  const name    = fields[0].value.trim();
+  const email   = fields[1].value.trim();
+  const phone   = fields[2].value.trim();
+  const subject = fields[3].value.trim();
+  const message = fields[4].value.trim();
+
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/contact_messages`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ name, email, phone, subject, message })
+    });
+
+    if (res.ok) {
+      btn.textContent = '✅ Message Sent!';
+      setTimeout(() => { e.target.reset(); btn.textContent = 'Send Message 🚀'; btn.disabled = false; }, 3000);
+    } else {
+      throw new Error('Failed');
+    }
+  } catch {
+    btn.textContent = 'Send Message 🚀';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again or email directly at thetechyatra@gmail.com');
+  }
 }
 
 // ── ANIMATIONS ──────────────────────────────────────────────────────────────
