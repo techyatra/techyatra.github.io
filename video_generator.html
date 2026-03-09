@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TechYatra Video Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0a0f;
+  --card:#13131a;
+  --border:#1e1e2e;
+  --blue:#4f8ef7;
+  --cyan:#00d4ff;
+  --green:#00ff88;
+  --orange:#ff6b35;
+  --text:#e8eaf0;
+  --text2:#8890a4;
+  --grad:linear-gradient(135deg,#4f8ef7,#00d4ff);
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── SETUP SCREEN ─────────────────────────────────── */
+#setup{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+  background:radial-gradient(ellipse at 20% 50%,rgba(79,142,247,0.08) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(0,212,255,0.06) 0%,transparent 50%),
+             var(--bg);
+}
+.setup-box{
+  max-width:680px;width:100%;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:2.5rem;
+  box-shadow:0 0 60px rgba(79,142,247,0.08);
+}
+.setup-logo{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:1.5rem;letter-spacing:0.05em;
+}
+.setup-title{
+  font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;
+  color:#fff;margin-bottom:0.5rem;line-height:1.2;
+}
+.setup-sub{color:var(--text2);font-size:0.92rem;margin-bottom:2rem;line-height:1.6;}
+
+.form-lbl{font-size:0.78rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:0.5rem;}
+textarea{
+  width:100%;background:#0d0d14;border:1px solid var(--border);color:var(--text);
+  padding:1rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;
+  line-height:1.7;resize:vertical;min-height:180px;outline:none;transition:border-color 0.2s;
+  margin-bottom:1.2rem;
+}
+textarea:focus{border-color:var(--blue);}
+textarea::placeholder{color:#3a3a50;}
+
+.options-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+select{
+  width:100%;background:#0d0d14;border:1px solid var(--border);color:var(--text);
+  padding:0.75rem 1rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;
+  outline:none;cursor:pointer;
+}
+select:focus{border-color:var(--blue);}
+
+.generate-btn{
+  width:100%;background:var(--grad);color:#fff;font-family:'Syne',sans-serif;
+  font-weight:700;font-size:1rem;padding:1rem;border-radius:12px;border:none;
+  cursor:pointer;transition:all 0.3s;letter-spacing:0.03em;
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;
+}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,142,247,0.4);}
+.generate-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+.progress-bar{
+  height:3px;background:var(--border);border-radius:2px;margin-top:1.5rem;overflow:hidden;display:none;
+}
+.progress-fill{height:100%;background:var(--grad);border-radius:2px;width:0%;transition:width 0.5s ease;}
+.progress-text{font-size:0.78rem;color:var(--text2);margin-top:0.5rem;text-align:center;display:none;}
+
+/* ── PRESENTER SCREEN ─────────────────────────────── */
+#presenter{display:none;position:fixed;inset:0;background:#000;flex-direction:column;}
+
+.slide-stage{
+  flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* Slide types */
+.slide{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:5vw;opacity:0;transition:opacity 0.6s ease,transform 0.6s ease;
+  transform:translateY(30px);pointer-events:none;
+}
+.slide.active{opacity:1;transform:none;pointer-events:all;}
+.slide.exit{opacity:0;transform:translateY(-30px);}
+
+/* HOOK slide */
+.slide-hook{
+  background:radial-gradient(ellipse at center,#0d1a2e 0%,#000 70%);
+  text-align:center;flex-direction:column;
+}
+.slide-hook .slide-tag{
+  font-size:0.75rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:1.5rem;
+  display:inline-flex;align-items:center;gap:0.5rem;
+}
+.slide-hook .slide-tag::before,.slide-hook .slide-tag::after{
+  content:'';height:1px;width:40px;background:var(--cyan);opacity:0.4;
+}
+.slide-hook h1{
+  font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,4rem);font-weight:800;
+  line-height:1.1;color:#fff;margin-bottom:1.5rem;
+}
+.slide-hook h1 em{
+  font-style:normal;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.slide-hook p{
+  font-size:clamp(0.95rem,2vw,1.2rem);color:var(--text2);max-width:600px;line-height:1.7;
+}
+
+/* SECTION slide */
+.slide-section{
+  background:#000;flex-direction:column;
+  border-left:3px solid var(--blue);padding-left:8vw;
+  align-items:flex-start;
+}
+.slide-section .section-num{
+  font-size:0.72rem;font-weight:700;color:var(--blue);letter-spacing:0.12em;
+  text-transform:uppercase;margin-bottom:1rem;
+}
+.slide-section h2{
+  font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,3.5rem);font-weight:800;
+  color:#fff;line-height:1.1;margin-bottom:1.2rem;
+}
+.slide-section p{
+  font-size:clamp(0.95rem,2vw,1.15rem);color:var(--text2);max-width:650px;line-height:1.75;
+}
+
+/* STAT slide */
+.slide-stat{
+  background:radial-gradient(ellipse at center,#001122 0%,#000 70%);
+  flex-direction:column;text-align:center;
+}
+.stat-big{
+  font-family:'Syne',sans-serif;font-size:clamp(4rem,12vw,9rem);font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;margin-bottom:0.5rem;
+  animation:countUp 1s ease forwards;
+}
+@keyframes countUp{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.stat-label{font-size:clamp(1rem,2.5vw,1.5rem);color:var(--text2);font-weight:500;}
+.stat-sub{font-size:clamp(0.85rem,1.5vw,1rem);color:#3a3a50;margin-top:0.5rem;}
+
+/* LIST slide */
+.slide-list{
+  background:#000;flex-direction:column;align-items:flex-start;padding:6vw 8vw;
+}
+.slide-list h3{
+  font-family:'Syne',sans-serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;
+  color:#fff;margin-bottom:2rem;
+}
+.list-items{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:700px;}
+.list-item{
+  display:flex;align-items:flex-start;gap:1rem;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.2rem;
+  animation:slideInLeft 0.4s ease forwards;opacity:0;
+}
+.list-item:nth-child(1){animation-delay:0.1s}
+.list-item:nth-child(2){animation-delay:0.25s}
+.list-item:nth-child(3){animation-delay:0.4s}
+.list-item:nth-child(4){animation-delay:0.55s}
+.list-item:nth-child(5){animation-delay:0.7s}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+.list-bullet{
+  width:28px;height:28px;border-radius:6px;background:rgba(79,142,247,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;
+  color:var(--blue);flex-shrink:0;margin-top:1px;
+}
+.list-text{font-size:clamp(0.85rem,1.8vw,1rem);color:var(--text);line-height:1.5;}
+.list-text strong{color:#fff;}
+
+/* TOOL slide */
+.slide-tools{
+  background:#000;flex-direction:column;align-items:center;
+  text-align:center;padding:4vw;
+}
+.slide-tools h3{
+  font-family:'Syne',sans-serif;font-size:clamp(1.2rem,2.5vw,2rem);font-weight:800;
+  color:#fff;margin-bottom:2rem;
+}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:700px;width:100%;}
+.tool-card{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;
+  padding:1.2rem;transition:border-color 0.3s;
+  animation:fadeInScale 0.4s ease forwards;opacity:0;
+}
+.tool-card:nth-child(1){animation-delay:0.1s}
+.tool-card:nth-child(2){animation-delay:0.2s}
+.tool-card:nth-child(3){animation-delay:0.3s}
+.tool-card:nth-child(4){animation-delay:0.4s}
+.tool-card:nth-child(5){animation-delay:0.5s}
+@keyframes fadeInScale{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.tool-card:hover{border-color:var(--blue);}
+.tool-emoji{font-size:1.8rem;margin-bottom:0.5rem;}
+.tool-name{font-weight:700;font-size:0.88rem;color:#fff;margin-bottom:0.25rem;}
+.tool-desc{font-size:0.75rem;color:var(--text2);}
+.tool-badge{
+  display:inline-block;background:rgba(0,255,136,0.1);color:var(--green);
+  font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:100px;
+  margin-top:0.3rem;letter-spacing:0.05em;
+}
+
+/* QUOTE slide */
+.slide-quote{
+  background:radial-gradient(ellipse at 30% 70%,rgba(0,212,255,0.06) 0%,transparent 60%),#000;
+  flex-direction:column;text-align:center;padding:6vw;
+}
+.quote-mark{
+  font-size:5rem;line-height:1;color:var(--blue);opacity:0.3;font-family:'Syne',sans-serif;
+  margin-bottom:-1rem;
+}
+.quote-text{
+  font-family:'Syne',sans-serif;font-size:clamp(1.2rem,3vw,2rem);font-weight:700;
+  color:#fff;max-width:700px;line-height:1.4;margin-bottom:1.5rem;
+}
+.quote-author{font-size:0.85rem;color:var(--text2);}
+
+/* OUTRO slide */
+.slide-outro{
+  background:linear-gradient(135deg,#0a0a1a,#001133);
+  flex-direction:column;text-align:center;
+}
+.outro-logo{
+  font-family:'Syne',sans-serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:1rem;
+}
+.outro-tagline{
+  font-size:clamp(1rem,2.5vw,1.4rem);color:var(--text2);margin-bottom:2rem;line-height:1.6;
+}
+.outro-cta{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--grad);color:#fff;padding:0.8rem 2rem;
+  border-radius:100px;font-weight:700;font-size:0.95rem;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,142,247,0.4)}50%{box-shadow:0 0 0 12px rgba(79,142,247,0)}}
+
+/* ── BOTTOM BAR ──────────────────────────────────── */
+.bottom-bar{
+  height:64px;background:rgba(0,0,0,0.9);border-top:1px solid #111;
+  display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;
+  gap:1rem;flex-shrink:0;
+}
+.progress-track{flex:1;height:3px;background:#1a1a2e;border-radius:2px;overflow:hidden;}
+.progress-track-fill{height:100%;background:var(--grad);border-radius:2px;transition:width 0.3s;}
+.slide-counter{font-size:0.78rem;color:var(--text2);white-space:nowrap;min-width:60px;text-align:center;}
+.ctrl-btn{
+  width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.05);
+  border:1px solid #1a1a2e;color:var(--text2);cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;
+}
+.ctrl-btn:hover{background:rgba(79,142,247,0.15);border-color:var(--blue);color:var(--blue);}
+.auto-btn{
+  font-size:0.72rem;font-weight:700;padding:0 0.8rem;width:auto;letter-spacing:0.05em;
+  white-space:nowrap;
+}
+.auto-btn.playing{background:rgba(0,255,136,0.1);border-color:var(--green);color:var(--green);}
+
+/* ── PARTICLES BG ────────────────────────────────── */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.slide-stage{z-index:1;}
+.bottom-bar{z-index:2;}
+
+/* ── LOADING ──────────────────────────────────────── */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.95);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;gap:1.5rem;
+}
+.loading-overlay.show{display:flex;}
+.loader-ring{
+  width:60px;height:60px;border:3px solid #1a1a2e;border-top-color:var(--blue);
+  border-radius:50%;animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{color:var(--text2);font-size:0.88rem;text-align:center;max-width:300px;line-height:1.6;}
+.loader-step{
+  display:flex;flex-direction:column;gap:0.4rem;width:300px;
+}
+.loader-step-item{
+  display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#3a3a50;
+  transition:color 0.3s;
+}
+.loader-step-item.done{color:var(--green);}
+.loader-step-item.active{color:var(--cyan);}
+.loader-step-dot{
+  width:6px;height:6px;border-radius:50%;background:#3a3a50;flex-shrink:0;transition:background 0.3s;
+}
+.loader-step-item.done .loader-step-dot{background:var(--green);}
+.loader-step-item.active .loader-step-dot{background:var(--cyan);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Generating your video slides with AI...</div>
+  <div class="loader-step" id="loaderSteps">
+    <div class="loader-step-item" id="step1"><div class="loader-step-dot"></div>Analyzing script</div>
+    <div class="loader-step-item" id="step2"><div class="loader-step-dot"></div>Creating slide structure</div>
+    <div class="loader-step-item" id="step3"><div class="loader-step-dot"></div>Writing slide content</div>
+    <div class="loader-step-item" id="step4"><div class="loader-step-dot"></div>Adding visuals & animations</div>
+    <div class="loader-step-item" id="step5"><div class="loader-step-dot"></div>Ready to present</div>
+  </div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div id="setup">
+  <div class="setup-box">
+    <div class="setup-logo">⚡ TechYatra Video Generator</div>
+    <div class="setup-title">Paste your script,<br/>get a video presentation.</div>
+    <div class="setup-sub">Claude AI will convert your script into animated slides. Record your screen while it plays — instant YouTube video.</div>
+
+    <label class="form-lbl">Your Video Script</label>
+    <textarea id="scriptInput" placeholder="Paste your YouTube video script here...
+
+Example:
+Maine Claude se apna poora portfolio website banaya — aur aaj main tumhe puri journey bataunga..."></textarea>
+
+    <div class="options-row">
+      <div>
+        <label class="form-lbl">Video Style</label>
+        <select id="styleSelect">
+          <option value="tech">Tech Tutorial</option>
+          <option value="story">Story / Journey</option>
+          <option value="educational">Educational</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-lbl">Slide Duration</label>
+        <select id="durationSelect">
+          <option value="5">5 sec per slide</option>
+          <option value="8" selected>8 sec per slide</option>
+          <option value="12">12 sec per slide</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateSlides()">
+      <span>✨</span> Generate Video Slides
+    </button>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+</div>
+
+<!-- PRESENTER SCREEN -->
+<div id="presenter">
+  <div class="slide-stage" id="slideStage"></div>
+  <div class="bottom-bar">
+    <button class="ctrl-btn" onclick="prevSlide()" title="Previous">◀</button>
+    <button class="ctrl-btn" onclick="nextSlide()" title="Next">▶</button>
+    <div class="progress-track">
+      <div class="progress-track-fill" id="trackFill"></div>
+    </div>
+    <div class="slide-counter" id="slideCounter">1 / 1</div>
+    <button class="ctrl-btn auto-btn" id="autoBtn" onclick="toggleAuto()">▶ AUTO</button>
+    <button class="ctrl-btn" onclick="exitPresenter()" title="Exit" style="font-size:0.7rem;width:auto;padding:0 0.6rem;">✕ EXIT</button>
+  </div>
+</div>
+
+<script>
+// ── PARTICLES ────────────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+for (let i = 0; i < 60; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.3,
+    dx: (Math.random() - 0.5) * 0.3,
+    dy: (Math.random() - 0.5) * 0.3,
+    o: Math.random() * 0.4 + 0.1
+  });
+}
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(79,142,247,${p.o})`;
+    ctx.fill();
+    p.x += p.dx; p.y += p.dy;
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ── STATE ────────────────────────────────────────────────────
+let slides = [];
+let currentSlide = 0;
+let autoTimer = null;
+let isAuto = false;
+let slideDuration = 8000;
+
+// ── DEFAULT SCRIPT ───────────────────────────────────────────
+document.getElementById('scriptInput').value = `Maine Claude AI ki madad se apna poora portfolio website banaya — bina ek line code khud likhe. Aaj main tumhe puri journey bataunga.
+
+Pehle mera workflow kya tha? Main YouTube pe video banata tha. Blog? Woh alag kaam tha. Same content, alag format — isme ghante lagte the. 230 videos x 2 hours = 460 hours ka kaam.
+
+Maine Claude ko sirf ek prompt diya: Mera portfolio website banao jisme YouTube videos automatically blog articles ban jayein. Aur Claude ne kar diya.
+
+Tools used: Claude AI, Hashnode GraphQL API, YouTube Data API v3, Supabase database, GitHub Pages. Total cost: Zero rupees.
+
+Time saved: 460 hours ka kaam — zero ho gaya. Yeh hai AI ka real power.
+
+Sabse bada learning: AI tumhari job nahi lega. Lekin AI use karna jaanne wala developer — woh zaroor aage jayega.
+
+Like karo, subscribe karo. Comment mein batao — tum Claude se kya build karna chahoge?`;
+
+// ── GENERATE SLIDES VIA CLAUDE API ───────────────────────────
+async function generateSlides() {
+  const script = document.getElementById('scriptInput').value.trim();
+  if (!script) { alert('Please paste your script first!'); return; }
+
+  slideDuration = parseInt(document.getElementById('durationSelect').value) * 1000;
+  const style = document.getElementById('styleSelect').value;
+
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('loadingOverlay').classList.add('show');
+
+  const steps = ['step1','step2','step3','step4','step5'];
+  let stepIdx = 0;
+  const stepTimer = setInterval(() => {
+    if (stepIdx > 0) document.getElementById(steps[stepIdx-1]).classList.remove('active');
+    if (stepIdx < steps.length) {
+      document.getElementById(steps[stepIdx]).classList.add('active');
+      stepIdx++;
+    }
+  }, 1200);
+
+  const systemPrompt = `You are a video slide generator. Convert the given script into a JSON array of slide objects.
+
+Each slide must have:
+- "type": one of "hook", "section", "stat", "list", "tools", "quote", "outro"
+- "data": object with slide-specific fields
+
+Slide type schemas:
+- hook: { tag, headline (use <em> tags for emphasis), subtitle }
+- section: { num (e.g. "01"), title, body }
+- stat: { number (e.g. "460"), unit (e.g. "Hours"), label, sub }
+- list: { title, items: [{icon, text}] } (max 5 items)
+- tools: { title, tools: [{emoji, name, desc, badge}] } (max 6, badge is "FREE" or similar)
+- quote: { text, author }
+- outro: { logo, tagline, cta }
+
+Rules:
+- Create 10-16 slides total
+- Start with hook, end with outro
+- Mix types — stat and quote slides create visual variety
+- Extract real numbers and key points from the script
+- Make headlines punchy and visual
+- Return ONLY valid JSON array, no markdown, no explanation`;
+
+  try {
+    // Domain guard
+    const allowed = ['techyatra.github.io', 'localhost', '127.0.0.1'];
+    const host = window.location.hostname;
+    if (!allowed.includes(host)) {
+      slides = getDefaultSlides();
+      clearInterval(stepTimer);
+      document.getElementById('loadingOverlay').classList.remove('show');
+      launchPresenter();
+      return;
+    }
+
+    // Domain guard — only works on techyatra.github.io or localhost
+    const allowed = ['techyatra.github.io', 'localhost', '127.0.0.1'];
+    if (!allowed.some(d => location.hostname.includes(d))) {
+      throw new Error('Unauthorized domain — this tool only works on techyatra.github.io');
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': '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',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Style: ${style}\n\nScript:\n${script}` }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.[0]?.text || '[]';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    slides = JSON.parse(clean);
+
+    clearInterval(stepTimer);
+    steps.forEach(s => {
+      document.getElementById(s).classList.remove('active');
+      document.getElementById(s).classList.add('done');
+    });
+
+    setTimeout(() => {
+      document.getElementById('loadingOverlay').classList.remove('show');
+      launchPresenter();
+    }, 600);
+
+  } catch(err) {
+    clearInterval(stepTimer);
+    document.getElementById('loadingOverlay').classList.remove('show');
+    document.getElementById('generateBtn').disabled = false;
+    // Fallback to default slides if API fails
+    slides = getDefaultSlides();
+    launchPresenter();
+  }
+}
+
+// ── DEFAULT SLIDES FALLBACK ───────────────────────────────────
+function getDefaultSlides() {
+  return [
+    { type:'hook', data:{ tag:'My AI Journey', headline:'Maine Claude se <em>Portfolio</em> banaya — Bina code likhe', subtitle:'Aur 460 hours bachaye. Yeh hai meri story.' }},
+    { type:'section', data:{ num:'01', title:'Problem Statement', body:'230 YouTube videos. Har ek ke liye manual blog article. 2 hours per article. 460 hours total. Koi shortcut nahi tha — tab tak.' }},
+    { type:'stat', data:{ number:'230', unit:'Videos', label:'YouTube pe published', sub:'Sab manually blog karna tha' }},
+    { type:'section', data:{ num:'02', title:'Enter: Claude AI', body:'Maine sirf ek prompt diya. Claude ne poora solution design kiya — YouTube API se blog automation tak.' }},
+    { type:'quote', data:{ text:'"AI tumhari job nahi lega. Lekin AI use karna jaanne wala developer — woh zaroor aage jayega."', author:'Nishant Gupta, TechYatra' }},
+    { type:'tools', data:{ title:'Free Tech Stack', tools:[
+      { emoji:'🤖', name:'Claude AI', desc:'Brain of the system', badge:'FREE' },
+      { emoji:'📝', name:'Hashnode', desc:'Blog + GraphQL API', badge:'FREE' },
+      { emoji:'▶', name:'YouTube API', desc:'Video data + duration', badge:'FREE' },
+      { emoji:'🗄️', name:'Supabase', desc:'Database + auth', badge:'FREE' },
+      { emoji:'🌐', name:'GitHub Pages', desc:'Hosting', badge:'FREE' },
+    ]}},
+    { type:'stat', data:{ number:'460', unit:'Hours', label:'Saved with AI automation', sub:'From manual to zero effort' }},
+    { type:'list', data:{ title:'What Claude Built', items:[
+      { icon:'01', text:'<strong>YouTube → Blog</strong> — Auto fetch videos, filter Shorts, show only tutorials' },
+      { icon:'02', text:'<strong>Read Tracking</strong> — Every article read counted in Supabase database' },
+      { icon:'03', text:'<strong>Newsletter</strong> — Email subscribers saved to database' },
+      { icon:'04', text:'<strong>Contact Form</strong> — Messages with phone number saved automatically' },
+      { icon:'05', text:'<strong>Pagination</strong> — 7 articles per page, featured layout, total reads counter' },
+    ]}},
+    { type:'section', data:{ num:'03', title:'How to Use Claude', body:'Clear problem statement do. Context do. Iteratively refine karo. Claude sirf code nahi likhta — woh design decisions leta hai, bugs dhundta hai, aur alternatives suggest karta hai.' }},
+    { type:'quote', data:{ text:'"Jaise ek senior developer 24/7 available ho — jo judge nahi karta, thakta nahi."', author:'My experience with Claude AI' }},
+    { type:'stat', data:{ number:'₹0', unit:'Cost', label:'Poora stack free mein', sub:'Claude + Hashnode + Supabase + GitHub Pages' }},
+    { type:'section', data:{ num:'04', title:'Experience', body:'Sabse badi learning — AI ko effectively use karna ek skill hai. Jitna clear tumhara problem statement, utna better result.' }},
+    { type:'outro', data:{ logo:'TechYatra', tagline:'Subscribe karo. Comment mein batao — tum Claude se kya build karna chahoge?', cta:'🔔 Subscribe Now' }},
+  ];
+}
+
+// ── RENDER SLIDES ────────────────────────────────────────────
+function renderSlide(slide) {
+  const { type, data } = slide;
+  let html = '';
+
+  if (type === 'hook') {
+    html = `<div class="slide slide-hook">
+      <div class="slide-tag">${data.tag || 'TechYatra'}</div>
+      <h1>${data.headline || ''}</h1>
+      <p>${data.subtitle || ''}</p>
+    </div>`;
+  } else if (type === 'section') {
+    html = `<div class="slide slide-section">
+      <div class="section-num">Section ${data.num || ''}</div>
+      <h2>${data.title || ''}</h2>
+      <p>${data.body || ''}</p>
+    </div>`;
+  } else if (type === 'stat') {
+    html = `<div class="slide slide-stat">
+      <div class="stat-big">${data.number || ''}</div>
+      <div class="stat-label">${data.unit || ''} — ${data.label || ''}</div>
+      <div class="stat-sub">${data.sub || ''}</div>
+    </div>`;
+  } else if (type === 'list') {
+    const items = (data.items || []).map((item, i) =>
+      `<div class="list-item">
+        <div class="list-bullet">${item.icon || (i+1)}</div>
+        <div class="list-text">${item.text || ''}</div>
+      </div>`
+    ).join('');
+    html = `<div class="slide slide-list">
+      <h3>${data.title || ''}</h3>
+      <div class="list-items">${items}</div>
+    </div>`;
+  } else if (type === 'tools') {
+    const tools = (data.tools || []).map(t =>
+      `<div class="tool-card">
+        <div class="tool-emoji">${t.emoji || '🔧'}</div>
+        <div class="tool-name">${t.name || ''}</div>
+        <div class="tool-desc">${t.desc || ''}</div>
+        ${t.badge ? `<div class="tool-badge">${t.badge}</div>` : ''}
+      </div>`
+    ).join('');
+    html = `<div class="slide slide-tools">
+      <h3>${data.title || 'Tools Used'}</h3>
+      <div class="tools-grid">${tools}</div>
+    </div>`;
+  } else if (type === 'quote') {
+    html = `<div class="slide slide-quote">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">${data.text || ''}</div>
+      <div class="quote-author">— ${data.author || ''}</div>
+    </div>`;
+  } else if (type === 'outro') {
+    html = `<div class="slide slide-outro">
+      <div class="outro-logo">${data.logo || 'TechYatra'}</div>
+      <div class="outro-tagline">${data.tagline || ''}</div>
+      <div class="outro-cta">${data.cta || '🔔 Subscribe'}</div>
+    </div>`;
+  }
+  return html;
+}
+
+// ── PRESENTER ────────────────────────────────────────────────
+function launchPresenter() {
+  const stage = document.getElementById('slideStage');
+  stage.innerHTML = slides.map((s, i) => renderSlide(s)).join('');
+
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('presenter').style.display = 'flex';
+
+  currentSlide = 0;
+  showSlide(0);
+}
+
+function showSlide(idx) {
+  const allSlides = document.querySelectorAll('.slide');
+  allSlides.forEach((s, i) => {
+    s.classList.remove('active', 'exit');
+    if (i === idx) s.classList.add('active');
+    else if (i < idx) s.classList.add('exit');
+  });
+
+  currentSlide = idx;
+  const total = slides.length;
+  document.getElementById('slideCounter').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('trackFill').style.width = `${((idx + 1) / total) * 100}%`;
+}
+
+function nextSlide() {
+  if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+  else if (isAuto) stopAuto();
+}
+
+function prevSlide() { if (currentSlide > 0) showSlide(currentSlide - 1); }
+
+function toggleAuto() {
+  if (isAuto) stopAuto();
+  else startAuto();
+}
+
+function startAuto() {
+  isAuto = true;
+  const btn = document.getElementById('autoBtn');
+  btn.textContent = '⏸ PAUSE';
+  btn.classList.add('playing');
+  autoTimer = setInterval(() => {
+    if (currentSlide < slides.length - 1) nextSlide();
+    else stopAuto();
+  }, slideDuration);
+}
+
+function stopAuto() {
+  isAuto = false;
+  clearInterval(autoTimer);
+  const btn = document.getElementById('autoBtn');
+  btn.textContent = '▶ AUTO';
+  btn.classList.remove('playing');
+}
+
+function exitPresenter() {
+  stopAuto();
+  document.getElementById('presenter').style.display = 'none';
+  document.getElementById('setup').style.display = 'flex';
+  document.getElementById('generateBtn').disabled = false;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (document.getElementById('presenter').style.display === 'flex') {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'Escape') exitPresenter();
+    if (e.key === 'p' || e.key === 'P') toggleAuto();
+  }
+});
+</script>
+</body>
+</html>
