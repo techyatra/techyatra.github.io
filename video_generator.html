@@ -549,7 +549,7 @@ async function generate(){
 function extractSentences(script) {
   // Split by sentence endings and newlines
   return script
-    .split(/(?<=[.!?])\s+|
+  .split(/[.!?]+\s+|\n+/)
 +/)
     .map(s => s.trim())
     .filter(s => s.length > 20 && s.length < 300 && !s.startsWith('//'));
