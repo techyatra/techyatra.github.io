@@ -443,13 +443,12 @@ Sabse bada learning: AI tumhari job nahi lega. Lekin AI use karna jaanne wala de
 
 Like karo, subscribe karo. Comment mein batao — tum Claude se kya build karna chahoge?`;
 
-// ── GENERATE SLIDES VIA CLAUDE API ───────────────────────────
+// ── GENERATE SLIDES FROM SCRIPT (LOCAL PARSER) ──────────────
 async function generateSlides() {
   const script = document.getElementById('scriptInput').value.trim();
   if (!script) { alert('Please paste your script first!'); return; }
 
   slideDuration = parseInt(document.getElementById('durationSelect').value) * 1000;
-  const style = document.getElementById('styleSelect').value;
 
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('loadingOverlay').classList.add('show');
@@ -462,83 +461,159 @@ async function generateSlides() {
       document.getElementById(steps[stepIdx]).classList.add('active');
       stepIdx++;
     }
-  }, 1200);
+  }, 500);
 
-  const systemPrompt = `You are a video slide generator. Convert the given script into a JSON array of slide objects.
+  // Simulate processing
+  await new Promise(r => setTimeout(r, 2800));
 
-Each slide must have:
-- "type": one of "hook", "section", "stat", "list", "tools", "quote", "outro"
-- "data": object with slide-specific fields
+  clearInterval(stepTimer);
+  steps.forEach(s => {
+    document.getElementById(s).classList.remove('active');
+    document.getElementById(s).classList.add('done');
+  });
 
-Slide type schemas:
-- hook: { tag, headline (use <em> tags for emphasis), subtitle }
-- section: { num (e.g. "01"), title, body }
-- stat: { number (e.g. "460"), unit (e.g. "Hours"), label, sub }
-- list: { title, items: [{icon, text}] } (max 5 items)
-- tools: { title, tools: [{emoji, name, desc, badge}] } (max 6, badge is "FREE" or similar)
-- quote: { text, author }
-- outro: { logo, tagline, cta }
+  // Parse script into smart slides
+  slides = parseScriptToSlides(script);
 
-Rules:
-- Create 10-16 slides total
-- Start with hook, end with outro
-- Mix types — stat and quote slides create visual variety
-- Extract real numbers and key points from the script
-- Make headlines punchy and visual
-- Return ONLY valid JSON array, no markdown, no explanation`;
-
-  try {
-    // Domain guard
-    const allowed = ['techyatra.github.io', 'localhost', '127.0.0.1'];
-    const host = window.location.hostname;
-    if (!allowed.some(d => host.includes(d))) {
-      slides = getDefaultSlides();
-      clearInterval(stepTimer);
-      document.getElementById('loadingOverlay').classList.remove('show');
-      launchPresenter();
-      return;
-    }
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': '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',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: `Style: ${style}\n\nScript:\n${script}` }]
-      })
-    });
-
-    const data = await response.json();
-    const raw = data.content?.[0]?.text || '[]';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    slides = JSON.parse(clean);
-
-    clearInterval(stepTimer);
-    steps.forEach(s => {
-      document.getElementById(s).classList.remove('active');
-      document.getElementById(s).classList.add('done');
-    });
-
-    setTimeout(() => {
-      document.getElementById('loadingOverlay').classList.remove('show');
-      launchPresenter();
-    }, 600);
-
-  } catch(err) {
-    clearInterval(stepTimer);
+  setTimeout(() => {
     document.getElementById('loadingOverlay').classList.remove('show');
-    document.getElementById('generateBtn').disabled = false;
-    // Fallback to default slides if API fails
-    slides = getDefaultSlides();
     launchPresenter();
+  }, 400);
+}
+
+// ── SMART SCRIPT PARSER ───────────────────────────────────────
+function parseScriptToSlides(script) {
+  const lines = script.split(/\n/).map(l => l.trim()).filter(Boolean);
+  const result = [];
+
+  // Extract numbers for stat slides
+  const numbers = [];
+  const numRegex = /\b(\d+[+]?)\s*(hours?|videos?|minutes?|years?|rs\.?|rupees?|%|\+)?/gi;
+  let m;
+  while ((m = numRegex.exec(script)) !== null) {
+    const n = m[1]; const unit = m[2] || '';
+    if (parseInt(n) > 1 && !numbers.find(x => x.num === n)) {
+      numbers.push({ num: n, unit: unit.toUpperCase() });
+    }
   }
+
+  // Extract tool names
+  const toolKeywords = ['claude', 'hashnode', 'supabase', 'github', 'youtube', 'azure', 'angular', '.net', 'api', 'gpt', 'openai', 'vercel', 'netlify', 'firebase'];
+  const foundTools = toolKeywords.filter(t => script.toLowerCase().includes(t));
+  const toolEmojis = { claude:'🤖', hashnode:'📝', supabase:'🗄️', github:'🐙', youtube:'▶️', azure:'☁️', angular:'🅰️', '.net':'💻', api:'🔌', gpt:'🧠', openai:'🧠', vercel:'▲', netlify:'🌐', firebase:'🔥' };
+
+  // Slide 1 — Hook (first 1-2 sentences)
+  const firstSentence = lines[0] || '';
+  const hookWords = firstSentence.split(' ');
+  const emphIdx = Math.floor(hookWords.length / 2);
+  hookWords[emphIdx] = `<em>${hookWords[emphIdx]}</em>`;
+  result.push({
+    type: 'hook',
+    data: {
+      tag: 'TechYatra',
+      headline: hookWords.join(' '),
+      subtitle: lines[1] || 'Aaj main tumhe puri journey bataunga.'
+    }
+  });
+
+  // Slide 2 — Problem section (lines 1-3)
+  const problemLines = lines.slice(1, 4).join(' ');
+  result.push({
+    type: 'section',
+    data: { num: '01', title: 'Problem Statement', body: problemLines || lines[2] || '' }
+  });
+
+  // Slide 3 — First big stat if found
+  if (numbers[0]) {
+    result.push({
+      type: 'stat',
+      data: { number: numbers[0].num, unit: numbers[0].unit || 'Key Stat', label: 'From your journey', sub: '' }
+    });
+  }
+
+  // Slide 4 — Solution section (middle lines)
+  const midLines = lines.slice(3, 6).join(' ');
+  if (midLines) {
+    result.push({
+      type: 'section',
+      data: { num: '02', title: 'The Solution', body: midLines }
+    });
+  }
+
+  // Slide 5 — Tools (if found)
+  if (foundTools.length >= 2) {
+    result.push({
+      type: 'tools',
+      data: {
+        title: 'Tools Used — All Free',
+        tools: foundTools.slice(0, 6).map(t => ({
+          emoji: toolEmojis[t] || '🔧',
+          name: t.charAt(0).toUpperCase() + t.slice(1),
+          desc: 'Used in this project',
+          badge: 'FREE'
+        }))
+      }
+    });
+  }
+
+  // Slide 6 — Second stat
+  if (numbers[1]) {
+    result.push({
+      type: 'stat',
+      data: { number: numbers[1].num, unit: numbers[1].unit || '', label: 'Impact', sub: 'Real numbers from the journey' }
+    });
+  }
+
+  // Slide 7 — List of key points (extract sentences with colons or dashes)
+  const keyPoints = lines.filter(l => l.includes(':') || l.includes('—') || l.includes('-')).slice(0, 5);
+  if (keyPoints.length >= 2) {
+    result.push({
+      type: 'list',
+      data: {
+        title: 'Key Highlights',
+        items: keyPoints.map((p, i) => ({ icon: String(i+1).padStart(2,'0'), text: p }))
+      }
+    });
+  }
+
+  // Slide 8 — Quote (look for a strong statement)
+  const strongLine = lines.find(l => l.length > 40 && l.length < 140 && !l.includes('http')) || lines[Math.floor(lines.length/2)];
+  if (strongLine) {
+    result.push({
+      type: 'quote',
+      data: { text: `"${strongLine}"`, author: 'Nishant Gupta — TechYatra' }
+    });
+  }
+
+  // Slide 9 — Experience section
+  const expLines = lines.slice(-5, -2).join(' ');
+  if (expLines) {
+    result.push({
+      type: 'section',
+      data: { num: '03', title: 'Experience & Learnings', body: expLines }
+    });
+  }
+
+  // Slide 10 — Third stat or cost
+  if (numbers[2]) {
+    result.push({
+      type: 'stat',
+      data: { number: numbers[2].num, unit: numbers[2].unit || '', label: 'Result', sub: '' }
+    });
+  }
+
+  // Last slide — Outro (last line as CTA)
+  const lastLine = lines[lines.length - 1] || '';
+  result.push({
+    type: 'outro',
+    data: {
+      logo: 'TechYatra',
+      tagline: lastLine || 'Subscribe karo. Comment mein batao — tum AI se kya build karna chahoge?',
+      cta: '🔔 Subscribe & Like'
+    }
+  });
+
+  return result;
 }
 
 // ── DEFAULT SLIDES FALLBACK ───────────────────────────────────
