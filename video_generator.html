@@ -484,6 +484,7 @@ canvas.chart-canvas{width:100%!important;}
   </div>
 </div>
 
+
 <script>
 // ── PARTICLES ───────────────────────────────────────────────
 const cvs = document.getElementById('cvs');
@@ -501,7 +502,7 @@ function drawPts(){
   ctx2.clearRect(0,0,cvs.width,cvs.height);
   pts.forEach(p=>{
     ctx2.beginPath();ctx2.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx2.fillStyle=`rgba(59,110,248,${p.o})`;ctx2.fill();
+    ctx2.fillStyle='rgba(59,110,248,'+p.o+')';ctx2.fill();
     p.x+=p.dx;p.y+=p.dy;
     if(p.x<0||p.x>cvs.width)p.dx*=-1;
     if(p.y<0||p.y>cvs.height)p.dy*=-1;
@@ -518,69 +519,79 @@ let chartInstances=[];
 // ── GENERATE ────────────────────────────────────────────────
 async function generate(){
   const script = document.getElementById('scriptInput').value.trim();
-  if(!script){alert('Please paste your script first!');return;}
-  slideDur = parseInt(document.getElementById('speed').value)*1000;
+  if(!script){ alert('Please paste your script first!'); return; }
+  slideDur = parseInt(document.getElementById('speed').value) * 1000;
 
-  document.getElementById('genBtn').disabled=true;
+  document.getElementById('genBtn').disabled = true;
   document.getElementById('loading').classList.add('show');
 
-  const stepIds=['ls1','ls2','ls3','ls4','ls5'];
-  let si=0;
-  const st=setInterval(()=>{
-    if(si>0)document.getElementById(stepIds[si-1]).classList.remove('active');
-    if(si<stepIds.length){document.getElementById(stepIds[si]).classList.add('active');si++;}
-  },500);
+  const stepIds = ['ls1','ls2','ls3','ls4','ls5'];
+  let si = 0;
+  const st = setInterval(function(){
+    if(si > 0) document.getElementById(stepIds[si-1]).classList.remove('active');
+    if(si < stepIds.length){ document.getElementById(stepIds[si]).classList.add('active'); si++; }
+  }, 500);
 
-  await new Promise(r=>setTimeout(r,2600));
+  await new Promise(function(r){ setTimeout(r, 2600); });
   clearInterval(st);
-  stepIds.forEach(id=>{
+  stepIds.forEach(function(id){
     document.getElementById(id).classList.remove('active');
     document.getElementById(id).classList.add('done');
   });
 
   slides = buildSlides(script);
 
-  await new Promise(r=>setTimeout(r,300));
+  await new Promise(function(r){ setTimeout(r, 300); });
   document.getElementById('loading').classList.remove('show');
   launchPres();
 }
 
-// ── SMART PARSER ────────────────────────────────────────────
-function extractSentences(script) {
-  // Split by sentence endings and newlines
-  return script
-  .split(/[.!?]+\s+|\n+/)
-    .map(s => s.trim())
-    .filter(s => s.length > 20 && s.length < 300 && !s.startsWith('//'));
+// ── SENTENCE EXTRACTOR ──────────────────────────────────────
+function extractSentences(script){
+  var parts = script.split('\n');
+  var result = [];
+  parts.forEach(function(line){
+    line = line.trim();
+    if(!line) return;
+    var subs = line.split('. ');
+    subs.forEach(function(s){
+      s = s.trim();
+      if(s.length > 20 && s.length < 300) result.push(s);
+    });
+  });
+  return result;
 }
 
-function getSentence(sentences, idx, fallback) {
-  return sentences[idx] || sentences[Math.max(0, sentences.length - 1)] || fallback;
+function getParagraph(sentences, start, count){
+  return sentences.slice(start, start+count).join(' ');
 }
 
-function getParagraph(sentences, start, count) {
-  return sentences.slice(start, start + count).join(' ');
-}
-
+// ── BUILD SLIDES ────────────────────────────────────────────
 function buildSlides(script){
-  const lines = script.split(/
-/).map(l => l.trim()).filter(Boolean);
-  const sentences = extractSentences(script);
-  const full = script;
-  const total = sentences.length;
+  var lines = script.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+  var sentences = extractSentences(script);
+  var total = sentences.length;
+  var third = Math.max(1, Math.floor(total / 3));
 
   // Extract numbers
-  const nums = [];
-  const nr = /(\d[\d,]*)\s*([\+]?)\s*(hours?|videos?|minutes?|years?|rupees?|rs\.?|%|k)?/gi;
-  let m;
-  while((m = nr.exec(full)) !== null){
-    const n = parseInt(m[1].replace(/,/g,'')); 
-    if(n > 1) nums.push({val:n, raw:m[1]+m[2], unit:(m[3]||'').toUpperCase()});
-  }
-  const bigNums = [...new Map(nums.map(n=>[n.val,n])).values()].sort((a,b)=>b.val-a.val).slice(0,6);
+  var nums = [];
+  var words = script.split(/\s+/);
+  words.forEach(function(w){
+    var clean = w.replace(/[^0-9]/g,'');
+    if(clean && parseInt(clean) > 1){
+      nums.push({ val: parseInt(clean), raw: clean });
+    }
+  });
+  nums.sort(function(a,b){ return b.val - a.val; });
+  var seen = {};
+  var bigNums = [];
+  nums.forEach(function(n){
+    if(!seen[n.val]){ seen[n.val]=true; bigNums.push(n); }
+  });
+  bigNums = bigNums.slice(0,4);
 
-  // Tools detection
-  const toolMap = {
+  // Detect tools
+  var toolMap = {
     'claude':   {emoji:'🤖', name:'Claude AI',    role:'AI assistant & code generator', badge:'FREE'},
     'hashnode': {emoji:'📝', name:'Hashnode',     role:'Blog platform + GraphQL API',   badge:'FREE'},
     'supabase': {emoji:'🗄️', name:'Supabase',    role:'PostgreSQL database & auth',    badge:'FREE'},
@@ -588,160 +599,142 @@ function buildSlides(script){
     'youtube':  {emoji:'▶️', name:'YouTube API',  role:'Video data & filtering',        badge:'FREE'},
     'azure':    {emoji:'☁️', name:'Azure',        role:'Cloud infrastructure',          badge:'PAID'},
     'angular':  {emoji:'🅰️', name:'Angular',     role:'Frontend framework',            badge:'FREE'},
-    '.net':     {emoji:'💻', name:'.NET',         role:'Backend framework',             badge:'FREE'},
-    'openai':   {emoji:'🧠', name:'OpenAI',       role:'AI API',                        badge:'PAID'},
-    'vercel':   {emoji:'▲', name:'Vercel',        role:'Deployment platform',           badge:'FREE'},
+    '.net':     {emoji:'💻', name:'.NET',         role:'Backend framework',             badge:'FREE'}
   };
-  const foundTools = Object.entries(toolMap)
-    .filter(([k]) => full.toLowerCase().includes(k))
-    .map(([,v]) => v);
+  var foundTools = [];
+  Object.keys(toolMap).forEach(function(k){
+    if(script.toLowerCase().indexOf(k) !== -1) foundTools.push(toolMap[k]);
+  });
 
-  // Extract key bullet points — lines with colons, dashes, or numbers
-  const bulletLines = lines.filter(l => 
-    l.includes(':') || l.includes('—') || l.includes('-') || /^\d+\./.test(l)
-  ).slice(0, 10);
+  // Extract bullet lines (lines with — or : or numbered)
+  var bulletLines = lines.filter(function(l){
+    return l.indexOf(':') !== -1 || l.indexOf('—') !== -1 || /^\d+\./.test(l);
+  }).slice(0,5);
 
-  // Split sentences into thirds for distribution across slides
-  const third = Math.max(1, Math.floor(total / 3));
-
-  const result = [];
+  var result = [];
 
   // ── Slide 1: HOOK ──
-  const hook_h1 = sentences[0] || lines[0] || script.substring(0, 80);
-  const hook_sub = sentences[1] || sentences[0] || '';
-  const words = hook_h1.split(' ');
-  const hlWord = words.find(w => w.length > 5 && !['that','with','from','your','this','have','been','they','what','when','how','without','using'].includes(w.toLowerCase())) || words[0];
-  const hlH1 = hook_h1.replace(hlWord, `<span class="hl">${hlWord}</span>`);
-
+  var h1 = sentences[0] || lines[0] || script.substring(0,80);
+  var h1words = h1.split(' ');
+  var hlWord = h1words[Math.floor(h1words.length/2)] || h1words[0];
+  var hlH1 = h1.replace(hlWord, '<span class="hl">'+hlWord+'</span>');
   result.push({type:'hook', data:{
     eyebrow: 'My AI Journey — TechYatra',
     h1: hlH1,
-    sub: hook_sub,
+    sub: sentences[1] || sentences[0] || '',
     stats: [
-      {num: bigNums[0] ? bigNums[0].raw+'+' : (foundTools.length+'+'), label: bigNums[0] ? (bigNums[0].unit || 'KEY STAT') : 'TOOLS USED'},
-      {num: bigNums[1] ? bigNums[1].raw : '₹0', label: bigNums[1] ? (bigNums[1].unit || 'SAVED') : 'TOTAL COST'},
+      {num: bigNums[0] ? bigNums[0].raw+'+' : foundTools.length+'+', label: bigNums[0] ? 'KEY STAT' : 'TOOLS'},
+      {num: '₹0', label: 'TOTAL COST'}
     ]
   }});
 
   // ── Slide 2: PROBLEM ──
   result.push({type:'section', data:{
     num:'01', label:'The Problem',
-    h2: sentences[1] ? sentences[1].split(' ').slice(0,7).join(' ')+'...' : 'Why I needed to automate',
-    body: getParagraph(sentences, 1, 3),
+    h2: sentences[1] ? sentences[1].split(' ').slice(0,7).join(' ')+'...' : 'The Challenge',
+    body: getParagraph(sentences, 1, 3)
   }});
 
   // ── Slide 3: TIME CHART ──
   result.push({type:'chart', data:{
     eyebrow: 'Time Analysis',
-    h: sentences[2] ? sentences[2].split(' ').slice(0,6).join(' ') : 'Hours Saved with Automation',
+    h: 'Hours Saved with Automation',
     desc: getParagraph(sentences, 2, 2),
     highlights:[
-      {color:'#ff4d6d', label: bigNums[0] ? `Manual: ${bigNums[0].raw}+ hrs total` : 'Before: Hours of manual work'},
-      {color:'#0dffaa', label: 'Automated: 0 hrs total'},
+      {color:'#ff4d6d', label: bigNums[0] ? 'Manual: '+bigNums[0].raw+'+ hrs total' : 'Before: Hours of manual work'},
+      {color:'#0dffaa', label: 'Automated: 0 hrs total'}
     ],
     chartType:'bar',
     chartData:{
-      labels:['Script Review','Article Writing','Formatting','SEO Tagging','Publishing'],
+      labels:['Script Review','Writing','Formatting','SEO','Publishing'],
       before:[20,45,20,15,10],
       after:[0,0,0,0,0],
       labelsBefore:'Before (mins)',
-      labelsAfter:'After AI (mins)',
+      labelsAfter:'After AI (mins)'
     }
   }});
 
   // ── Slide 4: SOLUTION ──
-  const solStart = Math.floor(third * 0.8);
+  var solStart = Math.floor(third * 0.8);
   result.push({type:'section', data:{
     num:'02', label:'The Solution',
     h2: sentences[solStart] ? sentences[solStart].split(' ').slice(0,7).join(' ')+'...' : 'Enter Claude AI',
-    body: getParagraph(sentences, solStart, 3),
+    body: getParagraph(sentences, solStart, 3)
   }});
 
   // ── Slide 5: TOOLS ──
   if(foundTools.length >= 2){
-    // Extract the sentence that mentions tools from the script
-    const toolSentence = sentences.find(s => 
-      foundTools.some(t => s.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]))
-    ) || '';
     result.push({type:'tools', data:{
       eyebrow: 'Tech Stack',
-      h: toolSentence ? toolSentence.split(' ').slice(0,6).join(' ') : 'All Free. All Powerful.',
-      tools: foundTools.slice(0, 5)
+      h: 'All Free. All Powerful.',
+      tools: foundTools.slice(0,5)
     }});
   }
 
   // ── Slide 6: COMPARISON ──
-  // Try to extract before/after from script, else use smart defaults based on content
-  const beforeRows = [
-    {icon:'😓', text: `<strong>Before:</strong> ${sentences[1] ? sentences[1].substring(0,60)+'...' : 'Manual work for every article'}`},
-    {icon:'⏰', text: '<strong>No consistency</strong> — irregular publishing schedule'},
-    {icon:'💸', text: '<strong>Time-consuming</strong> — hours per article'},
-    {icon:'🔁', text: '<strong>Repetitive</strong> — same content, different formats'},
-  ];
-  const afterRows = [
-    {icon:'🤖', text: `<strong>After:</strong> ${sentences[solStart] ? sentences[solStart].substring(0,60)+'...' : 'Fully automated pipeline'}`},
-    {icon:'⚡', text: '<strong>Instant publish</strong> — zero manual effort required'},
-    {icon:'🆓', text: '<strong>100% Free</strong> — entire stack costs ₹0/month'},
-    {icon:'📈', text: '<strong>Scalable</strong> — works for any number of videos'},
-  ];
   result.push({type:'compare', data:{
     eyebrow: 'Before vs After',
     h: 'The Transformation',
-    before: beforeRows,
-    after: afterRows,
+    before:[
+      {icon:'😓', text:'<strong>Manual work</strong> — '+( sentences[1] ? sentences[1].substring(0,55)+'...' : 'hours per article')},
+      {icon:'⏰', text:'<strong>No consistency</strong> — irregular publishing schedule'},
+      {icon:'💸', text:'<strong>Time-consuming</strong> — hours per article per video'},
+      {icon:'🔁', text:'<strong>Repetitive</strong> — same content reformatted manually'}
+    ],
+    after:[
+      {icon:'🤖', text:'<strong>Auto-generated</strong> — '+( sentences[solStart] ? sentences[solStart].substring(0,55)+'...' : 'AI writes blog from video')},
+      {icon:'⚡', text:'<strong>Instant publish</strong> — zero manual effort required'},
+      {icon:'🆓', text:'<strong>100% Free</strong> — entire stack costs ₹0 per month'},
+      {icon:'📈', text:'<strong>Scalable</strong> — works for any number of videos'}
+    ]
   }});
 
   // ── Slide 7: COST CHART ──
-  const costSentence = sentences.find(s => 
-    s.toLowerCase().includes('free') || s.toLowerCase().includes('cost') || s.toLowerCase().includes('rupee') || s.toLowerCase().includes('₹')
-  ) || sentences[Math.floor(third * 1.5)] || '';
+  var costSent = '';
+  for(var i=0;i<sentences.length;i++){
+    var s = sentences[i].toLowerCase();
+    if(s.indexOf('free')!==-1||s.indexOf('cost')!==-1||s.indexOf('rupee')!==-1||s.indexOf('₹')!==-1){
+      costSent = sentences[i]; break;
+    }
+  }
   result.push({type:'chart', data:{
     eyebrow: 'Cost Breakdown',
-    h: costSentence ? costSentence.split(' ').slice(0,7).join(' ') : 'Total Stack Cost: ₹0 / Month',
-    desc: costSentence || getParagraph(sentences, Math.floor(third * 1.5), 2),
+    h: costSent ? costSent.split(' ').slice(0,7).join(' ') : 'Total Stack Cost: ₹0 / Month',
+    desc: costSent || getParagraph(sentences, Math.floor(third*1.5), 2),
     highlights:[
       {color:'#3b6ef8', label:'GitHub Pages: Free hosting'},
       {color:'#06d6f5', label:'Supabase: Free database'},
-      {color:'#0dffaa', label:'Hashnode: Free blog platform'},
+      {color:'#0dffaa', label:'Hashnode: Free blog platform'}
     ],
     chartType:'doughnut',
     chartData:{
-      labels: foundTools.length ? foundTools.slice(0,5).map(t=>t.name) : ['Claude AI','Hashnode','Supabase','GitHub Pages','YouTube API'],
+      labels: foundTools.length ? foundTools.slice(0,5).map(function(t){return t.name;}) : ['Claude AI','Hashnode','Supabase','GitHub Pages','YouTube API'],
       values:[1,1,1,1,1],
-      colors:['#3b6ef8','#06d6f5','#0dffaa','#ffb830','#ff4d6d'],
+      colors:['#3b6ef8','#06d6f5','#0dffaa','#ffb830','#ff4d6d']
     }
   }});
 
-  // ── Slide 8: LIST — extract real points from script ──
-  let listItems = [];
+  // ── Slide 8: LIST ──
+  var listItems = [];
   if(bulletLines.length >= 3){
-    listItems = bulletLines.slice(0,5).map((line, i) => {
-      const parts = line.split(/[:—-]/).map(p=>p.trim());
+    listItems = bulletLines.map(function(line, i){
+      var parts = line.split(/[:\—-]/);
       return {
-        num: String(i+1).padStart(2,'0'),
-        title: parts[0] ? parts[0].substring(0,50) : `Point ${i+1}`,
-        desc: parts[1] ? parts[1].substring(0,100) : line.substring(0,100)
+        num: String(i+1).length<2 ? '0'+(i+1) : ''+(i+1),
+        title: (parts[0]||'').trim().substring(0,50),
+        desc: (parts[1]||line).trim().substring(0,100)
       };
     });
   } else {
-    // Extract from sentences
-    listItems = sentences.filter(s => s.length > 30 && s.length < 150)
-      .slice(Math.floor(third), Math.floor(third)+5)
-      .map((s, i) => {
-        const words = s.split(' ');
-        return {
-          num: String(i+1).padStart(2,'0'),
-          title: words.slice(0,5).join(' '),
-          desc: words.slice(5).join(' ').substring(0,100) || s.substring(0,100)
-        };
-      });
+    listItems = sentences.slice(third, third+5).map(function(s,i){
+      var ws = s.split(' ');
+      return {
+        num: String(i+1).length<2 ? '0'+(i+1) : ''+(i+1),
+        title: ws.slice(0,5).join(' '),
+        desc: ws.slice(5).join(' ').substring(0,100) || s.substring(0,100)
+      };
+    });
   }
-  if(listItems.length < 3) listItems = sentences.slice(third, third+5).map((s,i)=>({
-    num:String(i+1).padStart(2,'0'),
-    title: s.split(' ').slice(0,5).join(' '),
-    desc: s.split(' ').slice(5).join(' ').substring(0,100)||s.substring(0,100)
-  }));
-
   result.push({type:'list', data:{
     eyebrow: 'What Was Built',
     h: sentences[third] ? sentences[third].split(' ').slice(0,6).join(' ')+'...' : 'Key Features Built',
@@ -749,17 +742,18 @@ function buildSlides(script){
     items: listItems.slice(0,5)
   }});
 
-  // ── Slide 9: QUOTE — find the most powerful sentence ──
-  const quoteSentence = sentences
-    .filter(s => s.length > 40 && s.length < 180 && !s.includes('http'))
-    .sort((a,b) => {
-      // Score by presence of strong words
-      const score = s => ['will','never','every','all','zero','free','power','ahead','better','first','most','build'].filter(w=>s.toLowerCase().includes(w)).length;
-      return score(b) - score(a);
-    })[0] || sentences[Math.floor(total/2)] || '';
-
+  // ── Slide 9: QUOTE ──
+  var strongWords = ['will','never','every','all','zero','free','power','ahead','better','build','job','replace','automate'];
+  var bestQuote = sentences[Math.floor(total/2)];
+  var bestScore = 0;
+  sentences.forEach(function(s){
+    if(s.length < 40 || s.length > 180) return;
+    var score = 0;
+    strongWords.forEach(function(w){ if(s.toLowerCase().indexOf(w)!==-1) score++; });
+    if(score > bestScore){ bestScore=score; bestQuote=s; }
+  });
   result.push({type:'quote', data:{
-    text: `"${quoteSentence}"`,
+    text: '"'+bestQuote+'"',
     author: 'Nishant Gupta',
     role: 'Full Stack Developer · TechYatra'
   }});
@@ -770,8 +764,8 @@ function buildSlides(script){
     h: sentences[Math.floor(third*1.8)] ? sentences[Math.floor(third*1.8)].split(' ').slice(0,6).join(' ') : 'Measurable Results',
     desc: getParagraph(sentences, Math.floor(third*1.8), 2),
     highlights:[
-      {color:'#3b6ef8', label:'Time saved: ' + (bigNums[0] ? bigNums[0].raw+' hours → 0' : 'Hours → 0')},
-      {color:'#ffb830', label:'Publishing consistency: 3x improved'},
+      {color:'#3b6ef8', label: bigNums[0] ? 'Time saved: '+bigNums[0].raw+' hours reduced to 0' : 'Time: Hours reduced to zero'},
+      {color:'#ffb830', label:'Publishing consistency: 3x improved'}
     ],
     chartType:'bar',
     chartData:{
@@ -779,305 +773,178 @@ function buildSlides(script){
       before:[20,30,20,30,25],
       after:[100,95,100,100,98],
       labelsBefore:'Manual Workflow (%)',
-      labelsAfter:'AI Automated (%)',
+      labelsAfter:'AI Automated (%)'
     }
   }});
 
   // ── Slide 11: LEARNINGS ──
-  const learnStart = Math.max(0, total - 5);
+  var learnStart = Math.max(0, total-5);
   result.push({type:'section', data:{
     num:'03', label:'Key Learnings',
     h2: sentences[learnStart] ? sentences[learnStart].split(' ').slice(0,7).join(' ')+'...' : 'What I Learned',
-    body: getParagraph(sentences, learnStart, 3),
+    body: getParagraph(sentences, learnStart, 3)
   }});
 
   // ── Slide 12: OUTRO ──
-  const lastSentence = sentences[sentences.length-1] || lines[lines.length-1] || '';
   result.push({type:'outro', data:{
     logo:'TechYatra',
-    tagline: lastSentence,
+    tagline: sentences[sentences.length-1] || lines[lines.length-1] || '',
     cta1:'🔔 Subscribe',
     cta2:'👍 Like This Video',
     stats:[
-      {num: bigNums[0] ? bigNums[0].raw+'+' : '230+', label: bigNums[0] ? (bigNums[0].unit||'STAT') : 'YT VIDEOS'},
+      {num: bigNums[0] ? bigNums[0].raw+'+' : '230+', label: 'YT VIDEOS'},
       {num:'₹0', label:'STACK COST'},
-      {num: bigNums[1] ? bigNums[1].raw+'h' : (bigNums[0]?bigNums[0].raw+'h':'460h'), label:'HOURS SAVED'},
+      {num: bigNums[1] ? bigNums[1].raw+'h' : '460h', label:'HOURS SAVED'}
     ]
   }});
 
   return result;
 }
 
-// ── RENDER SLIDES ────────────────────────────────────────────
-function renderSlide(slide,idx){
-  const {type,data}=slide;
-  const id=`slide-${idx}`;
-  let html='';
+// ── RENDER ──────────────────────────────────────────────────
+function renderSlide(slide, idx){
+  var type = slide.type;
+  var data = slide.data;
+  var id = 'slide-'+idx;
 
   if(type==='hook'){
-    const statCards=data.stats.map(s=>`
-      <div class="hook-stat-card">
-        <div class="hsc-num">${s.num}</div>
-        <div class="hsc-label">${s.label}</div>
-      </div>`).join('');
-    html=`<div class="slide s-hook" id="${id}">
-      <div class="hook-inner">
-        <div class="hook-left">
-          <div class="hook-eyebrow"><div class="hook-dot"></div>${data.eyebrow||'TechYatra'}</div>
-          <h1 class="hook-h1">${data.h1}</h1>
-          <p class="hook-sub">${data.sub}</p>
-        </div>
-        <div class="hook-right">${statCards}</div>
-      </div>
-    </div>`;
-
-  } else if(type==='section'){
-    html=`<div class="slide s-section" id="${id}" data-num="${data.num}">
-      <div class="section-inner">
-        <div class="sec-num">Section ${data.num} — ${data.label||''}</div>
-        <h2 class="sec-h2">${data.h2||data.title}</h2>
-        <p class="sec-body">${data.body}</p>
-      </div>
-    </div>`;
-
-  } else if(type==='chart'){
-    const hiHtml=(data.highlights||[]).map(h=>`
-      <div class="ch-item"><div class="ch-dot" style="background:${h.color}"></div>${h.label}</div>
-    `).join('');
-    html=`<div class="slide s-chart" id="${id}">
-      <div class="chart-inner">
-        <div class="chart-left">
-          <div class="chart-eyebrow">${data.eyebrow||'Data'}</div>
-          <h2 class="chart-h">${data.h}</h2>
-          <p class="chart-desc">${data.desc}</p>
-          <div class="chart-highlights">${hiHtml}</div>
-        </div>
-        <div class="chart-wrap">
-          <canvas class="chart-canvas" id="chart-${idx}" height="280"></canvas>
-        </div>
-      </div>
-    </div>`;
-
-  } else if(type==='tools'){
-    const tc=data.tools.map(t=>`
-      <div class="tool-card">
-        <div class="tc-emoji">${t.emoji}</div>
-        <div class="tc-name">${t.name}</div>
-        <div class="tc-role">${t.role}</div>
-        <div class="tc-badge">${t.badge}</div>
-      </div>`).join('');
-    html=`<div class="slide s-tools" id="${id}">
-      <div class="tools-inner">
-        <div class="tools-header">
-          <div class="tools-eyebrow">${data.eyebrow||'Stack'}</div>
-          <h2 class="tools-h">${data.h}</h2>
-        </div>
-        <div class="tools-grid">${tc}</div>
-      </div>
-    </div>`;
-
-  } else if(type==='compare'){
-    const bRows=data.before.map(r=>`<div class="cmp-row"><span class="cmp-icon">${r.icon}</span><span class="cmp-text">${r.text}</span></div>`).join('');
-    const aRows=data.after.map(r=>`<div class="cmp-row"><span class="cmp-icon">${r.icon}</span><span class="cmp-text">${r.text}</span></div>`).join('');
-    html=`<div class="slide s-compare" id="${id}">
-      <div class="compare-inner">
-        <div class="compare-header">
-          <div class="compare-eyebrow">${data.eyebrow||'Comparison'}</div>
-          <h2 class="compare-h">${data.h}</h2>
-        </div>
-        <div class="compare-grid">
-          <div class="compare-col">
-            <div class="col-label before">❌ Before AI</div>
-            ${bRows}
-          </div>
-          <div class="compare-divider">→</div>
-          <div class="compare-col after">
-            <div class="col-label after">✅ After AI</div>
-            ${aRows}
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-  } else if(type==='list'){
-    const items=data.items.map(it=>`
-      <div class="li-card">
-        <div class="li-num">${it.num}</div>
-        <div class="li-content">
-          <div class="li-title">${it.title}</div>
-          <div class="li-desc">${it.desc}</div>
-        </div>
-      </div>`).join('');
-    html=`<div class="slide s-list" id="${id}">
-      <div class="list-inner">
-        <div class="list-left">
-          <div class="list-eyebrow">${data.eyebrow||'Features'}</div>
-          <h2 class="list-h">${data.h||data.title}</h2>
-          <p class="list-sub">${data.sub||''}</p>
-        </div>
-        <div class="list-right">${items}</div>
-      </div>
-    </div>`;
-
-  } else if(type==='quote'){
-    html=`<div class="slide s-quote" id="${id}">
-      <div class="quote-card">
-        <span class="q-mark">"</span>
-        <div class="q-text">${data.text}</div>
-        <div class="q-author"><strong>${data.author}</strong>${data.role?` — ${data.role}`:''}</div>
-      </div>
-    </div>`;
-
-  } else if(type==='outro'){
-    const stats=data.stats.map(s=>`<div class="os-item"><div class="os-num">${s.num}</div><div class="os-label">${s.label}</div></div>`).join('');
-    html=`<div class="slide s-outro" id="${id}">
-      <div class="outro-inner">
-        <div class="outro-logo">${data.logo||'TechYatra'}</div>
-        <p class="outro-tagline">${data.tagline}</p>
-        <div class="outro-actions">
-          <div class="outro-cta-primary">${data.cta1||'🔔 Subscribe'}</div>
-          <div class="outro-cta-secondary">${data.cta2||'👍 Like'}</div>
-        </div>
-        <div class="outro-stats">${stats}</div>
-      </div>
-    </div>`;
+    var statCards = data.stats.map(function(s){
+      return '<div class="hook-stat-card"><div class="hsc-num">'+s.num+'</div><div class="hsc-label">'+s.label+'</div></div>';
+    }).join('');
+    return '<div class="slide s-hook" id="'+id+'"><div class="hook-inner"><div class="hook-left"><div class="hook-eyebrow"><div class="hook-dot"></div>'+data.eyebrow+'</div><h1 class="hook-h1">'+data.h1+'</h1><p class="hook-sub">'+data.sub+'</p></div><div class="hook-right">'+statCards+'</div></div></div>';
   }
-  return html;
+  if(type==='section'){
+    return '<div class="slide s-section" id="'+id+'" data-num="'+data.num+'"><div class="section-inner"><div class="sec-num">Section '+data.num+' — '+data.label+'</div><h2 class="sec-h2">'+data.h2+'</h2><p class="sec-body">'+data.body+'</p></div></div>';
+  }
+  if(type==='chart'){
+    var hiHtml = (data.highlights||[]).map(function(h){
+      return '<div class="ch-item"><div class="ch-dot" style="background:'+h.color+'"></div>'+h.label+'</div>';
+    }).join('');
+    return '<div class="slide s-chart" id="'+id+'"><div class="chart-inner"><div class="chart-left"><div class="chart-eyebrow">'+data.eyebrow+'</div><h2 class="chart-h">'+data.h+'</h2><p class="chart-desc">'+data.desc+'</p><div class="chart-highlights">'+hiHtml+'</div></div><div class="chart-wrap"><canvas class="chart-canvas" id="chart-'+idx+'" height="280"></canvas></div></div></div>';
+  }
+  if(type==='tools'){
+    var tc = data.tools.map(function(t){
+      return '<div class="tool-card"><div class="tc-emoji">'+t.emoji+'</div><div class="tc-name">'+t.name+'</div><div class="tc-role">'+t.role+'</div><div class="tc-badge">'+t.badge+'</div></div>';
+    }).join('');
+    return '<div class="slide s-tools" id="'+id+'"><div class="tools-inner"><div class="tools-header"><div class="tools-eyebrow">'+data.eyebrow+'</div><h2 class="tools-h">'+data.h+'</h2></div><div class="tools-grid">'+tc+'</div></div></div>';
+  }
+  if(type==='compare'){
+    var bRows = data.before.map(function(r){ return '<div class="cmp-row"><span class="cmp-icon">'+r.icon+'</span><span class="cmp-text">'+r.text+'</span></div>'; }).join('');
+    var aRows = data.after.map(function(r){ return '<div class="cmp-row"><span class="cmp-icon">'+r.icon+'</span><span class="cmp-text">'+r.text+'</span></div>'; }).join('');
+    return '<div class="slide s-compare" id="'+id+'"><div class="compare-inner"><div class="compare-header"><div class="compare-eyebrow">'+data.eyebrow+'</div><h2 class="compare-h">'+data.h+'</h2></div><div class="compare-grid"><div class="compare-col"><div class="col-label before">❌ Before AI</div>'+bRows+'</div><div class="compare-divider">→</div><div class="compare-col after"><div class="col-label after">✅ After AI</div>'+aRows+'</div></div></div></div>';
+  }
+  if(type==='list'){
+    var items = data.items.map(function(it){ return '<div class="li-card"><div class="li-num">'+it.num+'</div><div class="li-content"><div class="li-title">'+it.title+'</div><div class="li-desc">'+it.desc+'</div></div></div>'; }).join('');
+    return '<div class="slide s-list" id="'+id+'"><div class="list-inner"><div class="list-left"><div class="list-eyebrow">'+data.eyebrow+'</div><h2 class="list-h">'+data.h+'</h2><p class="list-sub">'+data.sub+'</p></div><div class="list-right">'+items+'</div></div></div>';
+  }
+  if(type==='quote'){
+    return '<div class="slide s-quote" id="'+id+'"><div class="quote-card"><span class="q-mark">"</span><div class="q-text">'+data.text+'</div><div class="q-author"><strong>'+data.author+'</strong>'+(data.role?' — '+data.role:'')+'</div></div></div>';
+  }
+  if(type==='outro'){
+    var stats = data.stats.map(function(s){ return '<div class="os-item"><div class="os-num">'+s.num+'</div><div class="os-label">'+s.label+'</div></div>'; }).join('');
+    return '<div class="slide s-outro" id="'+id+'"><div class="outro-inner"><div class="outro-logo">'+data.logo+'</div><p class="outro-tagline">'+data.tagline+'</p><div class="outro-actions"><div class="outro-cta-primary">'+data.cta1+'</div><div class="outro-cta-secondary">'+data.cta2+'</div></div><div class="outro-stats">'+stats+'</div></div></div>';
+  }
+  return '';
 }
 
-// ── LAUNCH PRESENTER ─────────────────────────────────────────
+// ── LAUNCH ──────────────────────────────────────────────────
 function launchPres(){
-  const stage=document.getElementById('stage');
-  chartInstances.forEach(c=>c.destroy());
-  chartInstances=[];
-
-  stage.innerHTML = slides.map((s,i)=>renderSlide(s,i)).join('');
-
-  document.getElementById('setup').style.display='none';
+  var stage = document.getElementById('stage');
+  chartInstances.forEach(function(c){ c.destroy(); });
+  chartInstances = [];
+  stage.innerHTML = slides.map(function(s,i){ return renderSlide(s,i); }).join('');
+  document.getElementById('setup').style.display = 'none';
   document.getElementById('presenter').classList.add('show');
-
-  cur=0;
-  showSlide(0,false);
-
-  // Init charts after DOM ready
-  setTimeout(()=>{
-    slides.forEach((s,i)=>{
-      if(s.type==='chart') initChart(i,s.data);
-    });
-  },100);
+  cur = 0;
+  showSlide(0);
+  setTimeout(function(){
+    slides.forEach(function(s,i){ if(s.type==='chart') initChart(i,s.data); });
+  }, 150);
 }
 
-// ── CHART INIT ────────────────────────────────────────────────
-function initChart(idx,data){
-  const canvas=document.getElementById(`chart-${idx}`);
+// ── CHARTS ──────────────────────────────────────────────────
+function initChart(idx, data){
+  var canvas = document.getElementById('chart-'+idx);
   if(!canvas) return;
-  const context=canvas.getContext('2d');
-
-  let cfg;
+  var context = canvas.getContext('2d');
+  var cfg;
   if(data.chartType==='doughnut'){
-    cfg={
+    cfg = {
       type:'doughnut',
       data:{
-        labels:data.chartData.labels,
+        labels: data.chartData.labels,
         datasets:[{
-          data:data.chartData.values,
-          backgroundColor:data.chartData.colors,
-          borderColor:'#111320',borderWidth:3,hoverOffset:8
+          data: data.chartData.values,
+          backgroundColor: data.chartData.colors,
+          borderColor:'#111320', borderWidth:3, hoverOffset:8
         }]
       },
       options:{
-        responsive:true,maintainAspectRatio:false,
+        responsive:true, maintainAspectRatio:false,
         plugins:{
-          legend:{
-            position:'bottom',
-            labels:{color:'#7c82a3',font:{family:'Cabinet Grotesk',size:11},padding:12,boxWidth:10,borderRadius:4}
-          },
-          tooltip:{
-            callbacks:{label:ctx=>`${ctx.label}: Free`}
-          }
+          legend:{ position:'bottom', labels:{ color:'#7c82a3', font:{family:'Cabinet Grotesk',size:11}, padding:12, boxWidth:10 }},
+          tooltip:{ callbacks:{ label: function(ctx){ return ctx.label+': Free'; }}}
         },
-        animation:{animateRotate:true,duration:1000}
+        animation:{ animateRotate:true, duration:1000 }
       }
     };
-    // Special: all-zero doughnut shows "FREE" label
-    cfg.data.datasets[0].data=[1,1,1,1,1];
   } else {
-    cfg={
+    cfg = {
       type:'bar',
       data:{
-        labels:data.chartData.labels,
+        labels: data.chartData.labels,
         datasets:[
-          {
-            label:data.chartData.labelsBefore||'Before',
-            data:data.chartData.before,
-            backgroundColor:'rgba(255,77,109,0.75)',
-            borderColor:'#ff4d6d',borderWidth:1,borderRadius:6,
-          },
-          {
-            label:data.chartData.labelsAfter||'After',
-            data:data.chartData.after,
-            backgroundColor:'rgba(13,255,170,0.75)',
-            borderColor:'#0dffaa',borderWidth:1,borderRadius:6,
-          }
+          { label: data.chartData.labelsBefore||'Before', data: data.chartData.before, backgroundColor:'rgba(255,77,109,0.75)', borderColor:'#ff4d6d', borderWidth:1, borderRadius:6 },
+          { label: data.chartData.labelsAfter||'After',   data: data.chartData.after,  backgroundColor:'rgba(13,255,170,0.75)', borderColor:'#0dffaa', borderWidth:1, borderRadius:6 }
         ]
       },
       options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{
-          legend:{labels:{color:'#7c82a3',font:{family:'Cabinet Grotesk',size:11},boxWidth:10,borderRadius:4}}
-        },
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{ color:'#7c82a3', font:{family:'Cabinet Grotesk',size:11}, boxWidth:10 }}},
         scales:{
-          x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7c82a3',font:{family:'Cabinet Grotesk',size:10}}},
-          y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7c82a3',font:{family:'Cabinet Grotesk',size:10}}}
+          x:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#7c82a3', font:{family:'Cabinet Grotesk',size:10} }},
+          y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#7c82a3', font:{family:'Cabinet Grotesk',size:10} }}
         },
-        animation:{duration:800,easing:'easeOutQuart'}
+        animation:{ duration:800, easing:'easeOutQuart' }
       }
     };
   }
-
-  const chart = new Chart(context,cfg);
-  chartInstances.push(chart);
+  chartInstances.push(new Chart(context, cfg));
 }
 
-// ── SLIDE NAVIGATION ─────────────────────────────────────────
-function showSlide(idx, animate=true){
-  const allSlides=document.querySelectorAll('.slide');
-  allSlides.forEach((s,i)=>{
+// ── NAVIGATION ──────────────────────────────────────────────
+function showSlide(idx){
+  var allSlides = document.querySelectorAll('.slide');
+  allSlides.forEach(function(s,i){
     s.classList.remove('active','prev');
     if(i===idx) s.classList.add('active');
     else if(i<idx) s.classList.add('prev');
   });
-  cur=idx;
-  const total=slides.length;
-  document.getElementById('slideNum').textContent=`${idx+1} / ${total}`;
-  document.getElementById('trackFill').style.width=`${((idx+1)/total)*100}%`;
-
-  // Trigger chart animation on chart slides
-  const s=slides[idx];
-  if(s&&s.type==='chart'){
-    setTimeout(()=>{
-      const c=chartInstances.find((_,i)=>slides[i]===s);
-      if(c){c.reset();c.update();}
-    },100);
-  }
+  cur = idx;
+  var total = slides.length;
+  document.getElementById('slideNum').textContent = (idx+1)+' / '+total;
+  document.getElementById('trackFill').style.width = (((idx+1)/total)*100)+'%';
 }
-function next(){if(cur<slides.length-1)showSlide(cur+1);}
-function prev(){if(cur>0)showSlide(cur-1);}
+function next(){ if(cur<slides.length-1) showSlide(cur+1); }
+function prev(){ if(cur>0) showSlide(cur-1); }
 function seekTrack(e){
-  const rect=e.currentTarget.getBoundingClientRect();
-  const pct=(e.clientX-rect.left)/rect.width;
+  var rect = e.currentTarget.getBoundingClientRect();
+  var pct = (e.clientX-rect.left)/rect.width;
   showSlide(Math.floor(pct*slides.length));
 }
 function toggleAuto(){
   if(isAuto){
-    clearInterval(autoTimer);isAuto=false;
+    clearInterval(autoTimer); isAuto=false;
     document.getElementById('autoBtn').textContent='▶ Auto';
     document.getElementById('autoBtn').classList.remove('active');
   } else {
     isAuto=true;
     document.getElementById('autoBtn').textContent='⏸ Pause';
     document.getElementById('autoBtn').classList.add('active');
-    autoTimer=setInterval(()=>{if(cur<slides.length-1)next();else{clearInterval(autoTimer);isAuto=false;document.getElementById('autoBtn').textContent='▶ Auto';document.getElementById('autoBtn').classList.remove('active');}},slideDur);
+    autoTimer = setInterval(function(){
+      if(cur<slides.length-1) next();
+      else { clearInterval(autoTimer); isAuto=false; document.getElementById('autoBtn').textContent='▶ Auto'; document.getElementById('autoBtn').classList.remove('active'); }
+    }, slideDur);
   }
 }
 function toggleFS(){
@@ -1085,64 +952,46 @@ function toggleFS(){
   else document.exitFullscreen();
 }
 function exitPres(){
-  if(isAuto){clearInterval(autoTimer);isAuto=false;}
+  if(isAuto){ clearInterval(autoTimer); isAuto=false; }
   document.getElementById('presenter').classList.remove('show');
-  document.getElementById('setup').style.display='flex';
-  document.getElementById('genBtn').disabled=false;
+  document.getElementById('setup').style.display = 'flex';
+  document.getElementById('genBtn').disabled = false;
 }
 
-// ── DOWNLOAD ALL SLIDES ───────────────────────────────────────
+// ── DOWNLOAD ────────────────────────────────────────────────
 async function downloadAll(){
-  const btn=document.getElementById('dlBtn');
-  btn.disabled=true;btn.textContent='⏳ Capturing...';
-
-  const prevCur=cur;
-  const total=slides.length;
-
-  // We'll capture each slide as PNG and package in a zip-like download
-  // Since we can't use JSZip without CDN, we download individually
-  for(let i=0;i<total;i++){
-    showSlide(i,false);
-    await new Promise(r=>setTimeout(r,600)); // Let animations settle
-
+  var btn = document.getElementById('dlBtn');
+  btn.disabled=true; btn.textContent='⏳ Capturing...';
+  var prevCur = cur;
+  var total = slides.length;
+  for(var i=0;i<total;i++){
+    showSlide(i);
+    await new Promise(function(r){ setTimeout(r,600); });
     try{
-      const slideEl=document.querySelector('.slide.active');
-      const canvas=await html2canvas(slideEl,{
-        backgroundColor:'#000',
-        scale:2,
-        useCORS:true,
-        allowTaint:true,
-        width:slideEl.offsetWidth,
-        height:slideEl.offsetHeight,
-        logging:false
-      });
-      const link=document.createElement('a');
-      link.download=`TechYatra_Slide_${String(i+1).padStart(2,'0')}.png`;
-      link.href=canvas.toDataURL('image/png');
+      var slideEl = document.querySelector('.slide.active');
+      var canvas = await html2canvas(slideEl,{ backgroundColor:'#000', scale:2, useCORS:true, logging:false });
+      var link = document.createElement('a');
+      link.download = 'TechYatra_Slide_'+String(i+1).padStart(2,'0')+'.png';
+      link.href = canvas.toDataURL('image/png');
       link.click();
-      await new Promise(r=>setTimeout(r,400));
-    } catch(e){
-      console.warn('Slide capture failed:',i,e);
-    }
-    btn.textContent=`⏳ ${i+1}/${total}`;
+      await new Promise(function(r){ setTimeout(r,400); });
+    } catch(e){ console.warn('Capture failed:',i,e); }
+    btn.textContent = '⏳ '+(i+1)+'/'+total;
   }
-
-  showSlide(prevCur,false);
-  btn.disabled=false;
-  btn.textContent='⬇ Download Slides';
+  showSlide(prevCur);
+  btn.disabled=false; btn.textContent='⬇ Download Slides';
 }
 
 // ── KEYBOARD ────────────────────────────────────────────────
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown',function(e){
   if(!document.getElementById('presenter').classList.contains('show')) return;
-  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(); }
   if(e.key==='ArrowLeft') prev();
   if(e.key==='Escape') exitPres();
   if(e.key==='f'||e.key==='F') toggleFS();
   if(e.key==='p'||e.key==='P') toggleAuto();
 });
 
-// Paste your own script in the textarea above
 </script>
 </body>
 </html>
