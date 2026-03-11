@@ -43,11 +43,25 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   .hero { padding:6rem 1.5rem 3rem; }
   .hero-grid { grid-template-columns:1fr; gap:2rem; text-align:center; }
   .hero-card { width:100%; max-width:320px; margin:0 auto; }
-  .hero-card-img { height:320px; object-position:center 10%; }
+  .hero-card-img { height:360px; object-position:center top; }
   .hero-btns { justify-content:center; }
   .hero-sub { margin:0 auto 2rem; }
 }
     [data-theme="dark"] nav { background:rgba(26,32,44,0.96); }
+    .visitor-bar {
+      position:fixed;top:68px;left:0;right:0;z-index:99;
+      display:flex;align-items:center;justify-content:center;
+      padding:0.35rem 1rem;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      font-size:0.75rem;color:var(--text2);font-weight:600;
+      gap:0.4rem;letter-spacing:0.02em;
+      transition:background 0.3s;
+    }
+    [data-theme="dark"] .visitor-bar { background:rgba(26,32,44,0.85); }
+    .visitor-bar .vb-dot { width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s infinite;flex-shrink:0; }
+    .visitor-bar .vb-num { color:var(--blue);font-weight:800; }
     .nav-logo { font-family:'Fraunces',serif; font-weight:800; font-size:1.4rem; color:var(--blue); text-decoration:none; }
     .nav-logo span { color:var(--navy); }
     .nav-links { display:flex; gap:2.5rem; list-style:none; }
@@ -76,7 +90,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     @media (max-width:768px) { .nav-toggle { display:block; } .nav-links.open { display:flex; } }
 
     /* HERO */
-    .hero { min-height:100vh; display:flex; align-items:center; padding:8rem 5rem 5rem; background:linear-gradient(160deg,#ffffff 0%,#eff6ff 50%,#dbeafe 100%); position:relative; overflow:hidden; }
+    .hero { min-height:100vh; display:flex; align-items:center; padding:9rem 5rem 5rem; background:linear-gradient(160deg,#ffffff 0%,#eff6ff 50%,#dbeafe 100%); position:relative; overflow:hidden; }
     [data-theme="dark"] .hero { background:linear-gradient(160deg,#0f1419 0%,#1a2c4a 50%,#162e4a 100%); }
     .hero::before { content:''; position:absolute; top:-100px; right:-100px; width:600px; height:600px; background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
     .hero-grid { display:grid; grid-template-columns:1fr auto; gap:6rem; align-items:center; max-width:1200px; margin:0 auto; width:100%; position:relative; z-index:1; }
@@ -101,7 +115,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     /* ensure the card never exceeds its container on tiny screens */
     .hero-card { max-width:100%; }
     [data-theme="dark"] .hero-card { background:var(--card); }
-    .hero-card-img { width:100%; height:280px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:center 15%; }
+    .hero-card-img { width:100%; height:340px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:center top; }
     .hero-card-info { padding:1.2rem; border-top:1px solid var(--border); }
     .hero-card-name { font-family:'Fraunces',serif; font-weight:700; font-size:1rem; color:var(--navy); }
     .hero-card-role { font-size:0.78rem; color:var(--text2); margin-top:0.2rem; }
@@ -388,6 +402,11 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   </a>
 </nav>
 
+<div class="visitor-bar" id="visitorBar" style="display:none;">
+  <div class="vb-dot"></div>
+  <span><span class="vb-num" id="visitor-count">—</span> people have visited this portfolio</span>
+</div>
+
 <section class="hero">
   <div class="hero-grid">
     <div>
@@ -398,7 +417,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
         <a href="#blog" class="btn-primary">📖 Read Blog</a>
         <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="btn-secondary">▶ Watch Videos</a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" id="hero-stats">
         <div class="stat-item"><div class="stat-num">9+</div><div class="stat-label">Years Exp.</div></div>
         <div class="stat-div"></div>
         <div class="stat-item"><div class="stat-num">230+</div><div class="stat-label">YT Videos</div></div>
@@ -1166,6 +1185,33 @@ document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 // ── INIT: Run blog + YouTube in PARALLEL for maximum speed ──────────────────
 // FIX 3 (continued): Promise.all means both fetches start simultaneously
 Promise.all([loadBlog(), loadYouTube()]);
+
+// ── VISITOR COUNT ───────────────────────────────────────────────────────
+async function fetchVisitorCount() {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/site_visits?select=id', {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Prefer': 'count=exact',
+        'Range': '0-0'
+      }
+    });
+    // Total count is in Content-Range header: 0-0/TOTAL
+    const range = res.headers.get('Content-Range');
+    if (range) {
+      const total = range.split('/')[1];
+      const el = document.getElementById('visitor-count');
+      if (el && total) {
+        const n = parseInt(total);
+        el.textContent = n >= 1000 ? (n/1000).toFixed(1)+'k' : n;
+        const bar = document.getElementById('visitorBar');
+        if (bar && n > 0) bar.style.display = 'flex';
+      }
+    }
+  } catch(e) {}
+}
+fetchVisitorCount();
 
 // ── VISIT TRACKER ────────────────────────────────────────────────────────
 async function trackVisit() {
