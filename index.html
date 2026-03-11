@@ -43,7 +43,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   .hero { padding:6rem 1.5rem 3rem; }
   .hero-grid { grid-template-columns:1fr; gap:2rem; text-align:center; }
   .hero-card { width:100%; max-width:320px; margin:0 auto; }
-  .hero-card-img { height:360px; object-position:center top; }
+  .hero-card-img { height:auto; max-height:380px; }
   .hero-btns { justify-content:center; }
   .hero-sub { margin:0 auto 2rem; }
 }
@@ -115,7 +115,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     /* ensure the card never exceeds its container on tiny screens */
     .hero-card { max-width:100%; }
     [data-theme="dark"] .hero-card { background:var(--card); }
-    .hero-card-img { width:100%; height:340px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:center top; }
+    .hero-card-img { width:100%; height:auto; max-height:420px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:contain; object-position:center top; }
     .hero-card-info { padding:1.2rem; border-top:1px solid var(--border); }
     .hero-card-name { font-family:'Fraunces',serif; font-weight:700; font-size:1rem; color:var(--navy); }
     .hero-card-role { font-size:0.78rem; color:var(--text2); margin-top:0.2rem; }
