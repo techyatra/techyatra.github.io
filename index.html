@@ -37,7 +37,16 @@ nav .nav-logo { order:0; }
 nav .nav-toggle { order:2; }
 nav .nav-links { order:1; }
 nav .subscribe-btn { order:3; margin-left:0.5rem; }
-    @media (max-width:768px) { .btn-primary { margin-left:0.5rem; padding:0.5rem 0.8rem; font-size:0.88rem; } .subscribe-btn { margin-left:0.5rem; } }
+    @media (max-width:768px) {
+  .btn-primary { margin-left:0.5rem; padding:0.5rem 0.8rem; font-size:0.88rem; }
+  .subscribe-btn { margin-left:0.5rem; }
+  .hero { padding:6rem 1.5rem 3rem; }
+  .hero-grid { grid-template-columns:1fr; gap:2rem; text-align:center; }
+  .hero-card { width:100%; max-width:320px; margin:0 auto; }
+  .hero-card-img { height:320px; object-position:center 10%; }
+  .hero-btns { justify-content:center; }
+  .hero-sub { margin:0 auto 2rem; }
+}
     [data-theme="dark"] nav { background:rgba(26,32,44,0.96); }
     .nav-logo { font-family:'Fraunces',serif; font-weight:800; font-size:1.4rem; color:var(--blue); text-decoration:none; }
     .nav-logo span { color:var(--navy); }
@@ -92,7 +101,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     /* ensure the card never exceeds its container on tiny screens */
     .hero-card { max-width:100%; }
     [data-theme="dark"] .hero-card { background:var(--card); }
-    .hero-card-img { width:100%; height:280px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:top; }
+    .hero-card-img { width:100%; height:280px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:center 15%; }
     .hero-card-info { padding:1.2rem; border-top:1px solid var(--border); }
     .hero-card-name { font-family:'Fraunces',serif; font-weight:700; font-size:1rem; color:var(--navy); }
     .hero-card-role { font-size:0.78rem; color:var(--text2); margin-top:0.2rem; }
@@ -493,10 +502,38 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
       <div>
         <div class="chip">Experience</div>
         <div class="exp-list">
-          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">June 2022 — Present</div></div></div>
-          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Aug 2021 — June 2022</div></div></div>
-          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Oct 2019 — Jul 2021</div></div></div>
-          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Mar 2017 — Sep 2019</div></div></div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-company">Senior Full Stack Developer</div>
+              <div class="exp-role">.NET · Angular · Azure · Microservices</div>
+              <div class="exp-period">June 2022 — Present</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-company">Full Stack Developer</div>
+              <div class="exp-role">.NET Core · SQL Server · REST APIs</div>
+              <div class="exp-period">Aug 2021 — June 2022</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-company">Full Stack Developer</div>
+              <div class="exp-role">Angular · ASP.NET · Azure DevOps</div>
+              <div class="exp-period">Oct 2019 — Jul 2021</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-company">Software Developer</div>
+              <div class="exp-role">.NET · MVC · jQuery · SQL</div>
+              <div class="exp-period">Mar 2017 — Sep 2019</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1129,6 +1166,31 @@ document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 // ── INIT: Run blog + YouTube in PARALLEL for maximum speed ──────────────────
 // FIX 3 (continued): Promise.all means both fetches start simultaneously
 Promise.all([loadBlog(), loadYouTube()]);
+
+// ── VISIT TRACKER ────────────────────────────────────────────────────────
+async function trackVisit() {
+  try {
+    const key = 'ty_visited_' + new Date().toDateString();
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    await fetch(SUPABASE_URL + '/rest/v1/site_visits', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        visited_at: new Date().toISOString(),
+        page: window.location.pathname || '/',
+        referrer: document.referrer || 'direct',
+        screen: window.screen.width + 'x' + window.screen.height
+      })
+    });
+  } catch(e) {}
+}
+trackVisit();
 
 </script>
 </body>
