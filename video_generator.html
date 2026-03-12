@@ -281,13 +281,15 @@ Or just describe your topic:
 
 <script>
 let slides = [], cur = 0, autoTimer = null, isAuto = false, slideDur = 8000;
-const GEMINI_KEY = 'AIzaSyApFlnDiTnzHbTofmA0_I6gFhIWy2QCpU4';
+
+// ── Cloudflare Worker URL ─────────────────────────────────────────────────────
+// Replace this with your own worker URL after deploying gemini-proxy-worker.js
+const WORKER_URL = 'https://orange-dawn-5dae.thetechyatra.workers.dev/generate';
 
 // ── GENERATE ──────────────────────────────────────────────────────────────────
 async function generate() {
   const script = document.getElementById('scriptInput').value.trim();
   if (!script) { alert('Please paste your script or topic first.'); return; }
-  const apiKey = GEMINI_KEY;
   const theme = document.getElementById('themeSelect').value;
   slideDur = parseInt(document.getElementById('speedInput').value) * 1000;
   document.getElementById('genBtn').disabled = true;
@@ -296,7 +298,7 @@ async function generate() {
   let mi = 0;
   const mt = setInterval(function(){ document.getElementById('loadSub').textContent = msgs[Math.min(mi++, msgs.length-1)]; }, 1800);
   try {
-    const json = await callGeminiForSlides(script, theme, apiKey);
+    const json = await callGeminiViaProxy(script, theme);
     slides = json.slides;
     clearInterval(mt);
     document.getElementById('loading').classList.remove('show');
@@ -310,19 +312,54 @@ async function generate() {
   }
 }
 
-// ── GEMINI API (FREE) ─────────────────────────────────────────────────────────
-async function callGeminiForSlides(script, theme, apiKey) {
-  const themeGuide = {
+// ── PROXY CALL ────────────────────────────────────────────────────────────────
+// Sends the assembled prompt to the Cloudflare Worker; the Worker holds the key.
+async function callGeminiViaProxy(script, theme) {
+  const prompt = buildPrompt(script, theme);
+
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!res.ok) {
+    let msg = `Worker error ${res.status}`;
+    try { const j = await res.json(); msg = j.error || msg; } catch(e) {}
+    throw new Error(msg);
+  }
+
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+
+  const raw = data.result.trim();
+  return parseGeminiJson(raw);
+}
+
+// ── BUILD PROMPT (unchanged logic, extracted for reuse) ───────────────────────
+function buildPrompt(script, theme) {
+  const themeGuide = getThemeGuide(theme);
+
+  const systemPrompt = `You are a professional presentation designer who creates slide decks from video scripts. You always respond with ONLY valid JSON — no explanation, no markdown fences, just the raw JSON object.`;
+
+  const userPrompt = buildUserPrompt(script, themeGuide);
+  return systemPrompt + '\n\n' + userPrompt;
+}
+
+// ── THEME GUIDE ───────────────────────────────────────────────────────────────
+function getThemeGuide(theme) {
+  return ({
     'dark': 'Dark backgrounds (#0d1117, #1a1a2e, #0f172a, #111827). Light text (#f0f4ff, #e2e8f0). Bold accent colors (electric blue, neon green, warm amber, rose). Each slide a different dark shade.',
     'light': 'Light/white/cream backgrounds (#ffffff, #f7f6f2, #f8fafc, #fffbf0). Dark ink text (#0d1117, #1e293b). Subtle colored accents. Clean and airy.',
     'colorful': 'Each slide gets a bold, vivid gradient or saturated color as background. High contrast. Every slide visually distinct and vibrant.',
     'minimal': 'Off-white or light gray backgrounds. Minimal color, mostly neutrals. Strong typography carries the design. Occasional single accent color.',
     'auto': 'Mix dark and light slides for visual variety. No two consecutive slides should have the same color palette. Make it feel professionally designed and varied.'
-  }[theme] || 'Mix dark and light slides for visual variety.';
+  })[theme] || 'Mix dark and light slides for visual variety.';
+}
 
-  const systemPrompt = `You are a professional presentation designer who creates slide decks from video scripts. You always respond with ONLY valid JSON — no explanation, no markdown fences, just the raw JSON object.`;
-
-  const userPrompt = `You are creating a YouTube video slide deck. Read the script below and generate slides.
+// ── USER PROMPT ───────────────────────────────────────────────────────────────
+function buildUserPrompt(script, themeGuide) {
+  return `You are creating a YouTube video slide deck. Read the script below and generate slides.
 
 === SCRIPT / TOPIC ===
 ${script}
@@ -399,62 +436,24 @@ Return ONLY this JSON, nothing else:
 }
 
 Return ONLY raw JSON. No explanation, no markdown fences, no newlines inside string values. All strings on one line. Start with { end with }.`;
+}
 
-  const fullPrompt = systemPrompt + '\n\n' + userPrompt;
-
-  // Try models in order — all free tier, correct names from Google docs
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'];
-  let raw = null;
-  let lastErr = '';
-  for (const model of models) {
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 4000 }
-        })
-      }
-    );
-    if (res.ok) {
-      const d = await res.json();
-      if (d.candidates && d.candidates[0]) {
-        raw = d.candidates[0].content.parts[0].text.trim();
-        break;
-      }
-    } else {
-      lastErr = await res.text();
-      if (!lastErr.includes('429') && !lastErr.includes('quota') && !lastErr.includes('RESOURCE_EXHAUSTED')) {
-        throw new Error('API error: ' + lastErr.substring(0, 300));
-      }
-      // quota hit on this model — try next
-    }
-  }
-  if (!raw) throw new Error('Quota limit hit on all models. Please wait 1 minute and try again.');
-
+// ── JSON CLEANUP (same logic as before) ──────────────────────────────────────
+function parseGeminiJson(raw) {
   function fixJson(str) {
     str = str.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
     const start = str.indexOf('{');
     const end = str.lastIndexOf('}');
     if (start !== -1 && end !== -1) str = str.substring(start, end + 1);
-    // Fix trailing commas before } or ]
     str = str.replace(/,\s*([}\]])/g, '$1');
-    // Fix unescaped control characters inside strings
     str = str.replace(/"((?:[^"\\]|\\.)*)"/g, function(m) {
       return m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
     });
     return str;
   }
-
   const clean = fixJson(raw);
   try { return JSON.parse(clean); }
   catch(e) {
-    // Last resort: truncate at last complete slide
     const lastSlide = clean.lastIndexOf('{"type"');
     if (lastSlide > 100) {
       const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';
@@ -462,6 +461,12 @@ Return ONLY raw JSON. No explanation, no markdown fences, no newlines inside str
     }
     throw new Error('AI returned invalid JSON. Try again. Detail: ' + e.message);
   }
+}
+
+// ── LEGACY STUB (kept so nothing else in the file breaks) ────────────────────
+async function callGeminiForSlides(script, theme, apiKey) {
+  // All logic has moved to callGeminiViaProxy() above.
+  return callGeminiViaProxy(script, theme);
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
