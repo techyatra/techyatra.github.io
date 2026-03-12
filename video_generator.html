@@ -228,13 +228,14 @@ Or just describe your topic:
     </div>
 
     <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate Slides with AI</button>
+
   </div>
 </div>
 
 <!-- LOADING -->
 <div id="loading">
   <div class="load-ring"></div>
-  <div class="load-title">Claude is reading your script…</div>
+  <div class="load-title">Gemini is reading your script…</div>
   <div class="load-sub" id="loadSub">Analysing content, deciding slide count and layouts</div>
 </div>
 
@@ -261,22 +262,23 @@ Or just describe your topic:
 </div>
 
 <script>
-const ANTHROPIC_KEY = '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';
 let slides = [], cur = 0, autoTimer = null, isAuto = false, slideDur = 8000;
+const GEMINI_KEY = 'AIzaSyApFlnDiTnzHbTofmA0_I6gFhIWy2QCpU4';
 
 // ── GENERATE ──────────────────────────────────────────────────────────────────
 async function generate() {
   const script = document.getElementById('scriptInput').value.trim();
   if (!script) { alert('Please paste your script or topic first.'); return; }
+  const apiKey = GEMINI_KEY;
   const theme = document.getElementById('themeSelect').value;
   slideDur = parseInt(document.getElementById('speedInput').value) * 1000;
   document.getElementById('genBtn').disabled = true;
   document.getElementById('loading').classList.add('show');
-  const msgs = ['Claude is reading your script…','Deciding how many slides you need…','Designing layouts for each section…','Writing specific slide content…','Building your presentation…'];
+  const msgs = ['AI is reading your script…','Deciding how many slides you need…','Designing layouts for each section…','Writing specific slide content…','Building your presentation…'];
   let mi = 0;
   const mt = setInterval(function(){ document.getElementById('loadSub').textContent = msgs[Math.min(mi++, msgs.length-1)]; }, 1800);
   try {
-    const json = await callClaudeForSlides(script, theme);
+    const json = await callGeminiForSlides(script, theme, apiKey);
     slides = json.slides;
     clearInterval(mt);
     document.getElementById('loading').classList.remove('show');
@@ -290,8 +292,8 @@ async function generate() {
   }
 }
 
-// ── CLAUDE API ────────────────────────────────────────────────────────────────
-async function callClaudeForSlides(script, theme) {
+// ── GEMINI API (FREE) ─────────────────────────────────────────────────────────
+async function callGeminiForSlides(script, theme, apiKey) {
   const themeGuide = {
     'dark': 'Dark backgrounds (#0d1117, #1a1a2e, #0f172a, #111827). Light text (#f0f4ff, #e2e8f0). Bold accent colors (electric blue, neon green, warm amber, rose). Each slide a different dark shade.',
     'light': 'Light/white/cream backgrounds (#ffffff, #f7f6f2, #f8fafc, #fffbf0). Dark ink text (#0d1117, #1e293b). Subtle colored accents. Clean and airy.',
@@ -380,21 +382,19 @@ Return ONLY this JSON, nothing else:
 
 Return ONLY the JSON. No explanation. No markdown fences. Start with { and end with }.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
-    })
-  });
+  const fullPrompt = systemPrompt + '\n\n' + userPrompt;
+
+  const res = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: fullPrompt }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 4000 }
+      })
+    }
+  );
 
   if (!res.ok) {
     const err = await res.text();
@@ -402,13 +402,14 @@ Return ONLY the JSON. No explanation. No markdown fences. Start with { and end w
   }
 
   const d = await res.json();
-  const raw = d.content[0].text.trim();
+  if (!d.candidates || !d.candidates[0]) throw new Error('No response from Gemini. Try again.');
+  const raw = d.candidates[0].content.parts[0].text.trim();
   const clean = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
   try { return JSON.parse(clean); }
   catch(e) {
     const m = clean.match(/\{[\s\S]*\}/);
     if (m) return JSON.parse(m[0]);
-    throw new Error('Could not parse response as JSON: ' + clean.substring(0,200));
+    throw new Error('Could not parse AI response as JSON: ' + clean.substring(0,200));
   }
 }
 
