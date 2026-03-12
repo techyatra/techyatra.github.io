@@ -438,19 +438,52 @@ Return ONLY this JSON, nothing else:
 Return ONLY raw JSON. No explanation, no markdown fences, no newlines inside string values. All strings on one line. Start with { end with }.`;
 }
 
-// ── JSON CLEANUP (same logic as before) ──────────────────────────────────────
+// ── JSON CLEANUP (robust) ───────────────────────────────────────────────────
 function parseGeminiJson(raw) {
   function fixJson(str) {
     str = str.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
-    const start = str.indexOf('{');
-    const end = str.lastIndexOf('}');
+    const start = str.indexOf('{'), end = str.lastIndexOf('}');
     if (start !== -1 && end !== -1) str = str.substring(start, end + 1);
     str = str.replace(/,\s*([}\]])/g, '$1');
-    str = str.replace(/"((?:[^"\\]|\\.)*)"/g, function(m) {
-      return m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-    });
-    return str;
+    // Walk char-by-char to fix raw control chars inside strings only
+    let out = '', inStr = false, esc = false;
+    for (let i = 0; i < str.length; i++) {
+      const c = str[i];
+      if (esc) { out += c; esc = false; continue; }
+      if (c === '\\') { esc = true; out += c; continue; }
+      if (c === '"') { inStr = !inStr; out += c; continue; }
+      if (inStr) {
+        if (c === '\n') { out += '\\n'; continue; }
+        if (c === '\r') { out += '\\r'; continue; }
+        if (c === '\t') { out += '\\t'; continue; }
+      }
+      out += c;
+    }
+    return out;
   }
+  const clean = fixJson(raw);
+  // Attempt 1
+  try { return JSON.parse(clean); } catch(e1) {
+    // Attempt 2: truncate at last complete slide
+    const lastSlide = clean.lastIndexOf('{"type"');
+    if (lastSlide > 100) {
+      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';      try { return JSON.parse(trimmed); } catch(e2) {}
+    }
+    // Attempt 3: extract slides array
+    try {
+      const m = clean.match(/"slides"\s*:\s*(\[[\s\S]*)/);
+      if (m) {
+        let arr = m[1];
+        const lc = arr.lastIndexOf('}');
+        arr = arr.substring(0, lc + 1);
+        if (!arr.trimEnd().endsWith(']')) arr += ']';
+        arr = arr.replace(/,\s*]$/, ']');
+        return { slides: JSON.parse(arr) };
+      }
+    } catch(e3) {}
+    throw new Error('AI returned invalid JSON. Try again. Detail: ' + e1.message);
+  }
+}
   const clean = fixJson(raw);
   try { return JSON.parse(clean); }
   catch(e) {
