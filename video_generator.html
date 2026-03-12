@@ -398,7 +398,7 @@ Return ONLY this JSON, nothing else:
   ]
 }
 
-Return ONLY the JSON. No explanation. No markdown fences. Start with { and end with }.`;
+Return ONLY raw JSON. No explanation, no markdown fences, no newlines inside string values. All strings on one line. Start with { end with }.`;
 
   const fullPrompt = systemPrompt + '\n\n' + userPrompt;
 
@@ -436,12 +436,31 @@ Return ONLY the JSON. No explanation. No markdown fences. Start with { and end w
     }
   }
   if (!raw) throw new Error('Quota limit hit on all models. Please wait 1 minute and try again.');
-  const clean = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
+
+  function fixJson(str) {
+    str = str.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
+    const start = str.indexOf('{');
+    const end = str.lastIndexOf('}');
+    if (start !== -1 && end !== -1) str = str.substring(start, end + 1);
+    // Fix trailing commas before } or ]
+    str = str.replace(/,\s*([}\]])/g, '$1');
+    // Fix unescaped control characters inside strings
+    str = str.replace(/"((?:[^"\\]|\\.)*)"/g, function(m) {
+      return m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+    });
+    return str;
+  }
+
+  const clean = fixJson(raw);
   try { return JSON.parse(clean); }
   catch(e) {
-    const m = clean.match(/\{[\s\S]*\}/);
-    if (m) return JSON.parse(m[0]);
-    throw new Error('Could not parse AI response as JSON: ' + clean.substring(0,200));
+    // Last resort: truncate at last complete slide
+    const lastSlide = clean.lastIndexOf('{"type"');
+    if (lastSlide > 100) {
+      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';
+      try { return JSON.parse(trimmed); } catch(e2) {}
+    }
+    throw new Error('AI returned invalid JSON. Try again. Detail: ' + e.message);
   }
 }
 
