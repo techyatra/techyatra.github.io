@@ -445,7 +445,6 @@ function parseGeminiJson(raw) {
     const start = str.indexOf('{'), end = str.lastIndexOf('}');
     if (start !== -1 && end !== -1) str = str.substring(start, end + 1);
     str = str.replace(/,\s*([}\]])/g, '$1');
-    // Walk char-by-char to fix raw control chars inside strings only
     let out = '', inStr = false, esc = false;
     for (let i = 0; i < str.length; i++) {
       const c = str[i];
@@ -462,14 +461,12 @@ function parseGeminiJson(raw) {
     return out;
   }
   const clean = fixJson(raw);
-  // Attempt 1
   try { return JSON.parse(clean); } catch(e1) {
-    // Attempt 2: truncate at last complete slide
     const lastSlide = clean.lastIndexOf('{"type"');
     if (lastSlide > 100) {
-      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';      try { return JSON.parse(trimmed); } catch(e2) {}
+      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';
+      try { return JSON.parse(trimmed); } catch(e2) {}
     }
-    // Attempt 3: extract slides array
     try {
       const m = clean.match(/"slides"\s*:\s*(\[[\s\S]*)/);
       if (m) {
@@ -484,17 +481,7 @@ function parseGeminiJson(raw) {
     throw new Error('AI returned invalid JSON. Try again. Detail: ' + e1.message);
   }
 }
-  const clean = fixJson(raw);
-  try { return JSON.parse(clean); }
-  catch(e) {
-    const lastSlide = clean.lastIndexOf('{"type"');
-    if (lastSlide > 100) {
-      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';
-      try { return JSON.parse(trimmed); } catch(e2) {}
-    }
-    throw new Error('AI returned invalid JSON. Try again. Detail: ' + e.message);
-  }
-}
+
 
 // ── LEGACY STUB (kept so nothing else in the file breaks) ────────────────────
 async function callGeminiForSlides(script, theme, apiKey) {
