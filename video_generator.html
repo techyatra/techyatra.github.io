@@ -402,16 +402,19 @@ Return ONLY the JSON. No explanation. No markdown fences. Start with { and end w
 
   const fullPrompt = systemPrompt + '\n\n' + userPrompt;
 
-  // Try models in order — all free tier
-  const models = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+  // Try models in order — all free tier, correct names from Google docs
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'];
   let raw = null;
   let lastErr = '';
   for (const model of models) {
     const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey,
+      'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
         body: JSON.stringify({
           contents: [{ parts: [{ text: fullPrompt }] }],
           generationConfig: { temperature: 0.7, maxOutputTokens: 4000 }
@@ -426,13 +429,13 @@ Return ONLY the JSON. No explanation. No markdown fences. Start with { and end w
       }
     } else {
       lastErr = await res.text();
-      if (!lastErr.includes('429') && !lastErr.includes('quota')) {
+      if (!lastErr.includes('429') && !lastErr.includes('quota') && !lastErr.includes('RESOURCE_EXHAUSTED')) {
         throw new Error('API error: ' + lastErr.substring(0, 300));
       }
-      // quota hit — try next model
+      // quota hit on this model — try next
     }
   }
-  if (!raw) throw new Error('All models hit quota limit. Please wait a minute and try again.\n\nDetails: ' + lastErr.substring(0, 200));
+  if (!raw) throw new Error('Quota limit hit on all models. Please wait 1 minute and try again.');
   const clean = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
   try { return JSON.parse(clean); }
   catch(e) {
