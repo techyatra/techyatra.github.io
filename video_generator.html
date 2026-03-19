@@ -6,6 +6,7 @@
 <title>TechYatra · Video Slide Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,87 +16,61 @@
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);overflow:hidden}
 
 /* ── SETUP ─────────────────────────────────────────── */
-#setup{
-  position:fixed;inset:0;background:var(--paper);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:2rem;overflow-y:auto;z-index:10;
-}
-.setup-card{
-  background:var(--card);border:1px solid var(--border);border-radius:20px;
-  padding:2.5rem;width:100%;max-width:700px;box-shadow:var(--shadow);
-}
-.setup-logo{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--accent);margin-bottom:0.3rem}
+#setup{position:fixed;inset:0;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;z-index:10;}
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:700px;box-shadow:var(--shadow);}
+.setup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;}
+.setup-logo{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--accent);}
+.visit-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.visit-btn:hover{background:#1d4ed8;transform:translateY(-1px);}
 .setup-title{font-family:'Instrument Serif',serif;font-size:2rem;line-height:1.2;margin-bottom:0.5rem}
 .setup-sub{font-size:0.88rem;color:var(--muted);margin-bottom:2rem;line-height:1.65}
 label{display:block;font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.45rem}
-textarea,input,select{
-  width:100%;background:#fafaf8;border:1.5px solid var(--border);border-radius:10px;
-  color:var(--ink);font-family:'DM Sans',sans-serif;font-size:0.9rem;
-  padding:0.85rem 1rem;outline:none;transition:border-color 0.2s;
-}
+textarea,input,select{width:100%;background:#fafaf8;border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:0.85rem 1rem;outline:none;transition:border-color 0.2s;}
 textarea:focus,input:focus,select:focus{border-color:var(--accent)}
 textarea{min-height:200px;resize:vertical;line-height:1.65}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
 .form-group{margin-bottom:1.4rem}
 .hint{font-size:0.76rem;color:var(--muted);margin-top:0.4rem}
-.gen-btn{
-  width:100%;background:var(--ink);color:#fff;border:none;border-radius:12px;
-  padding:1rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all 0.2s;
-}
+.gen-btn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:1rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .gen-btn:hover{background:#1e293b;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.15)}
 .gen-btn:disabled{background:#9ca3af;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* ── LOADING ──────────────────────────────────────── */
-#loading{
-  position:fixed;inset:0;background:rgba(247,246,242,0.96);backdrop-filter:blur(8px);
-  display:none;flex-direction:column;align-items:center;justify-content:center;z-index:100;
-}
+#loading{position:fixed;inset:0;background:rgba(247,246,242,0.96);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:100;}
 #loading.show{display:flex}
-.load-ring{
-  width:52px;height:52px;border:3px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;
-  animation:spin 0.8s linear infinite;margin-bottom:1.5rem;
-}
+.load-logo{font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--accent);margin-bottom:1.5rem;letter-spacing:-0.02em;}
+.load-ring{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:1.5rem;}
 .load-title{font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:0.5rem}
-.load-sub{font-size:0.85rem;color:var(--muted);text-align:center;max-width:300px;line-height:1.55}
+.load-sub{font-size:0.85rem;color:var(--muted);text-align:center;max-width:320px;line-height:1.55}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── PRESENTER ────────────────────────────────────── */
 #presenter{position:fixed;inset:0;background:#111;display:none;flex-direction:column;z-index:20}
 #presenter.show{display:flex}
 #stage{position:relative;flex:1;overflow:hidden}
-.slide{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity 0.35s ease;pointer-events:none;overflow:hidden;
-}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.35s ease;pointer-events:none;overflow:hidden;}
 .slide.active{opacity:1;pointer-events:auto}
 
+/* ── WATERMARK ─────────────────────────────────────── */
+.slide-watermark{position:absolute;bottom:14px;right:18px;font-family:'Instrument Serif',serif;font-size:0.72rem;font-weight:400;letter-spacing:0.04em;opacity:0.35;pointer-events:none;user-select:none;z-index:10;}
+
 /* ── CTRL BAR ─────────────────────────────────────── */
-#ctrl{
-  height:50px;background:#1a1a1a;border-top:1px solid #2d2d2d;
-  display:flex;align-items:center;gap:0.5rem;padding:0 1rem;flex-shrink:0;
-}
+#ctrl{height:50px;background:#1a1a1a;border-top:1px solid #2d2d2d;display:flex;align-items:center;gap:0.5rem;padding:0 1rem;flex-shrink:0;}
 .ctrl-brand{font-family:'Instrument Serif',serif;font-size:0.88rem;color:#555;margin-right:0.3rem}
-.ctrl-btn{
-  background:#2d2d2d;border:none;color:#999;border-radius:7px;
-  padding:0.33rem 0.7rem;font-size:0.7rem;font-weight:600;cursor:pointer;
-  transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;
-}
+.ctrl-btn{background:#2d2d2d;border:none;color:#999;border-radius:7px;padding:0.33rem 0.7rem;font-size:0.7rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .ctrl-btn:hover{background:#3a3a3a;color:#fff}
 .ctrl-btn.primary{background:#1a56db;color:#fff}
 .ctrl-btn.primary:hover{background:#1d4ed8}
+.ctrl-btn.success{background:#16a34a;color:#fff}
+.ctrl-btn.success:hover{background:#15803d}
 .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed}
 .ctrl-spacer{flex:1}
 #trackWrap{flex:1;max-width:180px;height:3px;background:#333;border-radius:2px;cursor:pointer}
 #trackFill{height:100%;background:#1a56db;border-radius:2px;transition:width 0.3s}
 #slideNum{font-size:0.7rem;color:#555;min-width:38px;text-align:center}
-.fmt-sel{background:#2d2d2d;border:1px solid #444;color:#999;border-radius:7px;padding:0.28rem 0.45rem;font-size:0.7rem;font-family:'DM Sans',sans-serif;outline:none}
 
 /* ── SLIDE COMPONENTS ─────────────────────────────── */
 .slide-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:5vw 6vw}
-
-/* Hook */
 .hook-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.55;margin-bottom:1.2rem}
 .hook-h1{font-family:'Instrument Serif',serif;font-size:clamp(2.2rem,5.5vw,5rem);line-height:1.05;letter-spacing:-0.02em;margin-bottom:1.2rem}
 .hook-sub{font-size:clamp(0.9rem,1.4vw,1.1rem);opacity:0.65;max-width:520px;line-height:1.7}
@@ -103,14 +78,10 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .hstat{border-left:3px solid;padding-left:1rem}
 .hstat-num{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400}
 .hstat-lbl{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.45;margin-top:0.2rem}
-
-/* Section */
 .s-section .sec-bg-num{font-family:'Instrument Serif',serif;font-size:clamp(6rem,18vw,16rem);font-weight:400;line-height:1;opacity:0.06;position:absolute;right:4vw;top:50%;transform:translateY(-50%);pointer-events:none;user-select:none}
 .sec-chip{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:1rem}
 .sec-h2{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4.5vw,3.8rem);line-height:1.08;letter-spacing:-0.02em;margin-bottom:1.2rem}
 .sec-body{font-size:clamp(0.88rem,1.4vw,1.05rem);opacity:0.65;max-width:580px;line-height:1.75}
-
-/* List */
 .list-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4vw;width:100%;max-width:1100px;align-items:start}
 .list-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:0.7rem}
 .list-h{font-family:'Instrument Serif',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.9rem}
@@ -120,8 +91,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .li-n{font-family:'Instrument Serif',serif;font-size:1.1rem;opacity:0.28;flex-shrink:0;padding-top:0.1rem}
 .li-title{font-weight:700;font-size:0.85rem;margin-bottom:0.2rem}
 .li-desc{font-size:0.78rem;opacity:0.58;line-height:1.5}
-
-/* Compare */
 .compare-header{margin-bottom:1.5rem}
 .compare-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45}
 .compare-h{font-family:'Instrument Serif',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);letter-spacing:-0.02em;margin-top:0.4rem}
@@ -129,14 +98,10 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .compare-col{border-radius:14px;padding:1.8rem;border:1px solid}
 .col-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.2rem}
 .cmp-row{display:flex;gap:0.7rem;align-items:flex-start;margin-bottom:0.8rem;font-size:0.86rem;line-height:1.5}
-
-/* Quote */
 .q-wrap{max-width:780px;text-align:center}
 .q-mark{font-family:'Instrument Serif',serif;font-size:7rem;line-height:0.6;opacity:0.12;display:block;margin-bottom:1.2rem}
 .q-text{font-family:'Instrument Serif',serif;font-size:clamp(1.25rem,2.8vw,2rem);font-style:italic;line-height:1.55;margin-bottom:2rem}
 .q-author{font-size:0.8rem;font-weight:700;letter-spacing:0.07em;opacity:0.45;text-transform:uppercase}
-
-/* Stats */
 .stats-grid-header{grid-column:1/-1;margin-bottom:1.2rem}
 .stats-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45}
 .stats-h{font-family:'Instrument Serif',serif;font-size:clamp(1.7rem,3.5vw,3rem);letter-spacing:-0.02em;margin-top:0.4rem}
@@ -144,8 +109,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .stat-num{font-family:'Instrument Serif',serif;font-size:clamp(2.2rem,4.5vw,3.8rem);line-height:1;margin-bottom:0.4rem}
 .stat-lbl{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.5}
 .stat-desc{font-size:0.82rem;opacity:0.55;margin-top:0.5rem;line-height:1.5}
-
-/* Tips */
 .tips-wrap{width:100%;max-width:1100px}
 .tips-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:0.6rem}
 .tips-h{font-family:'Instrument Serif',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);letter-spacing:-0.02em;margin-bottom:1.8rem}
@@ -154,15 +117,11 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .tip-icon{font-size:1.7rem;margin-bottom:0.65rem}
 .tip-title{font-weight:700;font-size:0.88rem;margin-bottom:0.35rem}
 .tip-body{font-size:0.8rem;opacity:0.6;line-height:1.55}
-
-/* Code */
 .code-wrap{width:100%;max-width:1100px;display:grid;grid-template-columns:1fr 1fr;gap:4vw;align-items:center}
 .code-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:0.6rem}
 .code-h{font-family:'Instrument Serif',serif;font-size:clamp(1.6rem,3vw,2.6rem);letter-spacing:-0.02em;margin-bottom:0.9rem}
 .code-desc{font-size:0.88rem;opacity:0.6;line-height:1.7}
 .code-block{border-radius:12px;padding:1.6rem;font-family:'Courier New',monospace;font-size:0.78rem;line-height:1.75;overflow:auto;max-height:300px;border:1px solid rgba(255,255,255,0.08)}
-
-/* Timeline */
 .tl-wrap{width:100%;max-width:900px}
 .tl-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.45;margin-bottom:0.6rem}
 .tl-h{font-family:'Instrument Serif',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);letter-spacing:-0.02em;margin-bottom:2rem}
@@ -172,8 +131,6 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .tl-dot{width:18px;height:18px;border-radius:50%;border:2px solid;flex-shrink:0;margin-top:0.15rem;position:relative;z-index:1;margin-left:-0.95rem}
 .tl-title{font-weight:700;font-size:0.88rem;margin-bottom:0.25rem}
 .tl-desc{font-size:0.8rem;opacity:0.58;line-height:1.55}
-
-/* Outro */
 .outro-wrap{text-align:center;max-width:680px}
 .outro-logo{font-family:'Instrument Serif',serif;font-size:clamp(3rem,8vw,6rem);font-weight:400;letter-spacing:-0.03em;line-height:1;margin-bottom:1.2rem}
 .outro-tagline{font-size:clamp(0.88rem,1.4vw,1.05rem);opacity:0.58;line-height:1.7;margin-bottom:2rem;max-width:480px;margin-left:auto;margin-right:auto}
@@ -184,26 +141,19 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 .ostat-lbl{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.4;margin-top:0.15rem}
 
 @media(max-width:768px){
-  /* Setup screen */
   #setup{padding:1rem;align-items:flex-start}
   .setup-card{padding:1.5rem;border-radius:14px;margin:auto 0}
   .setup-title{font-size:1.5rem}
   .form-row{grid-template-columns:1fr}
-  /* Slide layouts */
   .list-wrap,.compare-grid,.code-wrap{grid-template-columns:1fr}
   .hook-stats{gap:1rem}
   .tl-items{padding-left:1.5rem}
-  .hook-h1{font-size:clamp(1.6rem,7vw,2.5rem)}
-  .sec-h2{font-size:clamp(1.5rem,6vw,2.2rem)}
-  /* Control bar — two rows on mobile */
   #ctrl{flex-wrap:wrap;height:auto;padding:0.5rem;gap:0.4rem}
   .ctrl-brand{display:none}
   #trackWrap{order:10;width:100%;max-width:100%;flex-basis:100%}
   #slideNum{order:11}
   .ctrl-spacer{display:none}
   .ctrl-btn{font-size:0.65rem;padding:0.3rem 0.55rem}
-  .fmt-sel{font-size:0.65rem}
-  /* Slides inner padding */
   .slide-inner{padding:4vw 5vw}
 }
 </style>
@@ -213,19 +163,22 @@ textarea{min-height:200px;resize:vertical;line-height:1.65}
 <!-- SETUP -->
 <div id="setup">
   <div class="setup-card">
-    <div class="setup-logo">TechYatra</div>
+    <div class="setup-header">
+      <div class="setup-logo">TechYatra</div>
+      <a class="visit-btn" href="https://techyatra.github.io" target="_blank" rel="noopener">🌐 Visit Website</a>
+    </div>
     <h1 class="setup-title">Video Slide Generator</h1>
-    <p class="setup-sub">Paste your script or just describe your topic. Claude AI reads the actual content, decides how many slides you need, picks the right layout for each, and writes specific content — no templates, no hardcoding.</p>
+    <p class="setup-sub">Paste your script or describe your topic. AI reads the content, decides how many slides you need, picks the right layout for each, and writes specific content — no templates, no hardcoding.</p>
 
     <div class="form-group">
       <label for="scriptInput">Your Script or Topic</label>
-      <textarea id="scriptInput" aria-label="Script or topic input" placeholder="Paste your full video script here...
+      <textarea id="scriptInput" placeholder="Paste your full video script here...
 
 Or just describe your topic:
 '5 mistakes .NET developers make with async/await'
-'How I automated my YouTube to blog pipeline using Claude AI — full walkthrough'
+'How I automated my YouTube to blog pipeline using AI'
 'Azure Functions vs AWS Lambda — which one should you learn?'"></textarea>
-      <p class="hint">Longer, more detailed scripts → more specific, relevant slides. Short topic descriptions work too.</p>
+      <p class="hint">Longer, more detailed scripts → more specific, relevant slides.</p>
     </div>
 
     <div class="form-row">
@@ -246,15 +199,15 @@ Or just describe your topic:
     </div>
 
     <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate Slides with AI</button>
-
   </div>
 </div>
 
 <!-- LOADING -->
 <div id="loading">
+  <div class="load-logo">TechYatra</div>
   <div class="load-ring"></div>
-  <div class="load-title">Gemini is reading your script…</div>
-  <div class="load-sub" id="loadSub">Analysing content, deciding slide count and layouts</div>
+  <div class="load-title" id="loadTitle">TechYatra is working on your slides…</div>
+  <div class="load-sub" id="loadSub">Reading your script and planning the deck</div>
 </div>
 
 <!-- PRESENTER -->
@@ -262,188 +215,174 @@ Or just describe your topic:
   <div id="stage"></div>
   <div id="ctrl">
     <span class="ctrl-brand">TechYatra</span>
-    <button class="ctrl-btn" onclick="prev()">← Prev</button>
-    <button class="ctrl-btn" onclick="next()">Next →</button>
+    <button class="ctrl-btn" onclick="exitPres()" title="Back to home">← New</button>
+    <button class="ctrl-btn" onclick="prev()">‹ Prev</button>
+    <button class="ctrl-btn" onclick="next()">Next ›</button>
     <button class="ctrl-btn" id="autoBtn" onclick="toggleAuto()">▶ Auto</button>
     <div id="trackWrap" onclick="seekTrack(event)"><div id="trackFill" style="width:0%"></div></div>
     <span id="slideNum">1 / 1</span>
     <span class="ctrl-spacer"></span>
-    <select class="fmt-sel" id="dlFormat" aria-label="Download format">
-      <option value="png">PNG</option>
-      <option value="jpeg">JPEG</option>
-    </select>
-    <button class="ctrl-btn" id="dlSingleBtn" onclick="downloadSingle()">⬇ This Slide</button>
-    <button class="ctrl-btn primary" id="dlBtn" onclick="downloadAll()">⬇ All Slides</button>
+    <button class="ctrl-btn success" id="dlPdfBtn" onclick="downloadPDF()">⬇ PDF</button>
+    <button class="ctrl-btn" id="dlSingleBtn" onclick="downloadSingle()">⬇ PNG</button>
     <button class="ctrl-btn" onclick="toggleFS()">⛶ Full</button>
-    <button class="ctrl-btn" onclick="exitPres()">✕ Exit</button>
+    <a class="ctrl-btn" href="https://techyatra.github.io" target="_blank" rel="noopener" style="text-decoration:none;">🌐 Website</a>
   </div>
 </div>
 
 <script>
-let slides = [], cur = 0, autoTimer = null, isAuto = false, slideDur = 8000;
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const WORKER_URL    = 'https://orange-dawn-5dae.thetechyatra.workers.dev/generate';
+const SITE_URL      = 'https://techyatra.github.io';
+const WATERMARK_TEXT = 'techyatra.github.io';
 
-// ── Cloudflare Worker URL ─────────────────────────────────────────────────────
-// Replace this with your own worker URL after deploying gemini-proxy-worker.js
-const WORKER_URL = 'https://orange-dawn-5dae.thetechyatra.workers.dev/generate';
+// ── SUPABASE logging goes via Cloudflare Worker — no credentials in HTML ──────
+const LOG_URL = WORKER_URL.replace('/generate', '/log');
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let slides = [], cur = 0, autoTimer = null, isAuto = false, slideDur = 8000;
+let lastPromptTopic = '';
+
+// ── LOADING MESSAGES ──────────────────────────────────────────────────────────
+const LOAD_MSGS = [
+  ['Crafting your slide deck…',       'Reading your script and planning the layout'],
+  ['Choosing the best slide types…',  'Picking hooks, timelines, stats and more'],
+  ['Writing slide content…',          'Filling every slide with real content from your script'],
+  ['Designing the visual theme…',     'Choosing colours, accents and typography'],
+  ['Almost ready…',                   'Putting the finishing touches on your deck'],
+];
 
 // ── GENERATE ──────────────────────────────────────────────────────────────────
 async function generate() {
   const script = document.getElementById('scriptInput').value.trim();
   if (!script) { alert('Please paste your script or topic first.'); return; }
-  const theme = document.getElementById('themeSelect').value;
-  slideDur = parseInt(document.getElementById('speedInput').value) * 1000;
+  const theme    = document.getElementById('themeSelect').value;
+  slideDur       = parseInt(document.getElementById('speedInput').value) * 1000;
+  lastPromptTopic = script.substring(0, 300);
+
   document.getElementById('genBtn').disabled = true;
   document.getElementById('loading').classList.add('show');
-  const msgs = ['AI is reading your script…','Deciding how many slides you need…','Designing layouts for each section…','Writing specific slide content…','Building your presentation…'];
+
   let mi = 0;
-  const mt = setInterval(function(){ document.getElementById('loadSub').textContent = msgs[Math.min(mi++, msgs.length-1)]; }, 1800);
+  function rotateMsgs() {
+    const [title, sub] = LOAD_MSGS[Math.min(mi++, LOAD_MSGS.length - 1)];
+    document.getElementById('loadTitle').textContent = title;
+    document.getElementById('loadSub').textContent   = sub;
+  }
+  rotateMsgs();
+  const mt = setInterval(rotateMsgs, 2200);
+
+  const startTime = Date.now();
+
   try {
     const json = await callGeminiViaProxy(script, theme);
     slides = json.slides;
     clearInterval(mt);
     document.getElementById('loading').classList.remove('show');
+
+    // Log to Supabase (non-blocking)
+    logToSupabase(script, slides, Date.now() - startTime);
+
     launchPres();
   } catch(e) {
     clearInterval(mt);
     document.getElementById('loading').classList.remove('show');
     document.getElementById('genBtn').disabled = false;
     alert('Error generating slides:\n\n' + e.message);
-    console.error(e);
+  }
+}
+
+// ── ANALYTICS LOGGING (via Cloudflare Worker — no credentials in HTML) ──────
+async function logToSupabase(script, slides, durationMs) {
+  try {
+    const payload = {
+      topic:        script.substring(0, 500),
+      slide_count:  slides.length,
+      theme:        document.getElementById('themeSelect').value,
+      duration_ms:  durationMs,
+      referrer:     document.referrer || 'direct',
+      user_agent:   navigator.userAgent,
+      language:     navigator.language,
+      screen:       screen.width + 'x' + screen.height,
+      timezone:     Intl.DateTimeFormat().resolvedOptions().timeZone,
+      slides_json:  JSON.stringify(slides),
+    };
+    await fetch(LOG_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch(e) {
+    console.warn('Analytics log failed (non-critical):', e.message);
   }
 }
 
 // ── PROXY CALL ────────────────────────────────────────────────────────────────
-// Sends the assembled prompt to the Cloudflare Worker; the Worker holds the key.
 async function callGeminiViaProxy(script, theme) {
   const prompt = buildPrompt(script, theme);
-
   const res = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt }),
   });
-
   if (!res.ok) {
-    let msg = `Worker error ${res.status}`;
+    let msg = 'Worker error ' + res.status;
     try { const j = await res.json(); msg = j.error || msg; } catch(e) {}
     throw new Error(msg);
   }
-
   const data = await res.json();
   if (data.error) throw new Error(data.error);
-
-  const raw = data.result.trim();
-  return parseGeminiJson(raw);
+  return parseGeminiJson(data.result.trim());
 }
 
-// ── BUILD PROMPT (unchanged logic, extracted for reuse) ───────────────────────
+// ── BUILD PROMPT ──────────────────────────────────────────────────────────────
 function buildPrompt(script, theme) {
-  const themeGuide = getThemeGuide(theme);
-
-  const systemPrompt = `You are a professional presentation designer who creates slide decks from video scripts. You always respond with ONLY valid JSON — no explanation, no markdown fences, just the raw JSON object.`;
-
-  const userPrompt = buildUserPrompt(script, themeGuide);
-  return systemPrompt + '\n\n' + userPrompt;
-}
-
-// ── THEME GUIDE ───────────────────────────────────────────────────────────────
-function getThemeGuide(theme) {
-  return ({
-    'dark': 'Dark backgrounds (#0d1117, #1a1a2e, #0f172a, #111827). Light text (#f0f4ff, #e2e8f0). Bold accent colors (electric blue, neon green, warm amber, rose). Each slide a different dark shade.',
-    'light': 'Light/white/cream backgrounds (#ffffff, #f7f6f2, #f8fafc, #fffbf0). Dark ink text (#0d1117, #1e293b). Subtle colored accents. Clean and airy.',
-    'colorful': 'Each slide gets a bold, vivid gradient or saturated color as background. High contrast. Every slide visually distinct and vibrant.',
-    'minimal': 'Off-white or light gray backgrounds. Minimal color, mostly neutrals. Strong typography carries the design. Occasional single accent color.',
-    'auto': 'Mix dark and light slides for visual variety. No two consecutive slides should have the same color palette. Make it feel professionally designed and varied.'
+  script = script.replace(/short speaker notes[^\.\n]*/gi,'').replace(/speaker notes[^\.\n]*/gi,'').trim();
+  const themeGuide = ({
+    'dark':     'Dark backgrounds (#0d1117, #1a1a2e, #0f172a, #111827). Light text (#f0f4ff, #e2e8f0). Bold accent colors.',
+    'light':    'Light/white/cream backgrounds (#ffffff, #f7f6f2, #f8fafc). Dark ink text (#0d1117, #1e293b). Subtle accents.',
+    'colorful': 'Each slide gets a bold vivid background. High contrast. Every slide visually distinct.',
+    'minimal':  'Off-white or light gray backgrounds. Minimal color. Strong typography. Occasional accent.',
+    'auto':     'Mix dark and light slides for visual variety. No two consecutive slides the same palette.',
   })[theme] || 'Mix dark and light slides for visual variety.';
-}
 
-// ── USER PROMPT ───────────────────────────────────────────────────────────────
-function buildUserPrompt(script, themeGuide) {
-  return `You are creating a YouTube video slide deck. Read the script below and generate slides.
+  return `You are a professional presentation designer. Read the script/topic and generate a slide deck. Respond with ONLY valid JSON.
 
-=== SCRIPT / TOPIC ===
+=== SCRIPT ===
 ${script}
-=== END SCRIPT ===
+=== END ===
 
-=== THEME INSTRUCTION ===
+=== THEME ===
 ${themeGuide}
-=== END THEME ===
 
-=== CRITICAL RULES — READ CAREFULLY ===
+=== RULES ===
+1. SLIDE COUNT: Count distinct topics. Min 4, max 18. Count the content, do not default to 10.
+2. NO PLACEHOLDERS: Use actual words, numbers, ideas from the script only.
+3. VARY TYPES: No two adjacent slides same type. Only use types that fit the content.
+4. VARY COLORS: Every slide a different bg hex value.
+5. ALL FIELDS FILLED: No empty strings, no nulls.
 
-RULE 1 — SLIDE COUNT: Count the distinct topics/sections in the script. Create EXACTLY that many slides (minimum 4, maximum 18). A short topic description = 4-6 slides. A full script with 5 sections = 8-12 slides. A long detailed script = 13-18 slides. DO NOT default to 10 or 12. Count the content.
+=== TYPES ===
+"hook"     data:{eyebrow,h1,sub,stats:[{num,label}]}
+"section"  data:{num:"01",label,h2,body}
+"list"     data:{eyebrow,h,sub,items:[{title,desc}]} 3-6 items
+"compare"  data:{eyebrow,h,colA:{label,items:[]},colB:{label,items:[]}}
+"quote"    data:{text,author,role}
+"stats"    data:{eyebrow,h,stats:[{num,label,desc}]} 2-4 stats
+"tips"     data:{eyebrow,h,tips:[{icon,title,body}]} 2-4 tips
+"code"     data:{eyebrow,h,desc,code} only if script has real code
+"timeline" data:{eyebrow,h,steps:[{title,desc}]} 3-6 steps
+"outro"    data:{logo,tagline,cta1,cta2,stats:[{num,label}]}
 
-RULE 2 — NO TEMPLATES: Every slide must contain ACTUAL words, numbers, and ideas from the script. Never write placeholder text. If the script says "460 hours", use "460 hours". If it mentions "async/await", use "async/await".
-
-RULE 3 — VARY SLIDE TYPES: Look at the sequence below — no two adjacent slides should use the same type. Use only the types that NATURALLY FIT the content. If the script has no code, use zero "code" slides. If it has no comparison, use zero "compare" slides.
-
-RULE 4 — VARY COLORS: Every slide must have a DIFFERENT background color. No two slides should share the same bg hex value.
-
-RULE 5 — EVERY FIELD MUST BE FILLED: Every "data" field you include must have real content from the script. Empty strings, null values, or placeholder text like "Description here" are forbidden.
-
-=== SLIDE TYPE REFERENCE (use only what fits) ===
-
-"hook" — Title slide. Use ONCE at start only.
-  data: { eyebrow, h1, sub, stats:[{num,label}] }
-
-"section" — Chapter break between major topics.
-  data: { num:"01", label, h2, body }
-
-"list" — Numbered items in two columns.
-  data: { eyebrow, h, sub, items:[{title,desc}] }  (3-6 items)
-
-"compare" — Two columns side by side.
-  data: { eyebrow, h, colA:{label,items:[]}, colB:{label,items:[]} }
-
-"quote" — One powerful sentence full-screen.
-  data: { text, author, role }
-
-"stats" — Grid of numbers with context.
-  data: { eyebrow, h, stats:[{num,label,desc}] }  (2-4 stats)
-
-"tips" — Emoji-icon tip cards in a grid.
-  data: { eyebrow, h, tips:[{icon,title,body}] }  (2-4 tips)
-
-"code" — Left explanation + right code block. Only if script has actual code/config.
-  data: { eyebrow, h, desc, code }
-
-"timeline" — Vertical ordered steps.
-  data: { eyebrow, h, steps:[{title,desc}] }  (3-6 steps)
-
-"outro" — Closing slide. Use ONCE at end only.
-  data: { logo, tagline, cta1, cta2, stats:[{num,label}] }
-
-=== JSON FORMAT ===
-Return ONLY this JSON, nothing else:
-
-{
-  "slides": [
-    {
-      "type": "hook",
-      "bg": "#0d1117",
-      "textColor": "#f0f4ff",
-      "accentColor": "#3b82f6",
-      "data": { ... fields for this type ... }
-    },
-    {
-      "type": "...",
-      "bg": "...",
-      "textColor": "...",
-      "accentColor": "...",
-      "data": { ... }
-    }
-  ]
+=== OUTPUT ===
+{"slides":[{"type":"hook","bg":"#0d1117","textColor":"#f0f4ff","accentColor":"#3b82f6","data":{...}},...]}`
 }
 
-Return ONLY raw JSON. No explanation, no markdown fences, no newlines inside string values. All strings on one line. Start with { end with }.`;
-}
-
-// ── JSON CLEANUP (robust) ───────────────────────────────────────────────────
+// ── JSON REPAIR ───────────────────────────────────────────────────────────────
 function parseGeminiJson(raw) {
-  function fixJson(str) {
+  function fix(str) {
     str = str.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
-    const start = str.indexOf('{'), end = str.lastIndexOf('}');
-    if (start !== -1 && end !== -1) str = str.substring(start, end + 1);
+    const s = str.indexOf('{'), e = str.lastIndexOf('}');
+    if (s !== -1 && e !== -1) str = str.substring(s, e + 1);
     str = str.replace(/,\s*([}\]])/g, '$1');
     let out = '', inStr = false, esc = false;
     for (let i = 0; i < str.length; i++) {
@@ -451,136 +390,122 @@ function parseGeminiJson(raw) {
       if (esc) { out += c; esc = false; continue; }
       if (c === '\\') { esc = true; out += c; continue; }
       if (c === '"') { inStr = !inStr; out += c; continue; }
-      if (inStr) {
-        if (c === '\n') { out += '\\n'; continue; }
-        if (c === '\r') { out += '\\r'; continue; }
-        if (c === '\t') { out += '\\t'; continue; }
+      if (inStr && c.charCodeAt(0) < 0x20) {
+        if (c==='\n'){out+='\\n';continue;}
+        if (c==='\r'){out+='\\r';continue;}
+        if (c==='\t'){out+='\\t';continue;}
+        out += '\\u' + c.charCodeAt(0).toString(16).padStart(4,'0'); continue;
       }
       out += c;
     }
     return out;
   }
-  const clean = fixJson(raw);
+  const clean = fix(raw);
   try { return JSON.parse(clean); } catch(e1) {
-    const lastSlide = clean.lastIndexOf('{"type"');
-    if (lastSlide > 100) {
-      const trimmed = clean.substring(0, lastSlide).replace(/,\s*$/, '') + ']}';
-      try { return JSON.parse(trimmed); } catch(e2) {}
-    }
+    // truncate at last complete slide
     try {
-      const m = clean.match(/"slides"\s*:\s*(\[[\s\S]*)/);
-      if (m) {
-        let arr = m[1];
-        const lc = arr.lastIndexOf('}');
-        arr = arr.substring(0, lc + 1);
-        if (!arr.trimEnd().endsWith(']')) arr += ']';
-        arr = arr.replace(/,\s*]$/, ']');
-        return { slides: JSON.parse(arr) };
+      const ls = clean.lastIndexOf('{"type"');
+      if (ls > 50) {
+        let d=0, end=-1;
+        for (let i=ls;i<clean.length;i++){if(clean[i]==='{')d++;else if(clean[i]==='}'){d--;if(d===0){end=i;break;}}}
+        if (end>ls) return JSON.parse(clean.substring(0,end+1)+']}');
+      }
+    } catch(e2) {}
+    // extract slide-by-slide
+    try {
+      const bi = clean.indexOf('[', clean.indexOf('"slides"'));
+      if (bi !== -1) {
+        const sl=[]; let i=bi+1;
+        while(i<clean.length){
+          while(i<clean.length&&/[\s,]/.test(clean[i]))i++;
+          if(clean[i]===']'||clean[i]==='}')break;
+          if(clean[i]!=='{')break;
+          let d=0,s=i,end=-1;
+          for(let j=i;j<clean.length;j++){if(clean[j]==='{')d++;else if(clean[j]==='}'){d--;if(d===0){end=j;break;}}}
+          if(end===-1)break;
+          try{sl.push(JSON.parse(clean.substring(s,end+1)));}catch(_){break;}
+          i=end+1;
+        }
+        if(sl.length>0) return {slides:sl};
       }
     } catch(e3) {}
-    throw new Error('AI returned invalid JSON. Try again. Detail: ' + e1.message);
+    throw new Error('AI returned invalid JSON. Try again. ' + e1.message);
   }
-}
-
-
-// ── LEGACY STUB (kept so nothing else in the file breaks) ────────────────────
-async function callGeminiForSlides(script, theme, apiKey) {
-  // All logic has moved to callGeminiViaProxy() above.
-  return callGeminiViaProxy(script, theme);
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
-function isLight(bg) {
-  if (!bg) return false;
-  const h = bg.replace('#','');
-  if (h.length < 6) return false;
-  const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
-  return (r*299+g*587+b*114)/1000 > 128;
+function isLight(bg){if(!bg)return false;const h=bg.replace('#','');if(h.length<6)return false;const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return(r*299+g*587+b*114)/1000>128;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function cardBg(bg){return isLight(bg)?'rgba(0,0,0,0.04)':'rgba(255,255,255,0.06)';}
+function cardBorder(bg){return isLight(bg)?'rgba(0,0,0,0.08)':'rgba(255,255,255,0.09)';}
+
+function watermark(textColor) {
+  const col = isLight ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)';
+  return '<div class="slide-watermark" style="color:'+col+'">'+WATERMARK_TEXT+'</div>';
 }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function cardBg(bg){ return isLight(bg) ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'; }
-function cardBorder(bg){ return isLight(bg) ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.09)'; }
 
 function renderSlide(s, i) {
-  const id = 'slide-' + i;
-  const t = s.type;
-  const d = s.data || {};
-  const tc = s.textColor || '#ffffff';
-  const ac = s.accentColor || '#3b82f6';
-  const st = 'background:' + (s.bg||'#0d1117') + ';color:' + tc + ';';
+  const id='slide-'+i, t=s.type, d=s.data||{};
+  const tc=s.textColor||'#ffffff', ac=s.accentColor||'#3b82f6';
+  const bg=s.bg||'#0d1117';
+  const st='background:'+bg+';color:'+tc+';';
+  const wm='<div class="slide-watermark" style="color:'+(isLight(bg)?'rgba(0,0,0,0.28)':'rgba(255,255,255,0.28)')+'">'+WATERMARK_TEXT+'</div>';
+  const cb=cardBg(bg), cbo=cardBorder(bg);
 
-  if (t === 'hook') {
-    const statsH = (d.stats||[]).map(function(x){ return '<div class="hstat" style="border-color:'+ac+'"><div class="hstat-num">'+x.num+'</div><div class="hstat-lbl">'+x.label+'</div></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="max-width:820px"><div class="hook-eyebrow">'+esc(d.eyebrow)+'</div><h1 class="hook-h1">'+esc(d.h1)+'</h1><p class="hook-sub">'+esc(d.sub)+'</p><div class="hook-stats">'+statsH+'</div></div></div></div>';
+  if(t==='hook'){
+    const sh=(d.stats||[]).map(x=>'<div class="hstat" style="border-color:'+ac+'"><div class="hstat-num">'+x.num+'</div><div class="hstat-lbl">'+x.label+'</div></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="max-width:820px"><div class="hook-eyebrow">'+esc(d.eyebrow)+'</div><h1 class="hook-h1">'+esc(d.h1)+'</h1><p class="hook-sub">'+esc(d.sub)+'</p><div class="hook-stats">'+sh+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'section') {
-    return '<div class="slide s-section" id="'+id+'" style="'+st+'"><div class="sec-bg-num">'+esc(d.num)+'</div><div class="slide-inner"><div style="max-width:700px;position:relative;z-index:1"><div class="sec-chip" style="color:'+ac+'">Section '+esc(d.num)+' — '+esc(d.label)+'</div><h2 class="sec-h2">'+esc(d.h2)+'</h2><p class="sec-body">'+esc(d.body)+'</p></div></div></div>';
+  if(t==='section'){
+    return '<div class="slide s-section" id="'+id+'" style="'+st+'"><div class="sec-bg-num">'+esc(d.num)+'</div><div class="slide-inner"><div style="max-width:700px;position:relative;z-index:1"><div class="sec-chip" style="color:'+ac+'">Section '+esc(d.num)+' — '+esc(d.label)+'</div><h2 class="sec-h2">'+esc(d.h2)+'</h2><p class="sec-body">'+esc(d.body)+'</p></div></div>'+wm+'</div>';
   }
-
-  if (t === 'list') {
-    const cb = cardBg(s.bg), cbo = cardBorder(s.bg);
-    const itemsH = (d.items||[]).map(function(it,ix){ return '<div class="li-card" style="background:'+cb+';border-color:'+cbo+'"><div class="li-n">'+String(ix+1).padStart(2,'0')+'</div><div><div class="li-title">'+esc(it.title)+'</div><div class="li-desc">'+esc(it.desc)+'</div></div></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="list-wrap"><div><div class="list-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="list-h">'+esc(d.h)+'</h2><p class="list-sub">'+esc(d.sub)+'</p></div><div class="list-items">'+itemsH+'</div></div></div></div>';
+  if(t==='list'){
+    const ih=(d.items||[]).map((it,ix)=>'<div class="li-card" style="background:'+cb+';border-color:'+cbo+'"><div class="li-n">'+String(ix+1).padStart(2,'0')+'</div><div><div class="li-title">'+esc(it.title)+'</div><div class="li-desc">'+esc(it.desc)+'</div></div></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="list-wrap"><div><div class="list-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="list-h">'+esc(d.h)+'</h2><p class="list-sub">'+esc(d.sub)+'</p></div><div class="list-items">'+ih+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'compare') {
-    const cb = cardBg(s.bg), cbo = cardBorder(s.bg);
-    const cbG = isLight(s.bg) ? 'rgba(16,185,129,0.07)' : 'rgba(16,185,129,0.1)';
-    const aH = (d.colA&&d.colA.items||[]).map(function(x){ return '<div class="cmp-row"><span>❌</span><span>'+esc(x)+'</span></div>'; }).join('');
-    const bH = (d.colB&&d.colB.items||[]).map(function(x){ return '<div class="cmp-row"><span>✅</span><span>'+esc(x)+'</span></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="width:100%;max-width:1100px"><div class="compare-header"><div class="compare-eyebrow">'+esc(d.eyebrow)+'</div><h2 class="compare-h">'+esc(d.h)+'</h2></div><div class="compare-grid"><div class="compare-col" style="background:'+cb+';border-color:'+cbo+'"><div class="col-label" style="color:#ef4444">'+esc(d.colA&&d.colA.label)+'</div>'+aH+'</div><div class="compare-col" style="background:'+cbG+';border-color:'+cbo+'"><div class="col-label" style="color:'+ac+'">'+esc(d.colB&&d.colB.label)+'</div>'+bH+'</div></div></div></div></div>';
+  if(t==='compare'){
+    const cbG=isLight(bg)?'rgba(16,185,129,0.07)':'rgba(16,185,129,0.1)';
+    const aH=(d.colA&&d.colA.items||[]).map(x=>'<div class="cmp-row"><span>❌</span><span>'+esc(x)+'</span></div>').join('');
+    const bH=(d.colB&&d.colB.items||[]).map(x=>'<div class="cmp-row"><span>✅</span><span>'+esc(x)+'</span></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="width:100%;max-width:1100px"><div class="compare-header"><div class="compare-eyebrow">'+esc(d.eyebrow)+'</div><h2 class="compare-h">'+esc(d.h)+'</h2></div><div class="compare-grid"><div class="compare-col" style="background:'+cb+';border-color:'+cbo+'"><div class="col-label" style="color:#ef4444">'+esc(d.colA&&d.colA.label)+'</div>'+aH+'</div><div class="compare-col" style="background:'+cbG+';border-color:'+cbo+'"><div class="col-label" style="color:'+ac+'">'+esc(d.colB&&d.colB.label)+'</div>'+bH+'</div></div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'quote') {
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="q-wrap"><span class="q-mark" style="color:'+ac+'">"</span><p class="q-text">'+esc(d.text)+'</p><div class="q-author">— '+esc(d.author)+(d.role?' · '+esc(d.role):'')+'</div></div></div></div>';
+  if(t==='quote'){
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="q-wrap"><span class="q-mark" style="color:'+ac+'">"</span><p class="q-text">'+esc(d.text)+'</p><div class="q-author">— '+esc(d.author)+(d.role?' · '+esc(d.role):'')+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'stats') {
-    const cols = Math.min((d.stats||[]).length, 4);
-    const cb = cardBg(s.bg), cbo = cardBorder(s.bg);
-    const sH = (d.stats||[]).map(function(x){ return '<div class="stat-card" style="background:'+cb+';border-color:'+cbo+'"><div class="stat-num" style="color:'+ac+'">'+esc(x.num)+'</div><div class="stat-lbl">'+esc(x.label)+'</div>'+(x.desc?'<div class="stat-desc">'+esc(x.desc)+'</div>':'')+'</div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:1.5rem;width:100%;max-width:1100px"><div class="stats-grid-header"><div class="stats-eyebrow">'+esc(d.eyebrow)+'</div><h2 class="stats-h">'+esc(d.h)+'</h2></div>'+sH+'</div></div></div>';
+  if(t==='stats'){
+    const cols=Math.min((d.stats||[]).length,4);
+    const sh=(d.stats||[]).map(x=>'<div class="stat-card" style="background:'+cb+';border-color:'+cbo+'"><div class="stat-num" style="color:'+ac+'">'+esc(x.num)+'</div><div class="stat-lbl">'+esc(x.label)+'</div>'+(x.desc?'<div class="stat-desc">'+esc(x.desc)+'</div>':'')+'</div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:1.5rem;width:100%;max-width:1100px"><div class="stats-grid-header"><div class="stats-eyebrow">'+esc(d.eyebrow)+'</div><h2 class="stats-h">'+esc(d.h)+'</h2></div>'+sh+'</div></div>'+wm+'</div>';
   }
-
-  if (t === 'tips') {
-    const cb = cardBg(s.bg), cbo = cardBorder(s.bg);
-    const tH = (d.tips||[]).map(function(x){ return '<div class="tip-card" style="background:'+cb+';border-color:'+cbo+'"><div class="tip-icon">'+esc(x.icon)+'</div><div class="tip-title">'+esc(x.title)+'</div><div class="tip-body">'+esc(x.body)+'</div></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="tips-wrap"><div class="tips-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="tips-h">'+esc(d.h)+'</h2><div class="tips-grid">'+tH+'</div></div></div></div>';
+  if(t==='tips'){
+    const th=(d.tips||[]).map(x=>'<div class="tip-card" style="background:'+cb+';border-color:'+cbo+'"><div class="tip-icon">'+esc(x.icon)+'</div><div class="tip-title">'+esc(x.title)+'</div><div class="tip-body">'+esc(x.body)+'</div></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="tips-wrap"><div class="tips-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="tips-h">'+esc(d.h)+'</h2><div class="tips-grid">'+th+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'code') {
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="code-wrap"><div><div class="code-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="code-h">'+esc(d.h)+'</h2><p class="code-desc">'+esc(d.desc)+'</p></div><div class="code-block" style="background:rgba(0,0,0,0.35);color:'+ac+'">'+esc(d.code||'')+'</div></div></div></div>';
+  if(t==='code'){
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="code-wrap"><div><div class="code-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="code-h">'+esc(d.h)+'</h2><p class="code-desc">'+esc(d.desc)+'</p></div><div class="code-block" style="background:rgba(0,0,0,0.35);color:'+ac+'">'+esc(d.code||'')+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'timeline') {
-    const sH = (d.steps||[]).map(function(x){ return '<div class="tl-item"><div class="tl-dot" style="background:'+ac+';border-color:'+ac+'"></div><div><div class="tl-title">'+esc(x.title)+'</div><div class="tl-desc">'+esc(x.desc)+'</div></div></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="tl-wrap"><div class="tl-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="tl-h">'+esc(d.h)+'</h2><div class="tl-items">'+sH+'</div></div></div></div>';
+  if(t==='timeline'){
+    const sh=(d.steps||[]).map(x=>'<div class="tl-item"><div class="tl-dot" style="background:'+ac+';border-color:'+ac+'"></div><div><div class="tl-title">'+esc(x.title)+'</div><div class="tl-desc">'+esc(x.desc)+'</div></div></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="tl-wrap"><div class="tl-eyebrow" style="color:'+ac+'">'+esc(d.eyebrow)+'</div><h2 class="tl-h">'+esc(d.h)+'</h2><div class="tl-items">'+sh+'</div></div></div>'+wm+'</div>';
   }
-
-  if (t === 'outro') {
-    const isL = isLight(s.bg);
-    const cta2bg = isL ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
-    const sH = (d.stats||[]).map(function(x){ return '<div class="ostat"><div class="ostat-num" style="color:'+ac+'">'+esc(x.num)+'</div><div class="ostat-lbl">'+esc(x.label)+'</div></div>'; }).join('');
-    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="outro-wrap"><div class="outro-logo" style="color:'+ac+'">'+(d.logo||'TechYatra')+'</div><p class="outro-tagline">'+esc(d.tagline)+'</p><div class="outro-actions"><div class="outro-cta" style="background:'+ac+';color:#fff">'+esc(d.cta1)+'</div><div class="outro-cta" style="background:'+cta2bg+';color:'+tc+'">'+esc(d.cta2)+'</div></div><div class="outro-stats">'+sH+'</div></div></div></div>';
+  if(t==='outro'){
+    const isL=isLight(bg), cta2bg=isL?'rgba(0,0,0,0.07)':'rgba(255,255,255,0.1)';
+    const sh=(d.stats||[]).map(x=>'<div class="ostat"><div class="ostat-num" style="color:'+ac+'">'+esc(x.num)+'</div><div class="ostat-lbl">'+esc(x.label)+'</div></div>').join('');
+    return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div class="outro-wrap"><div class="outro-logo" style="color:'+ac+'">'+(d.logo||'TechYatra')+'</div><p class="outro-tagline">'+esc(d.tagline)+'</p><div class="outro-actions"><div class="outro-cta" style="background:'+ac+';color:#fff">'+esc(d.cta1)+'</div><div class="outro-cta" style="background:'+cta2bg+';color:'+tc+'">'+esc(d.cta2)+'</div></div><div class="outro-stats">'+sh+'</div></div></div>'+wm+'</div>';
   }
-
-  // Unknown type fallback
-  return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="max-width:700px"><h2 style="font-family:\'Instrument Serif\',serif;font-size:2.5rem">'+esc(d.h1||d.h2||d.h||'Slide '+(i+1))+'</h2></div></div></div>';
+  return '<div class="slide" id="'+id+'" style="'+st+'"><div class="slide-inner"><div style="max-width:700px"><h2 style="font-family:\'Instrument Serif\',serif;font-size:2.5rem">'+esc(d.h1||d.h2||d.h||'Slide '+(i+1))+'</h2></div></div>'+wm+'</div>';
 }
 
 // ── LAUNCH / NAV ──────────────────────────────────────────────────────────────
 function launchPres() {
-  const stage = document.getElementById('stage');
-  stage.innerHTML = slides.map(function(s,i){ return renderSlide(s,i); }).join('');
+  document.getElementById('stage').innerHTML = slides.map((s,i)=>renderSlide(s,i)).join('');
   document.getElementById('setup').style.display = 'none';
   document.getElementById('presenter').classList.add('show');
-  cur = 0;
-  showSlide(0);
+  cur = 0; showSlide(0);
 }
 
 function showSlide(idx) {
-  document.querySelectorAll('.slide').forEach(function(s,i){ s.classList.toggle('active', i===idx); });
+  document.querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('active',i===idx));
   cur = idx;
   const t = slides.length;
   document.getElementById('slideNum').textContent = (idx+1)+' / '+t;
@@ -589,64 +514,69 @@ function showSlide(idx) {
 
 function next(){ if(cur<slides.length-1) showSlide(cur+1); }
 function prev(){ if(cur>0) showSlide(cur-1); }
-function seekTrack(e){ const r=e.currentTarget.getBoundingClientRect(); showSlide(Math.floor((e.clientX-r.left)/r.width*slides.length)); }
+function seekTrack(e){ const r=e.currentTarget.getBoundingClientRect(); showSlide(Math.max(0,Math.min(slides.length-1,Math.floor((e.clientX-r.left)/r.width*slides.length)))); }
 
 function toggleAuto() {
-  if (isAuto) {
-    clearInterval(autoTimer); isAuto=false;
-    document.getElementById('autoBtn').textContent='▶ Auto';
-  } else {
+  if(isAuto){ clearInterval(autoTimer); isAuto=false; document.getElementById('autoBtn').textContent='▶ Auto'; }
+  else {
     isAuto=true; document.getElementById('autoBtn').textContent='⏸ Pause';
-    autoTimer = setInterval(function(){ if(cur<slides.length-1) next(); else{ clearInterval(autoTimer); isAuto=false; document.getElementById('autoBtn').textContent='▶ Auto'; } }, slideDur);
+    autoTimer=setInterval(()=>{ if(cur<slides.length-1) next(); else{ clearInterval(autoTimer); isAuto=false; document.getElementById('autoBtn').textContent='▶ Auto'; } }, slideDur);
   }
 }
 
 function toggleFS(){ if(!document.fullscreenElement) document.getElementById('presenter').requestFullscreen(); else document.exitFullscreen(); }
-function exitPres(){ if(isAuto){clearInterval(autoTimer);isAuto=false;} document.getElementById('presenter').classList.remove('show'); document.getElementById('setup').style.display='flex'; document.getElementById('genBtn').disabled=false; }
 
-// ── DOWNLOAD ──────────────────────────────────────────────────────────────────
-function getFmt(){ return document.getElementById('dlFormat').value||'png'; }
+function exitPres(){
+  if(isAuto){ clearInterval(autoTimer); isAuto=false; }
+  document.getElementById('presenter').classList.remove('show');
+  document.getElementById('setup').style.display='flex';
+  document.getElementById('genBtn').disabled=false;
+}
 
+// ── CAPTURE SLIDE ─────────────────────────────────────────────────────────────
 async function capSlide(idx) {
   showSlide(idx);
-  await new Promise(function(r){ setTimeout(r,700); });
+  await new Promise(r=>setTimeout(r,600));
   const el = document.querySelector('.slide.active');
   const bg = (slides[idx]&&slides[idx].bg)||'#0d1117';
   return await html2canvas(el,{ backgroundColor:bg, scale:2, useCORS:true, logging:false });
 }
 
+// ── DOWNLOAD SINGLE PNG ───────────────────────────────────────────────────────
 async function downloadSingle() {
-  const btn = document.getElementById('dlSingleBtn');
+  const btn=document.getElementById('dlSingleBtn');
   btn.disabled=true; btn.textContent='⏳…';
-  try{
-    const c = await capSlide(cur);
-    const fmt = getFmt();
-    const a = document.createElement('a');
-    a.download='Slide_'+String(cur+1).padStart(2,'0')+'.'+fmt;
-    a.href=c.toDataURL(fmt==='jpeg'?'image/jpeg':'image/png',0.95);
-    a.click();
-  } catch(e){ alert('Capture failed'); }
-  btn.disabled=false; btn.textContent='⬇ This Slide';
+  try {
+    const c=await capSlide(cur), a=document.createElement('a');
+    a.download='Slide_'+String(cur+1).padStart(2,'0')+'.png';
+    a.href=c.toDataURL('image/png',0.95); a.click();
+  } catch(e){ alert('Capture failed: '+e.message); }
+  btn.disabled=false; btn.textContent='⬇ PNG';
 }
 
-async function downloadAll() {
-  const btn = document.getElementById('dlBtn');
+// ── DOWNLOAD ALL AS PDF ───────────────────────────────────────────────────────
+async function downloadPDF() {
+  const btn=document.getElementById('dlPdfBtn');
   btn.disabled=true;
-  const fmt = getFmt();
-  const prev = cur;
-  for(let i=0;i<slides.length;i++){
-    btn.textContent='⏳ '+(i+1)+'/'+slides.length;
-    try{
-      const c = await capSlide(i);
-      const a = document.createElement('a');
-      a.download='Slide_'+String(i+1).padStart(2,'0')+'.'+fmt;
-      a.href=c.toDataURL(fmt==='jpeg'?'image/jpeg':'image/png',0.95);
-      a.click();
-      await new Promise(function(r){ setTimeout(r,400); });
-    } catch(e){ console.warn('Slide',i,'failed',e); }
-  }
+  const prev=cur;
+  try {
+    const { jsPDF } = window.jspdf;
+    // A4 landscape in mm: 297 x 210
+    const pdf = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+    const W=297, H=210;
+
+    for(let i=0;i<slides.length;i++){
+      btn.textContent='⏳ '+( i+1)+'/'+slides.length;
+      const canvas = await capSlide(i);
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      if(i>0) pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,0,W,H);
+    }
+
+    pdf.save('TechYatra_Slides.pdf');
+  } catch(e){ alert('PDF export failed: '+e.message); }
   showSlide(prev);
-  btn.disabled=false; btn.textContent='⬇ All Slides';
+  btn.disabled=false; btn.textContent='⬇ PDF';
 }
 
 // ── KEYBOARD ──────────────────────────────────────────────────────────────────
