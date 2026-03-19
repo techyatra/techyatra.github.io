@@ -2,7 +2,6 @@
 <html lang="en">
 <head data-theme="light">
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nishant Gupta — TechYatra | Senior .NET Developer</title>
   <meta name="description" content="Nishant Gupta — Full Stack Developer (.NET, Angular &amp; Azure) and YouTuber at TechYatra."/>
@@ -34,34 +33,11 @@ img, video, iframe { max-width:100%; height:auto; }
     /* NAV */
     nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:0 5rem; height:68px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.96); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); box-shadow:0 1px 12px rgba(0,0,0,0.06); transition: all 0.3s; }
 nav .nav-logo { order:0; }
-nav .nav-toggle { order:2; }
+nav .nav-toggle { order:1; }
 nav .nav-links { order:1; }
-nav .subscribe-btn { order:3; margin-left:0.5rem; }
-    @media (max-width:768px) {
-  .btn-primary { margin-left:0.5rem; padding:0.5rem 0.8rem; font-size:0.88rem; }
-  .subscribe-btn { margin-left:0.5rem; }
-  .hero { padding:6rem 1.5rem 3rem; }
-  .hero-grid { grid-template-columns:1fr; gap:2rem; text-align:center; }
-  .hero-card { width:100%; max-width:320px; margin:0 auto; }
-  .hero-card-img { height:auto; max-height:380px; }
-  .hero-btns { justify-content:center; }
-  .hero-sub { margin:0 auto 2rem; }
-}
+nav .subscribe-btn { order:2; margin-left:0.5rem; }
+    @media (max-width:768px) { .btn-primary { margin-left:0.5rem; padding:0.5rem 0.8rem; font-size:0.88rem; } .subscribe-btn { margin-left:0.5rem; } }
     [data-theme="dark"] nav { background:rgba(26,32,44,0.96); }
-    .visitor-bar {
-      position:fixed;top:68px;left:0;right:0;z-index:99;
-      display:flex;align-items:center;justify-content:center;
-      padding:0.35rem 1rem;
-      background:rgba(255,255,255,0.85);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--border);
-      font-size:0.75rem;color:var(--text2);font-weight:600;
-      gap:0.4rem;letter-spacing:0.02em;
-      transition:background 0.3s;
-    }
-    [data-theme="dark"] .visitor-bar { background:rgba(26,32,44,0.85); }
-    .visitor-bar .vb-dot { width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s infinite;flex-shrink:0; }
-    .visitor-bar .vb-num { color:var(--blue);font-weight:800; }
     .nav-logo { font-family:'Fraunces',serif; font-weight:800; font-size:1.4rem; color:var(--blue); text-decoration:none; }
     .nav-logo span { color:var(--navy); }
     .nav-links { display:flex; gap:2.5rem; list-style:none; }
@@ -90,7 +66,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     @media (max-width:768px) { .nav-toggle { display:block; } .nav-links.open { display:flex; } }
 
     /* HERO */
-    .hero { min-height:100vh; display:flex; align-items:center; padding:9rem 5rem 5rem; background:linear-gradient(160deg,#ffffff 0%,#eff6ff 50%,#dbeafe 100%); position:relative; overflow:hidden; }
+    .hero { min-height:100vh; display:flex; align-items:center; padding:8rem 5rem 5rem; background:linear-gradient(160deg,#ffffff 0%,#eff6ff 50%,#dbeafe 100%); position:relative; overflow:hidden; }
     [data-theme="dark"] .hero { background:linear-gradient(160deg,#0f1419 0%,#1a2c4a 50%,#162e4a 100%); }
     .hero::before { content:''; position:absolute; top:-100px; right:-100px; width:600px; height:600px; background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
     .hero-grid { display:grid; grid-template-columns:1fr auto; gap:6rem; align-items:center; max-width:1200px; margin:0 auto; width:100%; position:relative; z-index:1; }
@@ -107,6 +83,8 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .hero-stats { display:inline-flex; gap:2.5rem; padding:1.5rem 2rem; background:#fff; border-radius:14px; box-shadow:var(--shadow); border:1px solid var(--border); animation:fadeInUp 0.8s ease 0.4s both; }
 [data-theme="dark"] .hero-stats { background:var(--card); }
 @media (max-width:768px) { .hero-stats { flex-direction:column; align-items:center; gap:1rem; } }
+
+    [data-theme="dark"] .hero-stats { background:var(--card); }
     .stat-item { text-align:center; }
     .stat-num { font-family:'Fraunces',serif; font-size:1.9rem; font-weight:800; color:var(--blue); line-height:1; }
     .stat-label { font-size:0.72rem; color:var(--text3); font-weight:600; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.06em; }
@@ -115,14 +93,14 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     /* ensure the card never exceeds its container on tiny screens */
     .hero-card { max-width:100%; }
     [data-theme="dark"] .hero-card { background:var(--card); }
-    .hero-card-img { width:100%; height:auto; max-height:420px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:contain; object-position:center top; }
+    .hero-card-img { width:100%; height:280px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:block; object-fit:cover; object-position:top; }
     .hero-card-info { padding:1.2rem; border-top:1px solid var(--border); }
     .hero-card-name { font-family:'Fraunces',serif; font-weight:700; font-size:1rem; color:var(--navy); }
     .hero-card-role { font-size:0.78rem; color:var(--text2); margin-top:0.2rem; }
     .hero-card-tag { display:inline-flex; align-items:center; gap:0.3rem; background:#dcfce7; color:#166534; font-size:0.72rem; font-weight:700; padding:0.25rem 0.6rem; border-radius:100px; margin-top:0.6rem; }
 
     /* SECTIONS */
-    section { padding:4rem 5rem; }
+    section { padding:6rem 5rem; }
     .section-inner { max-width:1200px; margin:0 auto; }
     .chip { display:inline-flex; background:var(--blue-pale); color:var(--blue); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.9rem; border-radius:100px; margin-bottom:1rem; }
     .section-title { font-family:'Fraunces',serif; font-size:clamp(1.8rem,3vw,2.6rem); font-weight:800; color:var(--navy); letter-spacing:-0.03em; line-height:1.1; margin-bottom:0.8rem; }
@@ -163,7 +141,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .project-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1rem; }
     .project-tag { background:var(--blue-pale); color:var(--blue); font-size:0.7rem; padding:0.25rem 0.6rem; border-radius:4px; font-weight:600; }
     .project-link { color:var(--blue); font-weight:700; text-decoration:none; transition:all 0.2s; }
-    .project-link:hover { opacity:0.75; }
+    .project-link:hover { gap:0.5rem; }
 
     /* TESTIMONIALS */
     #testimonials { background:var(--bg); }
@@ -177,7 +155,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
 
     /* SKILLS */
     #skills { background:var(--bg); }
-    .skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.2rem; }
+    .skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.2rem; }
     .skill-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.4rem; transition:all 0.25s; box-shadow:var(--shadow); }
     .skill-card:hover { border-color:#bfdbfe; transform:translateY(-3px); box-shadow:var(--shadow-lg); }
     .skill-icon { font-size:1.7rem; margin-bottom:0.7rem; }
@@ -189,26 +167,17 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     #blog { background:var(--bg2); }
     /* ── Blog Grid ─────────────────────────────── */
     .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
-    @media (max-width:900px) { .blog-grid { grid-template-columns:repeat(2,1fr); } }
-    @media (max-width:600px) { .blog-grid { grid-template-columns:1fr; } }
-    .blog-grid .blog-card.featured { grid-column:1 / -1; flex-direction:row; align-items:stretch; }
-    .blog-grid .blog-card.featured .blog-img-wrap { width:45%; flex-shrink:0; position:relative; overflow:hidden; min-height:240px; }
-    .blog-grid .blog-card.featured .blog-card-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center center; }
-    .blog-grid .blog-card.featured .blog-card-img-ph { position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:3rem; background:linear-gradient(135deg,#dbeafe,#eff6ff); }
-    .blog-grid .blog-card.featured .blog-body { padding:2rem 2.2rem; justify-content:center; }
-    .blog-grid .blog-card.featured .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
-    .blog-grid .blog-card.featured .blog-excerpt { -webkit-line-clamp:4; font-size:0.88rem; }
-    .blog-grid .blog-card.featured .featured-badge { display:inline-block; }
-    /* mobile: stack featured card */
-    @media (max-width:768px) {
-      .blog-grid .blog-card.featured { flex-direction:column; }
-      .blog-grid .blog-card.featured .blog-img-wrap { width:100%; min-height:0; padding-bottom:56.25%; }
-      .blog-grid .blog-card.featured .blog-body { padding:1.4rem 1.5rem; }
-    }
+    .blog-grid .blog-card:first-child { grid-column:1 / -1; flex-direction:row; max-height:280px; }
+    .blog-grid .blog-card:first-child .blog-card-img { width:45%; height:280px; flex-shrink:0; object-position:top; }
+    .blog-grid .blog-card:first-child .blog-card-img-ph { width:45%; height:280px; flex-shrink:0; }
+    .blog-grid .blog-card:first-child .blog-body { padding:2rem 2.2rem; justify-content:center; }
+    .blog-grid .blog-card:first-child .blog-title { font-size:1.3rem; line-height:1.35; -webkit-line-clamp:3; }
+    .blog-grid .blog-card:first-child .blog-excerpt { -webkit-line-clamp:4; font-size:0.88rem; }
+    .blog-grid .blog-card:first-child .featured-badge { display:inline-block; }
 
     .blog-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.28s cubic-bezier(.4,0,.2,1); cursor:pointer; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(15,31,64,0.07); }
     .blog-card:hover { border-color:#93c5fd; transform:translateY(-5px); box-shadow:0 12px 40px rgba(59,130,246,0.13); }
-    .blog-card-img { width:100%; height:195px; object-fit:cover; object-position:center; display:block; background:var(--bg3); transition:transform 0.4s ease; }
+    .blog-card-img { width:100%; height:195px; object-fit:cover; object-position:top; display:block; background:var(--bg3); transition:transform 0.4s ease; }
     .blog-card:hover .blog-card-img { transform:scale(1.03); }
     .blog-card-img-ph { width:100%; height:195px; background:linear-gradient(135deg,#dbeafe,#eff6ff); display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
     .blog-img-wrap { overflow:hidden; position:relative; flex-shrink:0; }
@@ -222,7 +191,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .blog-read { color:var(--blue); font-weight:700; font-size:0.75rem; display:flex; align-items:center; gap:0.3rem; }
     .blog-read::after { content:'→'; transition:transform 0.2s; }
     .blog-card:hover .blog-read::after { transform:translateX(4px); }
-    .blog-views { font-size:0.72rem; color:var(--text3); font-weight:600; }
+    .blog-read { color:var(--blue); font-weight:700; }
     .loading-msg { grid-column:1/-1; text-align:center; color:var(--text2); padding:3rem; }
 
     /* BLOG MODAL */
@@ -279,7 +248,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .yt-date { font-size:0.76rem; color:var(--text3); }
 
     /* SUBSCRIBE */
-    #subscribe { background:var(--blue); padding:4rem 5rem; color:#fff; }
+    #subscribe { background:var(--blue); padding:5rem; color:#fff; }
     .sub-inner { max-width:620px; margin:0 auto; text-align:center; }
     .sub-chip { display:inline-flex; background:rgba(255,255,255,0.15); color:#fff; font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.9rem; border-radius:100px; margin-bottom:1rem; }
     #subscribe .section-title { color:#fff; }
@@ -287,13 +256,12 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .sub-form { display:flex; gap:0.8rem; }
     .sub-input { flex:1; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:0.85rem 1.2rem; border-radius:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; outline:none; transition:all 0.2s; }
     .sub-input::placeholder { color:rgba(255,255,255,0.6); }
-    [data-theme="dark"] .sub-input { background:rgba(255,255,255,0.1); }
     .sub-input:focus { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.6); }
     .btn-white { background:#fff; color:var(--blue); font-weight:700; font-size:0.88rem; padding:0.85rem 1.8rem; border-radius:8px; border:none; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:all 0.2s; white-space:nowrap; }
     .btn-white:hover { background:#dbeafe; }
 
     /* CTA SECTION */
-    #cta { background:linear-gradient(135deg,var(--blue),#6366f1); padding:4rem 5rem; color:#fff; text-align:center; }
+    #cta { background:linear-gradient(135deg,var(--blue),#6366f1); padding:5rem; color:#fff; text-align:center; }
     .cta-inner { max-width:700px; margin:0 auto; }
     .cta-subtitle { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; opacity:0.9; margin-bottom:1rem; }
     .cta-title { font-family:'Fraunces',serif; font-size:2.2rem; font-weight:800; margin-bottom:1rem; line-height:1.2; }
@@ -337,17 +305,13 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     .footer-links a:hover { color:#fff; }
 
     /* FADE */
-    .fade-up { opacity:0; transform:translateY(20px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    .fade-up { opacity:0; transform:translateY(24px); transition:opacity 0.6s ease, transform 0.6s ease; }
     .fade-up.visible { opacity:1; transform:none; }
-    /* Safety fallback — if observer never fires, reveal after 0.8s */
-    @keyframes fadeUpFallback { to { opacity:1; transform:none; } }
-    .fade-up { animation:fadeUpFallback 0.5s ease 0.8s forwards; }
-    .fade-up.visible { animation:none; }
 
     /* MOBILE */
     @media (max-width:768px) {
       nav { padding:0 1.5rem; } .nav-links { display:none; }
-      section { padding:3rem 1.5rem; } #subscribe { padding:3rem 1.5rem; }
+      section { padding:4rem 1.5rem; } #subscribe { padding:4rem 1.5rem; }
       .hero { padding:7rem 1.5rem 4rem; }
       .hero-grid { grid-template-columns:1fr; gap:2rem; }
       .hero-sub { max-width:100%; }
@@ -356,7 +320,10 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
       .sub-form { flex-direction:column; }
       footer { flex-direction:column; gap:1rem; text-align:center; padding:2rem 1.5rem; }
       .blog-grid { grid-template-columns:1fr; }
-      /* featured card mobile handled above */
+      .blog-grid .blog-card:first-child { flex-direction:column; max-height:none; }
+      .blog-grid .blog-card:first-child .blog-card-img { width:100%; height:195px; }
+      .blog-grid .blog-card:first-child .blog-card-img-ph { width:100%; height:195px; }
+      .blog-grid .blog-card:first-child .blog-body { padding:1.4rem 1.5rem; }
       .modal-content { padding:1.5rem; }
       .modal-title { font-size:1.4rem; }
 
@@ -374,14 +341,6 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
           .stat-div { display:none; }
         }
       }
-
-    /* PAGINATION */
-    .pagination { display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-top:2.5rem; flex-wrap:wrap; }
-    .page-btn { min-width:40px; height:40px; padding:0 0.6rem; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--text2); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-    .page-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-pale); }
-    .page-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 2px 8px rgba(26,86,219,0.3); }
-    .page-btn:disabled { opacity:0.4; cursor:not-allowed; pointer-events:none; }
-    .page-ellipsis { color:var(--text3); font-size:0.9rem; padding:0 0.2rem; }
   </style>
 </head>
 <body>
@@ -392,6 +351,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
+    <li><a href="#tools">Tools</a></li>
     <li><a href="https://techyatra.hashnode.dev" target="_blank">Blog</a></li>
     <li><a href="#youtube">YouTube</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -401,11 +361,6 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
     <span class="subscribe-text">Subscribe</span>
   </a>
 </nav>
-
-<div class="visitor-bar" id="visitorBar" style="display:none;">
-  <div class="vb-dot"></div>
-  <span><span class="vb-num" id="visitor-count">—</span> people have visited this portfolio</span>
-</div>
 
 <section class="hero">
   <div class="hero-grid">
@@ -417,7 +372,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
         <a href="#blog" class="btn-primary">📖 Read Blog</a>
         <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="btn-secondary">▶ Watch Videos</a>
       </div>
-      <div class="hero-stats" id="hero-stats">
+      <div class="hero-stats">
         <div class="stat-item"><div class="stat-num">9+</div><div class="stat-label">Years Exp.</div></div>
         <div class="stat-div"></div>
         <div class="stat-item"><div class="stat-num">230+</div><div class="stat-label">YT Videos</div></div>
@@ -460,39 +415,17 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
           <div class="why-title">Developer Advocate</div>
           <div class="why-desc">230+ video tutorials, clear documentation, and developer-first thinking.</div>
         </div>
-
+        <div class="why-card">
+          <div class="why-icon">⚡</div>
+          <div class="why-title">Performance</div>
+          <div class="why-desc">Optimized systems for latency, cost, and scalability.</div>
+        </div>
       </div>
     </section>
 
 
     <!-- Testimonials -->
-    <section id="testimonials" class="fade-up">
-      <div class="section-title">Testimonials</div>
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">"Nishant निर्माण एक robust analytics platform - on time delivery और superb quality के साथ।"</div>
-          <div class="testimonial-author">अरुण शर्मा</div>
-          <div class="testimonial-role">CTO, टेक इनोवेशन्स</div>
-        </div>
-        <div class="testimonial-card">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">“Clear communicator and excellent mentor — our team productivity doubled.”</div>
-          <div class="testimonial-author">Priya Singh</div>
-          <div class="testimonial-role">Engineering Lead, DataFlow</div>
-        </div>
-        <div class="testimonial-card">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">“Highly recommended for cloud migrations and platform reliability.”</div>
-          <div class="testimonial-author">Rahul Verma</div>
-          <div class="testimonial-role">Founder, CodeFlow</div>
-        </div>        <div class="testimonial-card">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">"Nishant को लेना best decision था - उसकी expertise, dedication और communication skills outstanding है। हर project में successful delivery देखा।"</div>
-          <div class="testimonial-author">Deepak Kumar Mishra</div>
-          <div class="testimonial-role">Product Manager, Bharat Tech Solutions</div>
-        </div>      </div>
-    </section>
+    
 
     <!-- CTA -->
     <section id="cta" class="fade-up">
@@ -521,38 +454,10 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
       <div>
         <div class="chip">Experience</div>
         <div class="exp-list">
-          <div class="exp-item">
-            <div class="exp-dot"></div>
-            <div>
-              <div class="exp-company">Senior Full Stack Developer</div>
-              <div class="exp-role">.NET · Angular · Azure · Microservices</div>
-              <div class="exp-period">June 2022 — Present</div>
-            </div>
-          </div>
-          <div class="exp-item">
-            <div class="exp-dot"></div>
-            <div>
-              <div class="exp-company">Full Stack Developer</div>
-              <div class="exp-role">.NET Core · SQL Server · REST APIs</div>
-              <div class="exp-period">Aug 2021 — June 2022</div>
-            </div>
-          </div>
-          <div class="exp-item">
-            <div class="exp-dot"></div>
-            <div>
-              <div class="exp-company">Full Stack Developer</div>
-              <div class="exp-role">Angular · ASP.NET · Azure DevOps</div>
-              <div class="exp-period">Oct 2019 — Jul 2021</div>
-            </div>
-          </div>
-          <div class="exp-item">
-            <div class="exp-dot"></div>
-            <div>
-              <div class="exp-company">Software Developer</div>
-              <div class="exp-role">.NET · MVC · jQuery · SQL</div>
-              <div class="exp-period">Mar 2017 — Sep 2019</div>
-            </div>
-          </div>
+          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">June 2022 — Present</div></div></div>
+          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Aug 2021 — June 2022</div></div></div>
+          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Oct 2019 — Jul 2021</div></div></div>
+          <div class="exp-item"><div class="exp-dot"></div><div><div class="exp-company">Full Stack Developer</div><div class="exp-period">Mar 2017 — Sep 2019</div></div></div>
         </div>
       </div>
     </div>
@@ -575,17 +480,50 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   </div>
 </section>
 
+
+<section id="tools" style="background:var(--bg2);">
+  <div class="section-inner fade-up">
+    <div class="chip">Free Tool</div>
+    <h2 class="section-title">AI Video Slide Generator</h2>
+    <p class="section-desc">Paste your script or topic — AI reads it, decides how many slides you need, picks the right layout for each one, and builds the full deck. Download as PNG or JPEG.</p>
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);max-width:860px;">
+      <!-- Preview strip -->
+      <div style="background:linear-gradient(135deg,#0d1117 0%,#1a2c4a 50%,#0f172a 100%);padding:2.5rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:#f0f4ff;line-height:1.1;margin-bottom:0.6rem;">Beautiful Slides,<br/>Zero Design Skills</div>
+          <p style="color:rgba(240,244,255,0.65);font-size:0.9rem;line-height:1.65;max-width:380px;">Powered by Gemini AI. Paste any script → get a custom slide deck with varied layouts, colors, and content pulled directly from your words.</p>
+        </div>
+        <!-- Mini slide mockups -->
+        <div style="display:flex;gap:0.75rem;flex-shrink:0;">
+          <div style="width:80px;height:52px;background:#1a56db;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#fff;font-weight:700;text-align:center;padding:0.3rem;line-height:1.3;box-shadow:0 4px 12px rgba(0,0,0,0.3);">HOOK<br/>SLIDE</div>
+          <div style="width:80px;height:52px;background:#7c3aed;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#fff;font-weight:700;text-align:center;padding:0.3rem;line-height:1.3;box-shadow:0 4px 12px rgba(0,0,0,0.3);">LIST<br/>SLIDE</div>
+          <div style="width:80px;height:52px;background:#0f766e;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#fff;font-weight:700;text-align:center;padding:0.3rem;line-height:1.3;box-shadow:0 4px 12px rgba(0,0,0,0.3);">STATS<br/>SLIDE</div>
+          <div style="width:80px;height:52px;background:#b45309;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#fff;font-weight:700;text-align:center;padding:0.3rem;line-height:1.3;box-shadow:0 4px 12px rgba(0,0,0,0.3);">OUTRO<br/>SLIDE</div>
+        </div>
+      </div>
+      <!-- Feature pills + CTA -->
+      <div style="padding:1.8rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;border-top:1px solid var(--border);">
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+          <span style="background:var(--blue-pale);color:var(--blue);font-size:0.72rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px;">✦ AI-powered</span>
+          <span style="background:var(--blue-pale);color:var(--blue);font-size:0.72rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px;">🎨 10+ slide types</span>
+          <span style="background:var(--blue-pale);color:var(--blue);font-size:0.72rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px;">⬇ Download PNG/JPEG</span>
+          <span style="background:var(--blue-pale);color:var(--blue);font-size:0.72rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px;">💯 Free to use</span>
+        </div>
+        <a href="https://techyatra.github.io/video_generator.html" target="_blank" class="btn-primary" style="white-space:nowrap;padding:0.75rem 1.8rem;font-size:0.92rem;">
+          ✦ Try the Tool →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="blog">
   <div class="section-inner fade-up">
     <div class="chip">Blog</div>
     <h2 class="section-title">Latest Articles</h2>
     <p class="section-desc">Technical deep-dives on .NET, Azure, SQL Server — generated from my YouTube videos. Click any article to read it here.</p>
-    <div style="margin-bottom:1.5rem;">
-      <span id="blog-total-reads" style="display:none;align-items:center;gap:0.4rem;background:var(--blue-pale);color:var(--blue);font-size:0.8rem;font-weight:700;padding:0.35rem 0.9rem;border-radius:100px;border:1px solid #bfdbfe;"></span>
-    </div>
     <div class="blog-grid" id="blog-grid"><div class="loading-msg">⏳ Loading articles...</div></div>
-    <div class="pagination" id="blog-pagination"></div>
-    <div style="text-align:center;margin-top:2rem;"><a href="https://techyatra.hashnode.dev" target="_blank" class="btn-secondary">View All Articles →</a></div>
+    <div style="text-align:center;margin-top:2.5rem;"><a href="https://techyatra.hashnode.dev" target="_blank" class="btn-secondary">View All Articles →</a></div>
   </div>
 </section>
 
@@ -621,7 +559,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
       <div>
         <p style="color:var(--text2);margin-bottom:1.5rem;line-height:1.75;">Open to full stack freelance projects, consulting, speaking and collaborations.</p>
         <div class="contact-links">
-          <a href="mailto:thetechyatra@gmail.com" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val">thetechyatra@gmail.com</div></div></a>
+          <a href="/cdn-cgi/l/email-protection#0d79656879686e65746c797f6c4d6a606c6461236e6260" class="contact-card"><div class="contact-icon" style="background:#eff6ff">📧</div><div><div class="contact-lbl">Email</div><div class="contact-val"><span class="__cf_email__" data-cfemail="a2d6cac7d6c7c1cadbc3d6d0c3e2c5cfc3cbce8cc1cdcf">[email&#160;protected]</span></div></div></a>
           <a href="https://www.linkedin.com/in/nishant-gupta-fse/" target="_blank" class="contact-card"><div class="contact-icon" style="background:#eff6ff">💼</div><div><div class="contact-lbl">LinkedIn</div><div class="contact-val">nishant-gupta-fse</div></div></a>
           <a href="https://github.com/techyatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#f8fafc">🐙</div><div><div class="contact-lbl">GitHub</div><div class="contact-val">github.com/techyatra</div></div></a>
           <a href="https://www.youtube.com/@tech_yatra" target="_blank" class="contact-card"><div class="contact-icon" style="background:#fff1f2">▶</div><div><div class="contact-lbl">YouTube</div><div class="contact-val">@tech_yatra</div></div></a>
@@ -630,7 +568,6 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
       <form class="contact-form" onsubmit="handleContact(event)">
         <div class="form-group"><label class="form-lbl">Your Name</label><input type="text" class="form-ctrl" placeholder="John Doe" required/></div>
         <div class="form-group"><label class="form-lbl">Email Address</label><input type="email" class="form-ctrl" placeholder="john@example.com" required/></div>
-        <div class="form-group"><label class="form-lbl">Contact Number</label><input type="tel" class="form-ctrl" placeholder="+91 98765 43210"/></div>
         <div class="form-group"><label class="form-lbl">Subject</label><input type="text" class="form-ctrl" placeholder="Project inquiry" required/></div>
         <div class="form-group"><label class="form-lbl">Message</label><textarea class="form-ctrl" placeholder="Tell me about your project..."></textarea></div>
         <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:0.9rem;">Send Message 🚀</button>
@@ -661,7 +598,7 @@ nav .subscribe-btn { order:3; margin-left:0.5rem; }
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // NAV TOGGLE
 const navToggle = document.getElementById('nav-toggle');
 const navLinks = document.querySelector('.nav-links');
@@ -670,6 +607,8 @@ navToggle.addEventListener('click', () => {
   navToggle.classList.toggle('open', open);
   navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
 });
+
+// close menu when clicking a link (mobile)
 navLinks.querySelectorAll('a').forEach(a => {
   a.addEventListener('click', () => {
     if (navLinks.classList.contains('open')) {
@@ -680,93 +619,20 @@ navLinks.querySelectorAll('a').forEach(a => {
   });
 });
 
+
 let posts = [];
 const CHANNEL_ID = 'UCOfIbZhaSSQhNWsoITf8cUQ';
-// ⚠️  REPLACE with your YouTube Data API v3 key (free — get it at console.cloud.google.com)
-const YT_API_KEY = 'AIzaSyBBPZUHyA4fhnFWEHi39NfCposrzxcc8QU';
+const YT_API_KEY = 'YOUR_YOUTUBE_API_KEY'; // ← Replace with your key
 
-// ── READ TRACKING (Supabase — real counts across all visitors) ─────────────
-const SUPABASE_URL = 'https://dmddswshfwrwmchcttww.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtZGRzd3NoZndyd21jaGN0dHd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NTQ5ODAsImV4cCI6MjA4ODEzMDk4MH0.4QImySXvk_tXcXLAfMTO2P6D8c4jzWuGE3sOXH3QkYM';
-
-// Fetch all read counts from Supabase in one call
-async function fetchAllReadCounts() {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/article_reads?select=slug,read_count`, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
-    const rows = await res.json();
-    const map = {};
-    let total = 0;
-    (rows || []).forEach(r => { map[r.slug] = r.read_count; total += r.read_count; });
-    return { map, total };
-  } catch { return { map: {}, total: 0 }; }
-}
-
-// Upsert: increment read count for a slug in Supabase
-async function incrementRead(slug, title) {
-  try {
-    // First try to insert; if slug exists, increment
-    await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_read`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ p_slug: slug, p_title: title })
-    });
-  } catch {}
-}
-
-// ── SKELETON LOADERS ────────────────────────────────────────────────────────
-function blogSkeletons() {
-  const s = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:shimmer 1.4s infinite linear;">
-    <div style="height:195px;background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;"></div>
-    <div style="padding:1.4rem 1.5rem;">
-      <div style="height:12px;width:60%;background:var(--bg2);border-radius:4px;margin-bottom:12px;"></div>
-      <div style="height:18px;width:90%;background:var(--bg2);border-radius:4px;margin-bottom:8px;"></div>
-      <div style="height:18px;width:75%;background:var(--bg2);border-radius:4px;margin-bottom:16px;"></div>
-      <div style="height:12px;width:45%;background:var(--bg2);border-radius:4px;"></div>
-    </div>
-  </div>`;
-  return `<style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>` + Array(7).fill(s).join('');
-}
-
-function ytSkeletons() {
-  const s = `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-    <div style="padding-bottom:56.25%;position:relative;background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear;"></div>
-    <div style="padding:1.1rem;">
-      <div style="height:14px;width:90%;background:var(--bg2);border-radius:4px;margin-bottom:8px;"></div>
-      <div style="height:14px;width:65%;background:var(--bg2);border-radius:4px;"></div>
-    </div>
-  </div>`;
-  return Array(6).fill(s).join('');
-}
-
-// ── BLOG: Fetch from Hashnode (metadata only — fast!) ───────────────────────
-// FIX 1: Archived posts filtered out
-// FIX 2: Metadata-only fetch for grid; content loaded lazily on modal open
-// FIX: Pagination — 7 posts per page, featured layout on first post of each page
-
-const POSTS_PER_PAGE = 7;
-let allPosts = [];
-let currentPage = 1;
-
+// ── BLOG: Fetch from Hashnode ──────────────────────────────────────────────
 async function loadBlog() {
   const grid = document.getElementById('blog-grid');
-  grid.innerHTML = blogSkeletons();
-
   try {
     const query = `{
       publication(host: "techyatra.hashnode.dev") {
         posts(first: 50) {
           edges {
             node {
-              id
               title
               brief
               slug
@@ -774,12 +640,12 @@ async function loadBlog() {
               coverImage { url }
               tags { name }
               url
+              content { html }
             }
           }
         }
       }
     }`;
-
     const res = await fetch('https://gql.hashnode.com/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -789,157 +655,73 @@ async function loadBlog() {
     const edges = data?.data?.publication?.posts?.edges;
 
     if (!edges?.length) {
-      grid.innerHTML = `<div class="loading-msg">No articles yet — check back soon!</div>`;
+      grid.innerHTML = `<div class="loading-msg">No articles yet — check back soon! Articles are being published daily from YouTube videos.</div>`;
       return;
     }
 
-    // Filter: only published posts have both publishedAt and slug
-    allPosts = edges.map(e => e.node).filter(p => p.publishedAt && p.slug);
+    posts = edges.map(e => e.node);
 
-    if (!allPosts.length) {
-      grid.innerHTML = `<div class="loading-msg">No published articles found.</div>`;
-      return;
-    }
-
-    renderPage(1);
-
+    grid.innerHTML = posts.map((p, i) => {
+      const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
+      const featuredBadge = i === 0 ? `<span class="featured-badge">Featured</span>` : '';
+      const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 200 * 10)) + ' min read';
+      // Use coverImage, OR extract YouTube thumbnail from content as fallback
+      let imgSrc = p.coverImage?.url || null;
+      if (!imgSrc && p.content?.html) {
+        const ytMatch = p.content.html.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+        if (ytMatch) imgSrc = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+      }
+      const img = imgSrc
+        ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.style.display='none';const ph=this.parentElement.querySelector('.blog-card-img-ph'); if(ph) ph.style.display='flex';" />` +
+           `<div class="blog-card-img-ph" style="display:none">📝</div>`)
+        : `<div class="blog-card-img-ph">📝</div>`;
+      return `
+        <div class="blog-card" onclick="openModal(${i})">
+          <div class="blog-img-wrap">${img}</div>
+          <div class="blog-body">
+            <div class="blog-tags">${tags}${featuredBadge}</div>
+            <div class="blog-title">${p.title}</div>
+            <div class="blog-excerpt">${p.brief || ''}</div>
+            <div class="blog-meta"><span>${date} · ${readTime}</span><span class="blog-read">Read article</span></div>
+          </div>
+        </div>`;
+    }).join('');
   } catch (e) {
-    document.getElementById('blog-grid').innerHTML =
-      `<div class="loading-msg">Could not load articles. <a href="https://techyatra.hashnode.dev" target="_blank" style="color:var(--blue);font-weight:700;">Visit blog directly →</a></div>`;
+    grid.innerHTML = `<div class="loading-msg">Could not load articles. <a href="https://techyatra.hashnode.dev" target="_blank" style="color:var(--blue);font-weight:700;">Visit blog directly →</a></div>`;
   }
 }
 
-// Global read counts cache so we don't re-fetch on every page turn
-let readCountsCache = { map: {}, total: 0 };
-
-async function renderPage(page) {
-  currentPage = page;
-  const grid = document.getElementById('blog-grid');
-  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
-  const start = (page - 1) * POSTS_PER_PAGE;
-  const pagePosts = allPosts.slice(start, start + POSTS_PER_PAGE);
-
-  // Fetch counts from Supabase (only on first render; cache for page turns)
-  if (page === 1 || !readCountsCache._loaded) {
-    readCountsCache = await fetchAllReadCounts();
-    readCountsCache._loaded = true;
-    updateTotalReadsHeading(readCountsCache.total);
-  }
-
-  grid.innerHTML = pagePosts.map((p, i) => {
-    const globalIndex = start + i;
-    const isFeatured = i === 0;
-    const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const tags = (p.tags || []).slice(0, 2).map(t => `<span class="blog-tag">${t.name}</span>`).join('');
-    const featuredBadge = isFeatured ? `<span class="featured-badge">Featured</span>` : '';
-    const readTime = Math.max(1, Math.ceil((p.brief || '').split(' ').length / 40)) + ' min read';
-    const imgSrc = p.coverImage?.url || null;
-    const img = imgSrc
-      ? (`<img class="blog-card-img" src="${imgSrc}" alt="${p.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` +
-         `<div class="blog-card-img-ph" style="display:none">📝</div>`)
-      : `<div class="blog-card-img-ph">📝</div>`;
-    const views = readCountsCache.map[p.slug] || 0;
-    const viewsBadge = views > 0 ? `<span class="blog-views">👁 ${views.toLocaleString()}</span>` : '';
-    return `
-      <div class="blog-card${isFeatured ? ' featured' : ''}" onclick="openModal(${globalIndex})">
-        <div class="blog-img-wrap">${img}</div>
-        <div class="blog-body">
-          <div class="blog-tags">${tags}${featuredBadge}</div>
-          <div class="blog-title">${p.title}</div>
-          <div class="blog-excerpt">${p.brief || ''}</div>
-          <div class="blog-meta"><span>${date} · ${readTime}</span><div style="display:flex;align-items:center;gap:0.7rem">${viewsBadge}<span class="blog-read">Read article</span></div></div>
-        </div>
-      </div>`;
-  }).join('');
-
-  renderPagination(page, totalPages);
-
-  if (page > 1) {
-    document.getElementById('blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-function updateTotalReadsHeading(total) {
-  const el = document.getElementById('blog-total-reads');
-  if (el && total > 0) {
-    el.textContent = `📖 ${total.toLocaleString()} total reads`;
-    el.style.display = 'inline-flex';
-  }
-}
-
-function renderPagination(current, total) {
-  const container = document.getElementById('blog-pagination');
-  if (total <= 1) { container.innerHTML = ''; return; }
-
-  let html = '';
-
-  // Prev button
-  html += `<button class="page-btn" onclick="renderPage(${current - 1})" ${current === 1 ? 'disabled' : ''}>← Prev</button>`;
-
-  // Page number buttons with ellipsis
-  const pages = [];
-  for (let i = 1; i <= total; i++) {
-    if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
-      pages.push(i);
-    } else if (pages[pages.length - 1] !== '...') {
-      pages.push('...');
-    }
-  }
-
-  pages.forEach(p => {
-    if (p === '...') {
-      html += `<span class="page-ellipsis">…</span>`;
-    } else {
-      html += `<button class="page-btn${p === current ? ' active' : ''}" onclick="renderPage(${p})">${p}</button>`;
-    }
-  });
-
-  // Next button
-  html += `<button class="page-btn" onclick="renderPage(${current + 1})" ${current === total ? 'disabled' : ''}>Next →</button>`;
-
-  container.innerHTML = html;
-}
-
-// ── BLOG MODAL: Lazy-load full content only when opened ────────────────────
-async function openModal(i) {
-  const p = allPosts[i];
+// ── BLOG MODAL ─────────────────────────────────────────────────────────────
+function openModal(i) {
+  const p = posts[i];
   document.getElementById('modal-bar-title').textContent = p.title;
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  document.querySelector('.modal-box').scrollTop = 0;
 
-  const tags = (p.tags || []).map(t => `<span class="modal-tag">${t.name}</span>`).join('');
-  const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  // Extract YouTube video ID from article content if present
+  const ytMatch = p.content?.html?.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+  const videoId = ytMatch ? ytMatch[1] : null;
+
   const heroImg = p.coverImage?.url
     ? `<img class="modal-hero-img" src="${p.coverImage.url}" alt="${p.title}"/>`
     : `<div class="modal-hero-ph">📝</div>`;
+
+  const ytBox = videoId ? `
+    <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="modal-yt-box">
+      <div class="modal-yt-icon">▶</div>
+      <div class="modal-yt-text">
+        <div class="label">Watch on YouTube</div>
+        <div class="title">${p.title}</div>
+      </div>
+    </a>` : '';
+
+  const tags = (p.tags || []).map(t => `<span class="modal-tag">${t.name}</span>`).join('');
+  const date = new Date(p.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const body = p.content?.html
+    ? `<div class="modal-article">${p.content.html}</div>`
+    : `<div class="modal-article"><p>${p.brief || ''}</p></div>`;
+
   const hashnodeUrl = p.url || `https://techyatra.hashnode.dev/${p.slug}`;
   const readFullBtn = `<a href="${hashnodeUrl}" target="_blank" class="modal-read-full">Read Full Article on Hashnode ↗</a>`;
-
-  // Increment read count in Supabase (fire and forget)
-  incrementRead(p.slug, p.title).then(() => {
-    // Update local cache and refresh badge on the card
-    readCountsCache.map[p.slug] = (readCountsCache.map[p.slug] || 0) + 1;
-    readCountsCache.total = (readCountsCache.total || 0) + 1;
-    // Refresh the badge on whichever card is currently visible
-    document.querySelectorAll('.blog-card').forEach(card => {
-      if (card.querySelector('.blog-title')?.textContent === p.title) {
-        let badge = card.querySelector('.blog-views');
-        const newCount = readCountsCache.map[p.slug];
-        if (badge) {
-          badge.textContent = `👁 ${newCount.toLocaleString()}`;
-        } else {
-          const metaRight = card.querySelector('.blog-meta > div');
-          if (metaRight) {
-            badge = document.createElement('span');
-            badge.className = 'blog-views';
-            badge.textContent = `👁 ${newCount.toLocaleString()}`;
-            metaRight.prepend(badge);
-          }
-        }
-    }});
-    updateTotalReadsHeading(readCountsCache.total);
-  });
 
   document.getElementById('modal-inner').innerHTML = `
     ${heroImg}
@@ -948,50 +730,14 @@ async function openModal(i) {
       <div class="modal-title">${p.title}</div>
       <div class="modal-date">Published ${date}</div>
       ${readFullBtn}
-      <div id="modal-body-loader" style="text-align:center;padding:2rem;color:var(--text3);">
-        <div style="font-size:1.5rem;margin-bottom:0.5rem;">⏳</div>Loading article...
-      </div>
+      ${ytBox}
+      ${body}
     </div>`;
 
-  // FIX 2: Fetch full content lazily — only when modal opens
-  try {
-    const query = `{
-      publication(host: "techyatra.hashnode.dev") {
-        post(slug: "${p.slug}") {
-          content { html }
-        }
-      }
-    }`;
-    const res = await fetch('https://gql.hashnode.com/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
-    });
-    const data = await res.json();
-    const html = data?.data?.publication?.post?.content?.html || '';
-
-    const ytMatch = html.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
-    const videoId = ytMatch ? ytMatch[1] : null;
-    const ytBox = videoId ? `
-      <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" class="modal-yt-box">
-        <div class="modal-yt-icon">▶</div>
-        <div class="modal-yt-text">
-          <div class="label">Watch on YouTube</div>
-          <div class="title">${p.title}</div>
-        </div>
-      </a>` : '';
-
-    let contentHtml = html;
-    contentHtml = contentHtml.replace(/<img[^>]*>/, '');
-
-    document.getElementById('modal-body-loader').outerHTML = `
-      ${ytBox}
-      <div class="modal-article">${contentHtml || `<p>${p.brief || ''}</p>`}</div>`;
-
-  } catch(err) {
-    document.getElementById('modal-body-loader').outerHTML =
-      `<div class="modal-article"><p>${p.brief || ''}</p><p style="margin-top:1rem;"><a href="${hashnodeUrl}" target="_blank" style="color:var(--blue);font-weight:700;">Read full article on Hashnode →</a></p></div>`;
-  }
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Scroll modal to top
+  document.querySelector('.modal-box').scrollTop = 0;
 }
 
 function closeModal() {
@@ -1005,239 +751,80 @@ function closeIfOutside(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-
-// ── YOUTUBE: Fast loading with reliable proxy ──────────────────────────────
-// FIX 3: Switched to corsproxy.io (faster, more reliable than allorigins.win)
-// Also runs in parallel with blog load via Promise.all
+// ── YOUTUBE: Load videos with thumbnails + titles ──────────────────────────
 async function loadYouTube() {
   const grid = document.getElementById('yt-grid');
-  grid.innerHTML = ytSkeletons();
 
   try {
-    // Step 1: Get latest video IDs from RSS feed (no API key needed)
+    // Use YouTube RSS feed — no API key needed, always returns latest videos
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+
     const res = await fetch(proxyUrl);
-    const text = await res.text();
+    const data = await res.json();
     const parser = new DOMParser();
-    const xml = parser.parseFromString(text, 'text/xml');
-    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 20);
+    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 6);
+
     if (!entries.length) throw new Error('No entries');
 
-    // Extract video IDs and basic metadata
-    const videos = entries.map(entry => ({
-      id: entry.querySelector('videoId')?.textContent
-          || entry.querySelector('id')?.textContent?.split(':').pop(),
-      title: entry.querySelector('title')?.textContent || '',
-      published: entry.querySelector('published')?.textContent || '',
-    })).filter(v => v.id);
-
-    // Step 2: Fetch durations via YouTube Data API v3
-    // contentDetails gives ISO 8601 duration e.g. PT5M32S
-    const ids = videos.map(v => v.id).join(',');
-    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ids}&key=${YT_API_KEY}`;
-    const apiRes = await fetch(apiUrl);
-    const apiData = await apiRes.json();
-
-    if (apiData.error) throw new Error('API error: ' + apiData.error.message);
-
-    // Parse ISO 8601 duration to seconds
-    function parseDuration(iso) {
-      const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-      if (!m) return 0;
-      return (parseInt(m[1]||0)*3600) + (parseInt(m[2]||0)*60) + parseInt(m[3]||0);
-    }
-
-    // Build duration map
-    const durMap = {};
-    (apiData.items || []).forEach(item => {
-      durMap[item.id] = parseDuration(item.contentDetails?.duration || '');
-    });
-
-    // Step 3: Filter — keep only videos longer than 3 minutes (180s)
-    const MIN_SECONDS = 180;
-    const longVideos = videos
-      .filter(v => {
-        const dur = durMap[v.id] || 0;
-        // If duration missing from API response, skip the video
-        return dur >= MIN_SECONDS;
-      })
-      .slice(0, 6);
-
-    if (!longVideos.length) throw new Error('No long videos found');
-
-    grid.innerHTML = longVideos.map(v => {
-      const date = v.published
-        ? new Date(v.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    grid.innerHTML = entries.map(entry => {
+      const videoId = entry.querySelector('videoId')?.textContent
+        || entry.querySelector('id')?.textContent?.split(':').pop();
+      const title = entry.querySelector('title')?.textContent || '';
+      const published = entry.querySelector('published')?.textContent || '';
+      const date = published
+        ? new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         : '';
-      const thumb = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
-      return buildYTCard(v.id, v.title, thumb, date);
+      const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      return buildYTCard(videoId, title, thumb, date);
     }).join('');
 
   } catch (e) {
-    console.warn('YouTube load failed:', e.message);
+    // Final fallback — hardcoded recent videos
     const fallbackIds = [
       'l4p9i4Y2tg0', 'eiKBa0810Lg', '22HUdc_kMvE',
       '3EPl5a5KkOQ', 'DXFL2qYRlH0', 'sfaGJkfqC_4'
     ];
     grid.innerHTML = fallbackIds.map(id =>
-      buildYTCard(id, 'TechYatra', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
+      buildYTCard(id, 'Loading...', `https://img.youtube.com/vi/${id}/hqdefault.jpg`, '')
     ).join('');
   }
 }
 
 function buildYTCard(id, title, thumb, date) {
   return `
-    <a class="yt-card" href="https://www.youtube.com/watch?v=${id}" target="_blank">
+    <a class="yt-card" href="https://www.youtube.com/watch?v=${id}" target="_blank" data-vid="${id}">
       <div class="yt-thumb">
         <img src="${thumb}" alt="${title || 'TechYatra video'}" loading="lazy"
           onerror="this.src='https://img.youtube.com/vi/${id}/mqdefault.jpg'"/>
         <div class="yt-overlay"><div class="yt-play">▶</div></div>
       </div>
       <div class="yt-body">
-        <div class="yt-title">${title || 'TechYatra Video'}</div>
+        <div class="yt-title">${title || 'Loading title...'}</div>
         ${date ? `<div class="yt-date">${date}</div>` : ''}
       </div>
     </a>`;
 }
 
-// ── FORMS ───────────────────────────────────────────────────────────────────
-async function handleSub(e) {
+// ── FORMS ──────────────────────────────────────────────────────────────────
+function handleSub(e) {
   e.preventDefault();
-  const input = e.target.querySelector('.sub-input');
-  const btn = e.target.querySelector('.btn-white');
-  const email = input.value.trim();
-  if (!email) return;
-
-  btn.textContent = 'Saving...';
-  btn.disabled = true;
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/newsletter_subscribers`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'resolution=ignore-duplicates'
-      },
-      body: JSON.stringify({ email })
-    });
-
-    if (res.ok || res.status === 409) {
-      document.querySelector('.sub-form').innerHTML =
-        '<p style="color:#fff;font-weight:700;font-size:1rem;">✅ Thanks! You\'re subscribed.</p>';
-    } else {
-      throw new Error('Failed');
-    }
-  } catch {
-    btn.textContent = 'Subscribe →';
-    btn.disabled = false;
-    input.placeholder = 'Something went wrong, try again';
-  }
+  document.querySelector('.sub-form').innerHTML = '<p style="color:#fff;font-weight:700;font-size:1rem;">✅ Thanks! You\'re subscribed.</p>';
 }
 
-async function handleContact(e) {
+function handleContact(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
-  const fields = e.target.querySelectorAll('.form-ctrl');
-  const name    = fields[0].value.trim();
-  const email   = fields[1].value.trim();
-  const phone   = fields[2].value.trim();
-  const subject = fields[3].value.trim();
-  const message = fields[4].value.trim();
-
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/contact_messages`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ name, email, phone, subject, message })
-    });
-
-    if (res.ok) {
-      btn.textContent = '✅ Message Sent!';
-      setTimeout(() => { e.target.reset(); btn.textContent = 'Send Message 🚀'; btn.disabled = false; }, 3000);
-    } else {
-      throw new Error('Failed');
-    }
-  } catch {
-    btn.textContent = 'Send Message 🚀';
-    btn.disabled = false;
-    alert('Something went wrong. Please try again or email directly at thetechyatra@gmail.com');
-  }
+  btn.textContent = '✅ Message Sent!';
+  setTimeout(() => { e.target.reset(); btn.textContent = 'Send Message 🚀'; }, 3000);
 }
 
-// ── ANIMATIONS ──────────────────────────────────────────────────────────────
+// ── ANIMATIONS ─────────────────────────────────────────────────────────────
 const obs = new IntersectionObserver(entries =>
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-  { threshold: 0, rootMargin: '0px 0px -40px 0px' }
+  { threshold: 0.08 }
 );
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-// ── INIT: Run blog + YouTube in PARALLEL for maximum speed ──────────────────
-// FIX 3 (continued): Promise.all means both fetches start simultaneously
-Promise.all([loadBlog(), loadYouTube()]);
-
-// ── VISITOR COUNT ───────────────────────────────────────────────────────
-async function fetchVisitorCount() {
-  try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/site_visits?select=id', {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Prefer': 'count=exact',
-        'Range': '0-0'
-      }
-    });
-    // Total count is in Content-Range header: 0-0/TOTAL
-    const range = res.headers.get('Content-Range');
-    if (range) {
-      const total = range.split('/')[1];
-      const el = document.getElementById('visitor-count');
-      if (el && total) {
-        const n = parseInt(total);
-        el.textContent = n >= 1000 ? (n/1000).toFixed(1)+'k' : n;
-        const bar = document.getElementById('visitorBar');
-        if (bar && n > 0) bar.style.display = 'flex';
-      }
-    }
-  } catch(e) {}
-}
-fetchVisitorCount();
-
-// ── VISIT TRACKER ────────────────────────────────────────────────────────
-async function trackVisit() {
-  try {
-    const key = 'ty_visited_' + new Date().toDateString();
-    if (sessionStorage.getItem(key)) return;
-    sessionStorage.setItem(key, '1');
-    await fetch(SUPABASE_URL + '/rest/v1/site_visits', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        visited_at: new Date().toISOString(),
-        page: window.location.pathname || '/',
-        referrer: document.referrer || 'direct',
-        screen: window.screen.width + 'x' + window.screen.height
-      })
-    });
-  } catch(e) {}
-}
-trackVisit();
-
-</script>
-</body>
-</html>
+// ── INIT ── 
