@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TechYatra portfolio — how it works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --card: #ffffff;
+      --bg: linear-gradient(160deg, #f0f4ff 0%, #fff 45%, #f8fafc 100%);
+      --gh: #24292f;
+      --gh-soft: #ddf4e0;
+      --hash: #2962ff;
+      --hash-soft: #e3f2fd;
+      --yt: #ff0000;
+      --yt-soft: #ffebee;
+      --supa: #3ecf8e;
+      --supa-dark: #1e2e24;
+      --supa-soft: #ecfdf5;
+      --proxy: #f59e0b;
+      --proxy-soft: #fffbeb;
+      --line: #cbd5e1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Outfit", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(135deg, #1a56db, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 52ch;
+      margin: 0 0 2rem;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+      margin-bottom: 2rem;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .chip i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .chip.gh { background: var(--gh-soft); color: #1a3c28; }
+    .chip.gh i { background: var(--gh); }
+    .chip.hash { background: var(--hash-soft); color: #0d1b3d; }
+    .chip.hash i { background: var(--hash); }
+    .chip.yt { background: var(--yt-soft); color: #5c0a0a; }
+    .chip.yt i { background: var(--yt); }
+    .chip.supa { background: var(--supa-soft); color: var(--supa-dark); }
+    .chip.supa i { background: var(--supa); }
+    .chip.proxy { background: var(--proxy-soft); color: #78350f; }
+    .chip.proxy i { background: var(--proxy); }
+    .diagram-box {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 1.5rem 1rem 2rem;
+      box-shadow: 0 4px 24px rgba(15, 31, 64, 0.08), 0 0 0 1px rgba(15, 31, 64, 0.04);
+    }
+    .mermaid { text-align: center; }
+    .foot {
+      margin-top: 2.5rem;
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: #e2e8f0;
+      border-radius: 16px;
+      font-size: 0.9rem;
+    }
+    .foot strong { color: #fff; }
+    .foot ul { margin: 0.75rem 0 0; padding-left: 1.2rem; }
+    .foot li { margin: 0.35rem 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Your portfolio site — at a glance</h1>
+    <p class="lead">
+      Everything runs in the <strong>browser</strong> and on <strong>free hosting</strong>. There is no custom server: the page calls public APIs
+      to show your blog, videos, and to save form data and light analytics.
+    </p>
+
+    <div class="legend" aria-label="Color legend">
+      <span class="chip gh"><i></i> GitHub Pages (your files)</span>
+      <span class="chip hash"><i></i> Hashnode (blog)</span>
+      <span class="chip yt"><i></i> YouTube</span>
+      <span class="chip proxy"><i></i> CORS helper</span>
+      <span class="chip supa"><i></i> Supabase (data)</span>
+    </div>
+
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart TB
+  subgraph gYou["1 · You"]
+    B(["👤 Visitor's browser<br/>phone or laptop"])
+  end
+
+  subgraph gPage["2 · This website — hosted on GitHub"]
+    P(["🌿 GitHub Pages<br/>static HTML, CSS, JavaScript only"])
+  end
+
+  subgraph gBlog["3 · Your blog (same articles as Hashnode)"]
+    H(["📝 Hashnode GraphQL API<br/>post list, text, and images"])
+  end
+
+  subgraph gVid["4 · Your YouTube channel"]
+    C(["🟠 CORS proxy<br/>lets the page read the RSS feed"])
+    R(["📡 YouTube RSS feed<br/>list of latest video IDs"])
+    A(["🎬 YouTube Data API<br/>length of each video"])
+  end
+
+  subgraph gData["5 · Your small database"]
+    S(["🗄️ Supabase<br/>newsletter, contact, reads, visits"])
+  end
+
+  B -->|"loads the page"| P
+  P -->|"fetches posts"| H
+  P -->|"asks for RSS via proxy"| C
+  C -->|"pulls feed"| R
+  P -->|"asks for video details"| A
+  P -->|"sends and reads rows"| S
+
+  style gYou fill:#f1f5f9,stroke:#cbd5e1,stroke-width:1px
+  style gPage fill:#ecfdf5,stroke:#22c55e,stroke-width:1px
+  style gBlog fill:#eff6ff,stroke:#3b82f6,stroke-width:1px
+  style gVid fill:#fff7ed,stroke:#fb923c,stroke-width:1px
+  style gData fill:#ecfdf5,stroke:#10b981,stroke-width:1px
+
+  style B fill:#eef2ff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b
+  style P fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+  style H fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a5f
+  style R fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#7f1d1d
+  style C fill:#ffedd5,stroke:#f97316,stroke-width:2px,color:#7c2d12
+  style A fill:#fecaca,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
+  style S fill:#d1fae5,stroke:#059669,stroke-width:2px,color:#064e3b
+      </div>
+    </div>
+
+    <div class="foot">
+      <strong>Read this like a story</strong>
+      <ul>
+        <li><strong>Green (GitHub Pages)</strong> — hosts your page; it does not run a database, only files.</li>
+        <li><strong>Blue (Hashnode)</strong> — powers the blog list and article content your visitors see.</li>
+        <li><strong>Red / orange (YouTube + helper)</strong> — RSS gives video IDs; the API adds length so you can show the right videos.</li>
+        <li><strong>Teal (Supabase)</strong> — stores newsletter signups, contact messages, read counts, and visit counts. Your app uses a public “anon” key; safety comes from rules you set in Supabase.</li>
+      </ul>
+    </div>
+  </div>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      securityLevel: 'loose',
+      flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 40, rankSpacing: 50 },
+      themeVariables: {
+        fontFamily: '"Outfit", system-ui, sans-serif',
+        fontSize: '15px',
+        lineColor: '#94a3b8',
+        primaryTextColor: '#0f172a'
+      }
+    });
+    await mermaid.run({ querySelector: '.mermaid' });
+  </script>
+</body>
+</html>
