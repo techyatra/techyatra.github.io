@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TechYatra slide generator — how it works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --card: #ffffff;
+      --bg: linear-gradient(160deg, #faf5ff 0%, #fff 45%, #f8fafc 100%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Outfit", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(135deg, #7c3aed, #1a56db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lead { font-size: 1.05rem; color: var(--muted); max-width: 58ch; margin: 0 0 2rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; margin-bottom: 2rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+      border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .chip i { width: 10px; height: 10px; border-radius: 50%; }
+    .chip.gh { background: #dcfce7; color: #14532d; } .chip.gh i { background: #16a34a; }
+    .chip.cf { background: #ffedd5; color: #7c2d12; } .chip.cf i { background: #f97316; }
+    .chip.gem { background: #ede9fe; color: #4c1d95; } .chip.gem i { background: #8b5cf6; }
+    .chip.supa { background: #ecfdf5; color: #064e3b; } .chip.supa i { background: #10b981; }
+    .chip.ex { background: #e0e7ff; color: #312e81; } .chip.ex i { background: #6366f1; }
+    .diagram-box {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 1.5rem 1rem 2rem;
+      box-shadow: 0 4px 24px rgba(15, 31, 64, 0.08), 0 0 0 1px rgba(15, 31, 64, 0.04);
+    }
+    .mermaid { text-align: center; }
+    .foot {
+      margin-top: 2.5rem; padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      color: #e2e8f0; border-radius: 16px; font-size: 0.9rem;
+    }
+    .foot strong { color: #fff; }
+    .foot ul { margin: 0.75rem 0 0; padding-left: 1.2rem; }
+    .foot li { margin: 0.35rem 0; }
+    .note {
+      font-size: 0.9rem; color: var(--muted);
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      background: #f1f5f9;
+      border-radius: 12px;
+      border-left: 4px solid #7c3aed;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Video slide generator — at a glance</h1>
+    <p class="lead">
+      This is a <strong>separate</strong> page from your home portfolio. You paste a script; <strong>Google Gemini</strong> (through a
+      <strong>Cloudflare Worker</strong>) returns structured JSON; your <strong>browser</strong> turns that into real slides. PNG/PDF
+      export uses <strong>libraries in the page</strong> — nothing is uploaded to a “slide server.”
+    </p>
+
+    <div class="legend" aria-label="Color legend">
+      <span class="chip gh"><i></i> GitHub Pages (this HTML file)</span>
+      <span class="chip cf"><i></i> Cloudflare Worker (proxy + logging)</span>
+      <span class="chip gem"><i></i> Google Gemini (AI)</span>
+      <span class="chip supa"><i></i> Supabase (optional stats)</span>
+      <span class="chip ex"><i></i> html2canvas + jsPDF (export)</span>
+    </div>
+
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart TB
+  subgraph g1["1 · You"]
+    B(["👤 Your browser<br/>one tab, all processing visible"])
+  end
+
+  subgraph g2["2 · Slide generator app"]
+    P(["🌿 GitHub Pages<br/>video_generator.html + JavaScript"])
+    R(["🎬 Full-screen slide deck<br/>HTML built from AI JSON in #stage"])
+  end
+
+  subgraph g3["3 · Cloudflare Worker (your backend)"]
+    Wg(["🟠 POST …/generate<br/>builds the Gemini request — API keys not in the page"])
+    Wl(["🟠 POST …/log<br/>optional analytics after a successful run"])
+  end
+
+  subgraph g4["4 · AI model"]
+    G(["🤖 Google Gemini<br/>returns JSON: slide types, colours, text"])
+  end
+
+  subgraph g5["5 · Database"]
+    S(["🗄️ Supabase<br/>stores generation logs from /log"])
+  end
+
+  subgraph g6["6 · Export — 100% in the browser"]
+    X(["📥 html2canvas + jsPDF from CDN<br/>screenshot the DOM, then PNG or PDF file download"])
+  end
+
+  B -->|open tool| P
+  P -->|script + theme as JSON| Wg
+  Wg -->|API call| G
+  G -->|text / JSON| Wg
+  Wg -->|slide deck JSON| P
+  P -->|injects rows into| R
+  P -->|fire-and-forget| Wl
+  Wl -->|save row| S
+  R -->|user downloads| X
+
+  style g1 fill:#f1f5f9,stroke:#cbd5e1
+  style g2 fill:#ecfdf5,stroke:#22c55e
+  style g3 fill:#fff7ed,stroke:#fb923c
+  style g4 fill:#f5f3ff,stroke:#8b5cf6
+  style g5 fill:#ecfdf5,stroke:#10b981
+  style g6 fill:#eef2ff,stroke:#6366f1
+
+  style B fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1e1b4b
+  style P fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+  style R fill:#bbf7d0,stroke:#15803d,stroke-width:2px,color:#14532d
+  style Wg fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#7c2d12
+  style Wl fill:#fed7aa,stroke:#c2410c,stroke-width:2px,color:#7c2d12
+  style G fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95
+  style S fill:#d1fae5,stroke:#059669,stroke-width:2px,color:#064e3b
+  style X fill:#c7d2fe,stroke:#4f46e5,stroke-width:2px,color:#312e81
+      </div>
+    </div>
+
+    <p class="note">
+      <strong>Not the portfolio site.</strong> This tool does <em>not</em> use Hashnode, YouTube RSS, or the same Supabase tables as
+      the homepage contact form. The Worker URL is the only “server” your script talks to for AI and for logging.
+    </p>
+
+    <div class="foot">
+      <strong>Read this like a story</strong>
+      <ul>
+        <li><strong>Green</strong> — The generator is a static file. After AI responds, the page <em>builds</em> the deck with normal HTML and CSS (hooks, lists, quotes, code, etc.).</li>
+        <li><strong>Orange (Worker)</strong> — Keeps Gemini keys off GitHub. <code>/generate</code> does the model call; <code>/log</code> records optional usage metadata.</li>
+        <li><strong>Purple (Gemini)</strong> — Produces a single JSON document describing many slides. Your code repairs and parses that JSON client-side if needed.</li>
+        <li><strong>Teal (Supabase)</strong> — Receives what the Worker forwards to <code>/log</code>, not a direct public Supabase key in this HTML for that path.</li>
+        <li><strong>Indigo (Export)</strong> — png/pdf are created on <em>your machine</em> by rasterizing the live slide; files save locally — no “upload deck to cloud” step.</li>
+      </ul>
+    </div>
+  </div>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      securityLevel: 'loose',
+      flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 35, rankSpacing: 45 },
+      themeVariables: {
+        fontFamily: '"Outfit", system-ui, sans-serif',
+        fontSize: '14px',
+        lineColor: '#94a3b8',
+        primaryTextColor: '#0f172a'
+      }
+    });
+    await mermaid.run({ querySelector: '.mermaid' });
+  </script>
+</body>
+</html>

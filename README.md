@@ -17,6 +17,10 @@ Personal site: [https://techyatra.github.io/](https://techyatra.github.io/)
 
 Coloured diagram (open over **HTTPS**, e.g. after deploy): [docs/portfolio-architecture.html](https://techyatra.github.io/docs/portfolio-architecture.html)
 
+## Architecture (slide generator — `video_generator.html`)
+
+Separate from the portfolio: [docs/slide-generator-architecture.html](https://techyatra.github.io/docs/slide-generator-architecture.html) — Cloudflare Worker, Gemini, in-browser render and export.
+
 ## Local preview
 
 Open `index.html` in a browser, or use any static server from this folder (e.g. `npx serve`). Use the same for `docs/portfolio-architecture.html` if the Mermaid chart does not load from `file://`.
