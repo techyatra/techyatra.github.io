@@ -142,6 +142,22 @@
       color: #334155;
     }
 
+    .hamburger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid #cfe0f2;
+      background: #fff;
+      color: #1e3a8a;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.22rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+    }
+
     .nav-links a {
       padding: 0.38rem 0.45rem;
       border-radius: 8px;
@@ -636,10 +652,41 @@
     footer {
       border-top: 1px solid var(--line);
       margin-top: 2rem;
-      padding: 1.2rem 0 5rem;
-      text-align: center;
+      padding: 1.4rem 0 5rem;
       color: #475569;
       font-size: 0.86rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.9fr 0.9fr;
+      gap: 1rem;
+      text-align: left;
+      align-items: start;
+    }
+
+    .footer-block h4 {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: 0.92rem;
+    }
+
+    .footer-block p,
+    .footer-block a {
+      margin: 0.45rem 0 0;
+      color: #475569;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      display: block;
+    }
+
+    .footer-bottom {
+      margin-top: 0.9rem;
+      border-top: 1px solid #d8e5f1;
+      padding-top: 0.75rem;
+      font-size: 0.8rem;
+      color: #64748b;
+      text-align: center;
     }
 
     .mobile-sticky {
@@ -696,9 +743,9 @@
       }
 
       nav {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0.68rem 0;
+        position: relative;
+        min-height: 66px;
+        padding: 0.62rem 0;
       }
 
       .brand-name {
@@ -717,12 +764,44 @@
         font-size: 1.72rem;
       }
 
+      .hamburger {
+        display: inline-flex;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .nav-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-top: 0.42rem;
+        padding: 0.35rem 0.25rem 0.1rem;
+        border-top: 1px solid #dbe5f0;
+      }
+
+      header.menu-open .nav-links {
+        display: flex;
+      }
+
+      .nav-links a {
+        width: 100%;
+        padding: 0.58rem 0.45rem;
+      }
+
       .services-grid,
       .availability-grid,
       .packages-grid,
       .feedback-grid,
       .stats-row {
         grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
       }
 
       .mobile-sticky {
@@ -750,7 +829,8 @@
             <span class="brand-tag">Home Healthcare &amp; Security Support</span>
           </span>
         </a>
-        <div class="nav-links">
+        <button class="hamburger" type="button" aria-label="Toggle menu" aria-expanded="false">☰</button>
+        <div class="nav-links" id="site-nav">
           <a href="#services">Services</a>
           <a href="#availability">Availability</a>
           <a href="#packages">Packages</a>
@@ -1113,7 +1193,28 @@
 
   <footer>
     <div class="container">
-      &copy; <span id="year"></span> Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd. All rights reserved.
+      <div class="footer-grid">
+        <div class="footer-block">
+          <h4>Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd</h4>
+          <p>Trusted nurse, attendant, elder care, maternity support, and security services in Noida.</p>
+        </div>
+        <div class="footer-block">
+          <h4>Quick Links</h4>
+          <a href="#services">Services</a>
+          <a href="#availability">Availability</a>
+          <a href="#packages">Packages</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-block">
+          <h4>Contact</h4>
+          <a href="tel:+919582534911">+91 9582534911</a>
+          <a href="mailto:mridulanursingnoida@gmail.com">mridulanursingnoida@gmail.com</a>
+          <p>Sector 27, Noida office near Sab Mall</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; <span id="year"></span> Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd. All rights reserved.
+      </div>
     </div>
   </footer>
 
@@ -1124,6 +1225,38 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    const header = document.querySelector("header");
+    const navToggle = document.querySelector(".hamburger");
+    const navLinks = document.querySelectorAll("#site-nav a");
+
+    if (header && navToggle) {
+      function closeMobileNav() {
+        header.classList.remove("menu-open");
+        navToggle.setAttribute("aria-expanded", "false");
+        navToggle.textContent = "☰";
+      }
+
+      navToggle.addEventListener("click", () => {
+        const isOpen = header.classList.toggle("menu-open");
+        navToggle.setAttribute("aria-expanded", String(isOpen));
+        navToggle.textContent = isOpen ? "✕" : "☰";
+      });
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth <= 700) {
+            closeMobileNav();
+          }
+        });
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 700) {
+          closeMobileNav();
+        }
+      });
+    }
   </script>
 </body>
 </html>
