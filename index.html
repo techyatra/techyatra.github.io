@@ -451,12 +451,6 @@
       font-weight: 700;
     }
 
-    .packages-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
-    }
-
     .equipment-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -518,61 +512,6 @@
       line-height: 1.55;
       display: grid;
       gap: 0.12rem;
-    }
-
-    .package-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 0.95rem;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
-    }
-
-    .package-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.55rem;
-      align-items: center;
-    }
-
-    .package-head h3 {
-      margin: 0;
-      color: #1e3a8a;
-      font-size: 0.98rem;
-    }
-
-    .tag {
-      border-radius: 999px;
-      border: 1px solid #c8dcf1;
-      color: #1e3a8a;
-      font-size: 0.74rem;
-      font-weight: 700;
-      padding: 0.22rem 0.56rem;
-      background: #eef5ff;
-      white-space: nowrap;
-    }
-
-    .price {
-      margin-top: 0.65rem;
-      color: #0f172a;
-      font-weight: 800;
-      font-size: 1.3rem;
-    }
-
-    .price small {
-      color: #64748b;
-      font-size: 0.76rem;
-      font-weight: 600;
-    }
-
-    .feature-list {
-      margin: 0.7rem 0 0;
-      padding-left: 1rem;
-      color: #475569;
-      font-size: 0.86rem;
-      line-height: 1.58;
-      display: grid;
-      gap: 0.14rem;
     }
 
     .feedback-grid {
@@ -788,7 +727,6 @@
       .services-grid,
       .availability-grid,
       .equipment-grid,
-      .packages-grid,
       .feedback-grid,
       .stats-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -869,7 +807,6 @@
       .services-grid,
       .availability-grid,
       .equipment-grid,
-      .packages-grid,
       .feedback-grid,
       .stats-row {
         grid-template-columns: 1fr;
@@ -902,7 +839,6 @@
           <a href="#services">Services</a>
           <a href="#availability">Availability</a>
           <a href="#equipment">Equipment</a>
-          <a href="#packages">Packages</a>
           <a href="#feedback">Feedback</a>
           <a href="#contact">Contact</a>
         </div>
@@ -1176,53 +1112,6 @@
       </div>
     </section>
 
-    <section id="packages">
-      <div class="container">
-        <div class="section-title">
-          <h2>Care Packages</h2>
-          <p>Simple package view for families to understand starting options quickly.</p>
-        </div>
-        <div class="packages-grid">
-          <article class="package-card">
-            <div class="package-head">
-              <h3>Attendant Care Plan</h3>
-              <span class="tag">12 Hr</span>
-            </div>
-            <div class="price">₹1,499 <small>/ shift (from)</small></div>
-            <ul class="feature-list">
-              <li>Daily routine support</li>
-              <li>Elder and patient assistance</li>
-              <li>Mobility and hygiene care</li>
-            </ul>
-          </article>
-          <article class="package-card">
-            <div class="package-head">
-              <h3>Nurse Care Plan</h3>
-              <span class="tag">Clinical</span>
-            </div>
-            <div class="price">₹2,499 <small>/ shift (from)</small></div>
-            <ul class="feature-list">
-              <li>Nursing procedures support</li>
-              <li>Medication and vitals tracking</li>
-              <li>Post-discharge care</li>
-            </ul>
-          </article>
-          <article class="package-card">
-            <div class="package-head">
-              <h3>24-Hour Support Plan</h3>
-              <span class="tag">Full Time</span>
-            </div>
-            <div class="price">Custom <small>as per case</small></div>
-            <ul class="feature-list">
-              <li>Continuous care assistance</li>
-              <li>Critical and elderly support</li>
-              <li>Ongoing family coordination</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <section id="feedback">
       <div class="container">
         <div class="section-title">
@@ -1332,7 +1221,6 @@
           <h4>Quick Links</h4>
           <a href="#services">Services</a>
           <a href="#availability">Availability</a>
-          <a href="#packages">Packages</a>
           <a href="#contact">Contact</a>
         </div>
         <div class="footer-block">
