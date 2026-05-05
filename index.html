@@ -457,6 +457,61 @@
       gap: 0.9rem;
     }
 
+    .equipment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .equipment-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .equipment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .equipment-head h3 {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: 0.98rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #cde1f3;
+      color: #1e3a8a;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.22rem 0.56rem;
+      background: #eff6ff;
+      white-space: nowrap;
+    }
+
+    .equipment-card p {
+      margin: 0.6rem 0 0;
+      color: #475569;
+      font-size: 0.86rem;
+      line-height: 1.58;
+    }
+
+    .equipment-list {
+      margin: 0.65rem 0 0;
+      padding-left: 1rem;
+      color: #475569;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      display: grid;
+      gap: 0.12rem;
+    }
+
     .package-card {
       background: #fff;
       border: 1px solid var(--line);
@@ -724,6 +779,7 @@
 
       .services-grid,
       .availability-grid,
+      .equipment-grid,
       .packages-grid,
       .feedback-grid,
       .stats-row {
@@ -804,6 +860,7 @@
 
       .services-grid,
       .availability-grid,
+      .equipment-grid,
       .packages-grid,
       .feedback-grid,
       .stats-row {
@@ -836,6 +893,7 @@
         <div class="nav-links" id="site-nav">
           <a href="#services">Services</a>
           <a href="#availability">Availability</a>
+          <a href="#equipment">Equipment</a>
           <a href="#packages">Packages</a>
           <a href="#feedback">Feedback</a>
           <a href="#contact">Contact</a>
@@ -1090,6 +1148,56 @@
               <li>Continuous care assistance</li>
               <li>Critical and elderly support</li>
               <li>Ongoing family coordination</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="equipment">
+      <div class="container">
+        <div class="section-title">
+          <h2>Medical Equipment for Rent &amp; Sale</h2>
+          <p>
+            We also provide essential medical equipment on rent and for sale for home-care needs,
+            recovery support, and long-term patient management.
+          </p>
+        </div>
+        <div class="equipment-grid">
+          <article class="equipment-card">
+            <div class="equipment-head">
+              <h3>Oxygen Concentrator</h3>
+              <span class="pill">Rent / Sale</span>
+            </div>
+            <p>Suitable for respiratory support at home with setup guidance and service assistance.</p>
+            <ul class="equipment-list">
+              <li>Daily / weekly / monthly rental</li>
+              <li>Home delivery support in Noida</li>
+              <li>Service check and usage guidance</li>
+            </ul>
+          </article>
+          <article class="equipment-card">
+            <div class="equipment-head">
+              <h3>Hospital Bed &amp; Wheelchair</h3>
+              <span class="pill">Rent / Sale</span>
+            </div>
+            <p>Comfort and mobility support for post-surgery, elder care, and long-term home treatment.</p>
+            <ul class="equipment-list">
+              <li>Manual and semi-fowler bed options</li>
+              <li>Standard and commode wheelchair options</li>
+              <li>Short-term and long-term plans</li>
+            </ul>
+          </article>
+          <article class="equipment-card">
+            <div class="equipment-head">
+              <h3>BiPAP / CPAP / Suction Machine</h3>
+              <span class="pill">Rent / Sale</span>
+            </div>
+            <p>Equipment support for breathing care and dependent patient management at home.</p>
+            <ul class="equipment-list">
+              <li>Machine setup and basic training</li>
+              <li>Consumables guidance available</li>
+              <li>Emergency replacement support</li>
             </ul>
           </article>
         </div>
