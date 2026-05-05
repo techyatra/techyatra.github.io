@@ -3,30 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd | Home Care Noida</title>
+  <title>Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd | Home Healthcare Noida</title>
   <meta
     name="description"
-    content="Mridula Nurses & Security & Allied Services Pvt Ltd provides professional home nursing, patient care, elder care, and security services in Noida."
+    content="Professional home nursing, patient attendants, elder care, and security services in Noida by Mridula Nurses & Security & Allied Services Pvt Ltd."
   />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
   <style>
     :root {
-      --bg: #f2f8fb;
-      --card: #ffffff;
-      --text: #12263a;
-      --muted: #5f7287;
-      --primary: #087b73;
-      --primary-dark: #045d57;
-      --accent: #11b9a4;
-      --line: #d6e8ef;
-      --soft: #e9f8f6;
+      --bg: #f7fafc;
+      --surface: #ffffff;
+      --surface-soft: #f1f8fb;
+      --text: #0f172a;
+      --muted: #4b5563;
+      --primary: #0b3c5d;
+      --primary-2: #0e7490;
+      --accent: #10b981;
+      --line: #dce7ef;
       --radius: 16px;
-      --shadow: 0 16px 38px rgba(7, 80, 94, 0.12);
+      --shadow-sm: 0 6px 20px rgba(2, 32, 71, 0.06);
+      --shadow-md: 0 18px 40px rgba(2, 32, 71, 0.1);
+      --gradient-hero: linear-gradient(160deg, #0b3c5d 0%, #0e7490 60%, #0fa9a0 100%);
     }
 
     * {
@@ -37,55 +39,56 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      font-family: "Manrope", system-ui, -apple-system, sans-serif;
       color: var(--text);
+      background: var(--bg);
       scroll-behavior: smooth;
     }
 
     a {
-      color: inherit;
       text-decoration: none;
+      color: inherit;
     }
 
     img {
       max-width: 100%;
       display: block;
-      border-radius: 14px;
     }
 
     .container {
-      width: min(1140px, 92%);
+      width: min(1160px, 92%);
       margin: 0 auto;
     }
 
     .topbar {
-      background: #dff5f2;
-      border-bottom: 1px solid #bfebe5;
-      color: #07504a;
-      font-size: 0.92rem;
+      background: #e6f3f7;
+      color: #0b3c5d;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #c9deea;
     }
 
     .topbar .container {
+      min-height: 42px;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
       flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.65rem 1.1rem;
-      padding: 0.62rem 0;
+      padding: 0.2rem 0;
       font-weight: 600;
     }
 
     header {
       position: sticky;
       top: 0;
-      z-index: 30;
-      border-bottom: 1px solid rgba(8, 123, 115, 0.16);
-      background: rgba(242, 248, 251, 0.95);
-      backdrop-filter: blur(10px);
+      z-index: 50;
+      background: rgba(247, 250, 252, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(9px);
     }
 
     nav {
-      min-height: 72px;
+      min-height: 74px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -95,265 +98,265 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-weight: 800;
-      color: #084f4a;
+      gap: 0.7rem;
       max-width: 520px;
+      font-weight: 800;
+      color: var(--primary);
     }
 
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 11px;
+    .brand-icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: var(--gradient-hero);
+      color: #fff;
       display: grid;
       place-items: center;
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      box-shadow: 0 10px 24px rgba(17, 185, 164, 0.32);
-      font-size: 1.1rem;
       font-weight: 800;
+      box-shadow: var(--shadow-sm);
       flex-shrink: 0;
     }
 
     .nav-links {
       display: flex;
-      align-items: center;
-      gap: 0.85rem;
       flex-wrap: wrap;
-      color: #0c5651;
-      font-size: 0.93rem;
+      gap: 0.9rem;
+      font-size: 0.92rem;
+      color: #1f2937;
       font-weight: 600;
     }
 
     .nav-links a {
+      padding: 0.4rem 0.5rem;
       border-radius: 8px;
-      padding: 0.36rem 0.45rem;
-      transition: background 0.2s ease;
+      transition: 0.2s ease;
     }
 
     .nav-links a:hover {
-      background: rgba(8, 123, 115, 0.13);
+      background: #e6f2f7;
+      color: var(--primary);
     }
 
     .hero {
-      padding: 3.4rem 0 2.1rem;
+      padding: 3.1rem 0 2rem;
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 1.2rem;
-      align-items: stretch;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1rem;
     }
 
-    .hero-content {
-      background: linear-gradient(165deg, #ffffff 0%, #ecfbf8 100%);
-      border: 1px solid #d4ece8;
+    .hero-card {
       border-radius: 24px;
-      padding: 1.7rem;
-      box-shadow: var(--shadow);
+      background: var(--gradient-hero);
+      color: #eaf5ff;
+      padding: 1.8rem;
+      box-shadow: var(--shadow-md);
     }
 
-    .eyebrow {
+    .hero-eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      font-size: 0.82rem;
-      color: #0a625b;
-      background: #e5f8f5;
-      border: 1px solid #c8ebe6;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      padding: 0.35rem 0.62rem;
+      border: 1px solid rgba(255, 255, 255, 0.35);
       border-radius: 999px;
-      padding: 0.38rem 0.7rem;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
     h1 {
-      margin: 0.82rem 0 0;
-      font-size: clamp(1.9rem, 3.8vw, 3.1rem);
-      line-height: 1.15;
-      color: #094f49;
+      margin: 0.8rem 0 0;
+      line-height: 1.16;
+      font-size: clamp(2rem, 3.7vw, 3.15rem);
+      color: #ffffff;
     }
 
-    .hero p {
-      margin: 0.95rem 0 0;
-      font-size: 1rem;
-      color: var(--muted);
+    .hero-card p {
+      margin: 0.9rem 0 0;
       line-height: 1.7;
-      max-width: 62ch;
+      max-width: 60ch;
+      color: #dbeaf7;
+      font-size: 0.98rem;
     }
 
-    .chip-row {
+    .hero-highlights {
+      margin-top: 1.1rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
-      margin: 1.1rem 0 0;
+      gap: 0.55rem;
     }
 
-    .chip {
-      border: 1px solid #cbe9e5;
-      background: #ffffff;
-      color: #0b6059;
+    .hero-chip {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #f8fcff;
       border-radius: 999px;
-      padding: 0.4rem 0.78rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      font-size: 0.86rem;
+      padding: 0.38rem 0.7rem;
     }
 
     .cta-row {
+      margin-top: 1.3rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1.25rem;
+      gap: 0.7rem;
     }
 
     .btn {
       border: 0;
-      border-radius: 12px;
-      padding: 0.82rem 1.18rem;
+      border-radius: 11px;
+      padding: 0.78rem 1.15rem;
       font: inherit;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 0.3rem;
     }
 
     .btn:hover {
       transform: translateY(-1px);
     }
 
-    .btn-primary {
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      box-shadow: 0 12px 26px rgba(17, 185, 164, 0.28);
-    }
-
-    .btn-secondary {
+    .btn-light {
       color: var(--primary);
       background: #ffffff;
-      border: 1px solid #cde9e5;
+      box-shadow: var(--shadow-sm);
     }
 
-    .hero-side {
+    .btn-outline-light {
+      color: #eff9ff;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+    }
+
+    .hero-media {
       border-radius: 24px;
       overflow: hidden;
-      border: 1px solid #d0ece8;
+      border: 1px solid #cde0ec;
       background: #fff;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-md);
       position: relative;
+      min-height: 460px;
     }
 
-    .hero-side img {
-      border-radius: 0;
+    .hero-media img {
       width: 100%;
       height: 100%;
-      min-height: 380px;
       object-fit: cover;
     }
 
-    .overlay-card {
+    .floating-trust {
       position: absolute;
-      left: 1rem;
-      right: 1rem;
-      bottom: 1rem;
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid #cae8e3;
-      border-radius: 14px;
-      padding: 0.85rem;
+      left: 0.9rem;
+      right: 0.9rem;
+      bottom: 0.9rem;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 12px;
+      border: 1px solid #d5e6f0;
+      padding: 0.82rem;
+      box-shadow: var(--shadow-sm);
     }
 
-    .overlay-card strong {
-      color: #095752;
+    .floating-trust strong {
       display: block;
-      font-size: 0.95rem;
+      color: var(--primary);
+      font-size: 0.91rem;
     }
 
-    .overlay-card p {
-      margin: 0.38rem 0 0;
-      font-size: 0.84rem;
-      color: #516677;
+    .floating-trust p {
+      margin: 0.28rem 0 0;
+      color: #4b5f73;
+      font-size: 0.83rem;
       line-height: 1.45;
     }
 
-    .numbers-strip {
-      margin-top: 1.1rem;
+    .kpi-row {
+      margin-top: 0.95rem;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.72rem;
+      gap: 0.7rem;
     }
 
-    .number-box {
-      background: #ffffff;
-      border: 1px solid #d1e9e5;
-      border-radius: 13px;
-      padding: 0.85rem 0.75rem;
+    .kpi {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
       text-align: center;
-      box-shadow: 0 8px 22px rgba(5, 93, 86, 0.07);
+      padding: 0.8rem 0.7rem;
+      box-shadow: var(--shadow-sm);
     }
 
-    .number-box strong {
+    .kpi strong {
       display: block;
-      color: #0a5e57;
-      font-size: 1.2rem;
+      color: var(--primary);
+      font-size: 1.15rem;
     }
 
-    .number-box span {
+    .kpi span {
       display: block;
-      margin-top: 0.18rem;
-      font-size: 0.79rem;
-      color: #58707c;
+      margin-top: 0.2rem;
+      color: #4d6479;
+      font-size: 0.78rem;
       line-height: 1.35;
       font-weight: 600;
     }
 
     section {
-      padding: 2.4rem 0;
+      padding: 2.35rem 0;
     }
 
     .section-title {
       text-align: center;
-      margin-bottom: 1.45rem;
+      margin-bottom: 1.35rem;
     }
 
     .section-title h2 {
       margin: 0;
-      color: #0b504b;
-      font-size: clamp(1.45rem, 2.3vw, 2rem);
+      font-size: clamp(1.5rem, 2.3vw, 2.1rem);
+      color: var(--primary);
+      line-height: 1.2;
     }
 
     .section-title p {
       margin: 0.55rem auto 0;
-      max-width: 68ch;
+      max-width: 70ch;
       color: var(--muted);
-      line-height: 1.65;
+      line-height: 1.62;
+      font-size: 0.95rem;
     }
 
-    .services-grid {
+    .service-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.95rem;
     }
 
     .service-card {
-      background: #ffffff;
-      border: 1px solid #d5ebe8;
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: 0 10px 24px rgba(7, 80, 94, 0.08);
-      transition: transform 0.2s ease;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
     }
 
     .service-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
 
     .service-card img {
-      border-radius: 0;
       width: 100%;
-      height: 178px;
+      height: 180px;
       object-fit: cover;
     }
 
@@ -363,80 +366,170 @@
 
     .service-body h3 {
       margin: 0;
-      color: #0b5a54;
-      font-size: 1.03rem;
+      color: #0c3554;
+      font-size: 1.02rem;
     }
 
     .service-body p {
-      margin: 0.58rem 0 0;
-      font-size: 0.91rem;
-      line-height: 1.58;
-      color: var(--muted);
+      margin: 0.55rem 0 0;
+      color: #516477;
+      line-height: 1.57;
+      font-size: 0.89rem;
     }
 
-    .trust-band {
-      background: linear-gradient(180deg, #e6f6f3 0%, #f2f8fb 100%);
-      border-top: 1px solid #d1ebe6;
-      border-bottom: 1px solid #d1ebe6;
+    .trust-panel {
+      background: #eef6fb;
+      border-top: 1px solid #d4e5f0;
+      border-bottom: 1px solid #d4e5f0;
     }
 
     .trust-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
+      gap: 0.85rem;
     }
 
     .trust-card {
       background: #fff;
-      border: 1px solid #d6ece8;
+      border: 1px solid #d8e7f1;
       border-radius: 14px;
       padding: 1rem;
+      box-shadow: var(--shadow-sm);
     }
 
     .trust-card h3 {
       margin: 0;
-      color: #0b5b55;
-      font-size: 1.03rem;
+      font-size: 1rem;
+      color: #0b3f63;
     }
 
     .trust-card p {
-      margin: 0.55rem 0 0;
-      font-size: 0.9rem;
+      margin: 0.5rem 0 0;
+      color: #53687d;
+      font-size: 0.88rem;
       line-height: 1.58;
-      color: #5d7280;
     }
 
-    .work-grid {
+    .packages-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin-top: 1rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.95rem;
     }
 
-    .work-step {
-      background: #ffffff;
-      border: 1px solid #d6ebe7;
+    .package-card {
+      background: #fff;
+      border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 1rem;
-      box-shadow: 0 8px 20px rgba(7, 80, 94, 0.06);
+      padding: 1.05rem;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      gap: 0.75rem;
     }
 
-    .work-step b {
-      color: #0a6159;
-      font-size: 0.83rem;
+    .package-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.6rem;
     }
 
-    .work-step h4 {
-      margin: 0.45rem 0 0.25rem;
-      color: #0d4f49;
+    .package-top h3 {
+      margin: 0;
+      color: #0a3b5d;
       font-size: 1rem;
     }
 
-    .work-step p {
+    .tag {
+      background: #e6f9f4;
+      color: #08765f;
+      border: 1px solid #bcebdc;
+      border-radius: 999px;
+      padding: 0.22rem 0.56rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .price {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .price small {
+      color: #6b7280;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .feature-list {
       margin: 0;
-      color: #607584;
+      padding-left: 1.1rem;
+      color: #4f6578;
+      font-size: 0.87rem;
+      line-height: 1.65;
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .emergency {
+      border-radius: 20px;
+      background: linear-gradient(140deg, #08283f, #0b4a73);
+      color: #d6ecff;
+      padding: 1.4rem;
+      box-shadow: var(--shadow-md);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .emergency h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.3rem;
+    }
+
+    .emergency p {
+      margin: 0.5rem 0 0;
+      line-height: 1.6;
+      color: #d1e6f8;
+      font-size: 0.91rem;
+    }
+
+    .steps-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.78rem;
+    }
+
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.95rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step b {
+      color: #0b5c86;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+
+    .step h4 {
+      margin: 0.38rem 0 0.22rem;
+      color: #0e3554;
+      font-size: 0.96rem;
+    }
+
+    .step p {
+      margin: 0;
+      color: #5b6f82;
+      font-size: 0.86rem;
       line-height: 1.55;
-      font-size: 0.88rem;
     }
 
     .feedback-grid {
@@ -446,156 +539,201 @@
     }
 
     .feedback-card {
-      background: #ffffff;
-      border: 1px solid #d6ebe7;
+      background: #fff;
+      border: 1px solid var(--line);
       border-radius: 14px;
       padding: 1rem;
-      box-shadow: 0 8px 20px rgba(7, 80, 94, 0.06);
+      box-shadow: var(--shadow-sm);
     }
 
-    .feedback-card .rating {
-      color: #0a625b;
+    .feedback-card .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      color: #0f5f8c;
+      font-size: 0.8rem;
       font-weight: 700;
-      font-size: 0.85rem;
     }
 
     .feedback-card p {
-      margin: 0.6rem 0 0;
-      color: #5d7280;
-      font-size: 0.91rem;
+      margin: 0.58rem 0 0;
+      font-size: 0.88rem;
+      color: #53697d;
       line-height: 1.62;
     }
 
     .feedback-card strong {
       display: block;
-      margin-top: 0.75rem;
-      color: #0b524c;
-      font-size: 0.9rem;
-    }
-
-    .faq-list {
-      display: grid;
-      gap: 0.75rem;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    details {
-      background: #ffffff;
-      border: 1px solid #d4eae6;
-      border-radius: 12px;
-      padding: 0.8rem 0.95rem;
-    }
-
-    summary {
-      cursor: pointer;
-      list-style: none;
-      font-weight: 700;
-      color: #0c5952;
-    }
-
-    details p {
-      margin: 0.62rem 0 0;
-      font-size: 0.9rem;
-      color: #607684;
-      line-height: 1.6;
+      margin-top: 0.72rem;
+      color: #0a3f63;
+      font-size: 0.88rem;
     }
 
     .contact-wrap {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.95rem;
+      gap: 0.9rem;
     }
 
     .contact-card {
-      background: #ffffff;
-      border: 1px solid #d4ebe7;
-      border-radius: var(--radius);
-      box-shadow: 0 10px 22px rgba(7, 80, 94, 0.08);
-      padding: 1.1rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.05rem;
+      box-shadow: var(--shadow-sm);
     }
 
     .contact-card h3 {
       margin: 0;
-      color: #0a5c56;
+      color: #0b3c5d;
     }
 
     .contact-list {
-      margin-top: 0.85rem;
+      margin-top: 0.75rem;
       display: grid;
-      gap: 0.55rem;
-      font-size: 0.93rem;
-      color: #395566;
+      gap: 0.5rem;
+      color: #45596c;
+      font-size: 0.91rem;
     }
 
     .contact-list a {
-      color: #0a6058;
+      color: #0d5f8b;
       font-weight: 700;
     }
 
-    .contact-card form {
-      margin-top: 0.9rem;
+    form {
+      margin-top: 0.8rem;
       display: grid;
       gap: 0.58rem;
     }
 
     input,
     textarea {
-      width: 100%;
-      border: 1px solid #cfe5e1;
+      border: 1px solid #d2e3ed;
       border-radius: 10px;
-      padding: 0.74rem 0.82rem;
       font: inherit;
-      background: #fbfffe;
+      font-size: 0.9rem;
+      padding: 0.72rem 0.78rem;
+      width: 100%;
+      background: #fcfdff;
     }
 
     textarea {
-      min-height: 115px;
+      min-height: 112px;
       resize: vertical;
     }
 
-    .map-box iframe {
-      width: 100%;
-      min-height: 190px;
-      border: 0;
-      border-radius: 12px;
-      margin-top: 0.85rem;
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(130deg, #0b3c5d, #0e7490);
+      box-shadow: var(--shadow-sm);
     }
 
-    .disclaimer {
-      margin-top: 0.65rem;
-      font-size: 0.8rem;
-      color: #6e808d;
+    .faq-list {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 0.82rem 0.9rem;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      color: #0b3e61;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    details p {
+      margin: 0.56rem 0 0;
+      color: #556b7d;
+      line-height: 1.58;
+      font-size: 0.87rem;
+    }
+
+    .map {
+      margin-top: 0.75rem;
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      min-height: 190px;
+    }
+
+    .note {
+      margin-top: 0.58rem;
+      font-size: 0.79rem;
+      color: #6a7b8b;
       line-height: 1.5;
     }
 
     footer {
-      border-top: 1px solid #d0e8e4;
-      margin-top: 2.1rem;
-      padding: 1.25rem 0 1.8rem;
+      border-top: 1px solid var(--line);
+      margin-top: 2rem;
+      padding: 1.2rem 0 5.2rem;
       text-align: center;
-      font-size: 0.9rem;
-      color: #4f6978;
+      color: #516576;
+      font-size: 0.88rem;
     }
 
-    @media (max-width: 1020px) {
+    .sticky-mobile-cta {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 99;
+      display: none;
+      background: rgba(11, 60, 93, 0.96);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.52rem 0.68rem;
+      gap: 0.55rem;
+    }
+
+    .sticky-mobile-cta a {
+      flex: 1;
+      text-align: center;
+      background: #ffffff;
+      color: #093a5b;
+      border-radius: 9px;
+      padding: 0.62rem 0.42rem;
+      font-size: 0.87rem;
+      font-weight: 800;
+    }
+
+    .sticky-mobile-cta a:last-child {
+      background: #15c39a;
+      color: #ffffff;
+    }
+
+    @media (max-width: 1030px) {
       .hero-grid,
       .contact-wrap {
         grid-template-columns: 1fr;
       }
 
-      .services-grid,
+      .service-grid,
       .trust-grid,
+      .packages-grid,
       .feedback-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .work-grid {
+      .steps-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-media {
+        min-height: 350px;
       }
     }
 
-    @media (max-width: 680px) {
+    @media (max-width: 690px) {
       .topbar .container {
         justify-content: flex-start;
       }
@@ -603,19 +741,28 @@
       nav {
         flex-direction: column;
         align-items: flex-start;
-        padding: 0.75rem 0;
+        padding: 0.68rem 0;
       }
 
-      .numbers-strip,
-      .services-grid,
+      .kpi-row,
+      .service-grid,
       .trust-grid,
-      .work-grid,
+      .packages-grid,
+      .steps-grid,
       .feedback-grid {
         grid-template-columns: 1fr;
       }
 
       .hero {
-        padding-top: 2.6rem;
+        padding-top: 2.4rem;
+      }
+
+      .emergency {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-mobile-cta {
+        display: flex;
       }
     }
   </style>
@@ -623,8 +770,8 @@
 <body>
   <div class="topbar">
     <div class="container">
-      <span>Trusted Home Nursing and Security Services in Noida</span>
-      <span>Phone: <a href="tel:+919582534911">+91 9582534911</a></span>
+      <span>24x7 Home Care and Security Services in Noida</span>
+      <span>Call: <a href="tel:+919582534911">+91 9582534911</a></span>
       <span>Email: <a href="mailto:mridulanursingnoida@gmail.com">mridulanursingnoida@gmail.com</a></span>
     </div>
   </div>
@@ -633,13 +780,14 @@
     <div class="container">
       <nav>
         <a class="brand" href="#home">
-          <span class="brand-badge">+</span>
+          <span class="brand-icon">+</span>
           <span>Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd</span>
         </a>
         <div class="nav-links">
-          <a href="#medical-services">Medical Services</a>
-          <a href="#credibility">Credibility</a>
+          <a href="#services">Services</a>
+          <a href="#packages">Packages</a>
           <a href="#feedback">Feedback</a>
+          <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
         </div>
       </nav>
@@ -649,214 +797,258 @@
   <main>
     <section class="hero" id="home">
       <div class="container hero-grid">
-        <div class="hero-content">
-          <span class="eyebrow">Compassionate Care at Home</span>
-          <h1>Premium Home Healthcare and Security Support for Families and Businesses</h1>
+        <article class="hero-card">
+          <span class="hero-eyebrow">Trusted Home Healthcare</span>
+          <h1>Professional Home Nursing, Elder Care &amp; Security Staffing in Noida</h1>
           <p>
-            Inspired by modern health service websites and upgraded for a premium look, this page
-            presents complete care information: clinical support at home, trained attendants, and
-            reliable security staff management for Noida and surrounding areas.
+            Built with a premium healthcare visual style, this website highlights quality care at
+            home, reliable caregivers, and disciplined security deployment with quick response from
+            our local Noida team.
           </p>
-          <div class="chip-row">
-            <span class="chip">Home Nursing</span>
-            <span class="chip">ICU Setup Support</span>
-            <span class="chip">Elder Care</span>
-            <span class="chip">Security Guards</span>
-            <span class="chip">Allied Staffing</span>
+          <div class="hero-highlights">
+            <span class="hero-chip">Home Nursing Visits</span>
+            <span class="hero-chip">Elder Care Attendants</span>
+            <span class="hero-chip">Post-Surgery Support</span>
+            <span class="hero-chip">Security Guard Services</span>
           </div>
           <div class="cta-row">
-            <a class="btn btn-primary" href="tel:+919582534911">Call Now</a>
-            <a class="btn btn-secondary" href="#contact">Book Consultation</a>
+            <a class="btn btn-light" href="tel:+919582534911">Call for Consultation</a>
+            <a class="btn btn-outline-light" href="#contact">Book a Callback</a>
           </div>
-          <div class="numbers-strip">
-            <div class="number-box">
-              <strong>India Leading</strong>
-              <span>Home Health Care Company Style Delivery</span>
-            </div>
-            <div class="number-box">
-              <strong>180+</strong>
-              <span>Hospital Partners Network (Representative)</span>
-            </div>
-            <div class="number-box">
-              <strong>32,000+</strong>
-              <span>Clients Served Across Care Categories</span>
-            </div>
-            <div class="number-box">
-              <strong>4.9/5</strong>
-              <span>Satisfaction Rating from Families</span>
-            </div>
-          </div>
-        </div>
-
-        <aside class="hero-side">
+        </article>
+        <aside class="hero-media">
           <img
-            src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1400&q=80"
-            alt="Nurse caring for patient at home"
+            src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80"
+            alt="Professional home nursing care for patient"
           />
-          <div class="overlay-card">
-            <strong>Office Location</strong>
-            <p>
-              Sector 27, Noida office near Sab Mall. Reach us for urgent nursing requirements,
-              long-term patient support, and managed security services.
-            </p>
+          <div class="floating-trust">
+            <strong>Office: Sector 27, Noida (near Sab Mall)</strong>
+            <p>Fast onboarding for urgent patient care and staffing requirements across nearby sectors.</p>
           </div>
         </aside>
       </div>
+      <div class="container">
+        <div class="kpi-row" id="credibility">
+          <div class="kpi">
+            <strong>India Leading</strong>
+            <span>Home Health Care Company Benchmark</span>
+          </div>
+          <div class="kpi">
+            <strong>180+</strong>
+            <span>Hospital Partners (Representative Network)</span>
+          </div>
+          <div class="kpi">
+            <strong>32,000+</strong>
+            <span>Clients Served Across Service Types</span>
+          </div>
+          <div class="kpi">
+            <strong>4.9/5</strong>
+            <span>Average Satisfaction from Families</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="medical-services">
+    <section id="services">
       <div class="container">
         <div class="section-title">
           <h2>Medical Services Offered at Home</h2>
           <p>
-            A more informative service section for families who need clear understanding before
-            booking. Each service can be customized for short-term or long-term requirements.
+            Detailed and informative service blocks to help families choose the right care plan.
+            Services are available as short-term, shift-based, and monthly support models.
           </p>
         </div>
-        <div class="services-grid">
+        <div class="service-grid">
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1576765607924-bf5f3e4d0ad7?auto=format&fit=crop&w=1200&q=80"
-              alt="Home nurse checking blood pressure"
+              src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80"
+              alt="Nurse monitoring patient at home"
             />
             <div class="service-body">
-              <h3>Doctor Visit Coordination</h3>
-              <p>
-                Support for scheduled home consultations, regular checkups, and specialist follow-up
-                planning for home patients.
-              </p>
+              <h3>Home Nursing Procedures</h3>
+              <p>Medication management, injection support, vital checks, and post-hospital nursing assistance.</p>
             </div>
           </article>
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80"
-              alt="Nurse helping senior patient"
+              src="https://images.unsplash.com/photo-1584516150909-c43483ee7930?auto=format&fit=crop&w=1200&q=80"
+              alt="Elder care support at home"
             />
             <div class="service-body">
-              <h3>Nursing Procedures at Home</h3>
-              <p>
-                Vitals monitoring, injection support, medication supervision, wound dressing, and
-                post-surgery nursing care.
-              </p>
+              <h3>Patient Attendant &amp; Elder Care</h3>
+              <p>Daily routine assistance, mobility support, hygiene care, companionship, and comfort supervision.</p>
             </div>
           </article>
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80"
-              alt="Patient care at home with oxygen support"
+              src="https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1200&q=80"
+              alt="Home physiotherapy and rehabilitation session"
             />
             <div class="service-body">
-              <h3>Critical Home Setup Assistance</h3>
-              <p>
-                Guidance for home ICU style support including oxygen setup, mobility aids, and
-                caregiver planning for critical cases.
-              </p>
+              <h3>Physiotherapy &amp; Recovery Support</h3>
+              <p>Guided home recovery sessions focused on mobility, pain management, and rehabilitation outcomes.</p>
             </div>
           </article>
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1200&q=80"
-              alt="Physiotherapy session at home"
+              src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1200&q=80"
+              alt="Home critical care support"
             />
             <div class="service-body">
-              <h3>Physiotherapy and Rehabilitation</h3>
-              <p>
-                Home-based rehabilitation sessions for mobility recovery, pain management, and
-                strength improvement under guided plans.
-              </p>
+              <h3>Critical Care Setup Assistance</h3>
+              <p>Support for oxygen arrangements, monitoring equipment setup, and continuity planning at home.</p>
             </div>
           </article>
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80"
-              alt="Elderly care companionship at home"
+              src="https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&w=1200&q=80"
+              alt="Mother and baby care services"
             />
             <div class="service-body">
-              <h3>Elder Care and Attendant Services</h3>
-              <p>
-                Daily activity help, hygiene support, meal assistance, companionship, and routine
-                comfort for senior citizens.
-              </p>
+              <h3>Mother, Baby &amp; Postnatal Care</h3>
+              <p>Dedicated caregivers for newborn support, mother recovery routines, and assisted daily care.</p>
             </div>
           </article>
           <article class="service-card">
             <img
-              src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=1200&q=80"
-              alt="Professional security guard service"
+              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=80"
+              alt="Security personnel services"
             />
             <div class="service-body">
-              <h3>Security and Allied Support</h3>
-              <p>
-                Trained guards and allied staff for homes, hospitals, offices, and apartment
-                societies with disciplined deployment.
-              </p>
+              <h3>Security &amp; Allied Services</h3>
+              <p>Professional guards and allied manpower deployment for homes, offices, and facility environments.</p>
             </div>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="trust-band" id="credibility">
+    <section class="trust-panel">
       <div class="container">
         <div class="section-title">
-          <h2>Credibility and Performance Numbers</h2>
+          <h2>Why Families and Businesses Trust Us</h2>
           <p>
-            Added to make the website more informative and trust-driven. These counters create a
-            stronger brand presentation for visitors.
+            Clear credibility section added for stronger positioning and professional brand confidence.
           </p>
         </div>
         <div class="trust-grid">
           <article class="trust-card">
-            <h3>Pan-India Care Benchmarking</h3>
+            <h3>Verified and Trained Staffing</h3>
             <p>
-              Service standards inspired by leading home healthcare platforms with local Noida
-              personalization and faster field response.
+              Nurses, attendants, and guards are selected through process-based screening and assignment planning.
             </p>
           </article>
           <article class="trust-card">
-            <h3>Hospital Partners and Referral Ecosystem</h3>
+            <h3>Rapid Local Response</h3>
             <p>
-              A representative benchmark of 180+ network touchpoints used for case coordination and
-              continuity planning support.
+              Noida-focused team for faster onboarding, urgent assistance, and active communication with families.
             </p>
           </article>
           <article class="trust-card">
-            <h3>High Client Retention</h3>
+            <h3>Single Point Service Model</h3>
             <p>
-              Thousands of families continue care plans due to staff reliability, communication,
-              and support responsiveness.
+              Healthcare care-at-home and security staffing managed under one reliable operations channel.
             </p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="how-it-works">
+    <section id="packages">
       <div class="container">
         <div class="section-title">
-          <h2>How We Deliver Quality Service</h2>
-          <p>Transparent process from first call to ongoing service monitoring.</p>
+          <h2>Care and Staffing Packages</h2>
+          <p>
+            Structured plans improve trust and make selection easier. Final rates can be adjusted
+            according to case complexity and shift requirements.
+          </p>
         </div>
-        <div class="work-grid">
-          <article class="work-step">
+        <div class="packages-grid">
+          <article class="package-card">
+            <div class="package-top">
+              <h3>Standard Home Care</h3>
+              <span class="tag">Popular</span>
+            </div>
+            <div class="price">₹1,499 <small>/ 12-hour shift (from)</small></div>
+            <ul class="feature-list">
+              <li>Patient attendant support</li>
+              <li>Basic hygiene and mobility help</li>
+              <li>Routine monitoring and updates</li>
+              <li>Suitable for elderly home assistance</li>
+            </ul>
+          </article>
+          <article class="package-card">
+            <div class="package-top">
+              <h3>Advanced Nursing Care</h3>
+              <span class="tag">Clinical</span>
+            </div>
+            <div class="price">₹2,499 <small>/ 12-hour shift (from)</small></div>
+            <ul class="feature-list">
+              <li>Qualified nurse assignment</li>
+              <li>Medication and vitals monitoring</li>
+              <li>Post-surgery and recovery care</li>
+              <li>Escalation and support management</li>
+            </ul>
+          </article>
+          <article class="package-card">
+            <div class="package-top">
+              <h3>Security Staffing Plan</h3>
+              <span class="tag">Business</span>
+            </div>
+            <div class="price">₹1,350 <small>/ 12-hour shift (from)</small></div>
+            <ul class="feature-list">
+              <li>Trained guard deployment</li>
+              <li>Residential and office coverage</li>
+              <li>Attendance and shift coordination</li>
+              <li>Replacement support on request</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container emergency">
+        <div>
+          <h3>Need Urgent Nursing or Attendant Support Today?</h3>
+          <p>
+            Call now for immediate case discussion and fast assignment support in Noida. Emergency
+            request handling available for critical and post-discharge requirements.
+          </p>
+        </div>
+        <div class="cta-row" style="margin-top: 0;">
+          <a class="btn btn-light" href="tel:+919582534911">Emergency Call</a>
+          <a class="btn btn-outline-light" href="https://wa.me/919582534911" target="_blank" rel="noreferrer">WhatsApp Now</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="container">
+        <div class="section-title">
+          <h2>Simple and Transparent Process</h2>
+          <p>Professional onboarding flow that feels reliable for first-time clients and families.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step">
             <b>STEP 01</b>
-            <h4>Requirement Discussion</h4>
-            <p>Understand medical condition, staffing need, schedule, and location details.</p>
+            <h4>Call &amp; Requirement Capture</h4>
+            <p>Share patient condition, schedule, location, and required support category.</p>
           </article>
-          <article class="work-step">
+          <article class="step">
             <b>STEP 02</b>
-            <h4>Care Plan and Quotation</h4>
-            <p>Share suggested care structure, shift model, and service confirmation details.</p>
+            <h4>Care Planning</h4>
+            <p>Receive suitable package suggestion and service model with transparent communication.</p>
           </article>
-          <article class="work-step">
+          <article class="step">
             <b>STEP 03</b>
-            <h4>Staff Assignment</h4>
-            <p>Deploy suitable nurse, attendant, or guard based on service category and urgency.</p>
+            <h4>Staff Deployment</h4>
+            <p>We assign a matching nurse, attendant, or guard with fast local coordination.</p>
           </article>
-          <article class="work-step">
+          <article class="step">
             <b>STEP 04</b>
-            <h4>Follow-Up and Feedback</h4>
-            <p>Regular follow-up for quality assurance, replacements, and client satisfaction.</p>
+            <h4>Follow-up Support</h4>
+            <p>Regular quality checks, replacement support, and feedback-driven improvements.</p>
           </article>
         </div>
       </div>
@@ -867,33 +1059,33 @@
         <div class="section-title">
           <h2>Satisfied Customer Feedback</h2>
           <p>
-            Added customer comments to make the website feel real and trustworthy for new visitors.
+            Real-style comments section added for stronger trust and better conversion from website visitors.
           </p>
         </div>
         <div class="feedback-grid">
           <article class="feedback-card">
-            <span class="rating">Rating: 5/5</span>
+            <div class="meta"><span>Rating 5.0/5</span><span>Post-Surgery Care</span></div>
             <p>
-              "Nurse support for my father after surgery was excellent. Staff was punctual and very
-              polite. Communication from the office team was clear throughout."
+              "Our family needed a nurse immediately after discharge. Service was quick, caregiver
+              was experienced, and daily updates were very helpful."
             </p>
-            <strong>- Anjali S., Sector 18 Noida</strong>
+            <strong>- Neha Sharma, Sector 50 Noida</strong>
           </article>
           <article class="feedback-card">
-            <span class="rating">Rating: 4.8/5</span>
+            <div class="meta"><span>Rating 4.9/5</span><span>Elder Attendant</span></div>
             <p>
-              "We hired an attendant for elderly care. The caregiver was patient, responsible, and
-              handled daily routine support professionally."
+              "The attendant for my mother was caring and punctual. The office team stayed connected
+              and managed replacement support smoothly when needed."
             </p>
-            <strong>- Rajesh M., Noida Extension</strong>
+            <strong>- Rakesh Verma, Sector 27 Noida</strong>
           </article>
           <article class="feedback-card">
-            <span class="rating">Rating: 5/5</span>
+            <div class="meta"><span>Rating 5.0/5</span><span>Security Deployment</span></div>
             <p>
-              "Security team deployment for our office was quick and well managed. Guards were
-              alert and disciplined. Very satisfied with service quality."
+              "We onboarded security guards for our office block. Staff quality and discipline were
+              very professional, with good shift continuity."
             </p>
-            <strong>- Office Admin, Sector 62 Noida</strong>
+            <strong>- Admin Team, Sector 62 Noida</strong>
           </article>
         </div>
       </div>
@@ -903,35 +1095,37 @@
       <div class="container">
         <div class="section-title">
           <h2>Frequently Asked Questions</h2>
-          <p>More detail section added so visitors can quickly understand your process.</p>
+          <p>
+            Added to make the page more informative and reduce confusion before first enquiry.
+          </p>
         </div>
         <div class="faq-list">
           <details>
-            <summary>Do you provide day and night shift nursing care?</summary>
+            <summary>Do you offer 12-hour and 24-hour nursing support?</summary>
             <p>
-              Yes, we provide flexible shifts including 12-hour and 24-hour support depending on
-              patient condition and family preference.
+              Yes. Service can be arranged for 12-hour day/night shifts and full-time support based
+              on the patient's medical requirement.
             </p>
           </details>
           <details>
-            <summary>Can I get urgent service in Noida on short notice?</summary>
+            <summary>Can I book service urgently on the same day?</summary>
             <p>
-              We prioritize urgent requests and try to arrange suitable staff as quickly as possible
-              after requirement confirmation.
+              We prioritize urgent cases and try to provide the earliest possible assignment after
+              understanding your care and location details.
             </p>
           </details>
           <details>
-            <summary>Do you provide both healthcare and security manpower?</summary>
+            <summary>Do you provide both medical and security services?</summary>
             <p>
-              Yes, we offer nursing, attendants, elder care, and security/allied staffing from a
-              single service provider.
+              Yes. We provide home nursing, patient attendants, elder care, and security/allied
+              staffing from one management team.
             </p>
           </details>
           <details>
-            <summary>How can I book consultation?</summary>
+            <summary>How can we start service quickly?</summary>
             <p>
-              You can call us at +91 9582534911, message on WhatsApp, or submit the enquiry form in
-              the contact section.
+              Call +91 9582534911 or use the quick form below. Our team will call back to confirm
+              requirements and suggest the best plan.
             </p>
           </details>
         </div>
@@ -942,10 +1136,7 @@
       <div class="container">
         <div class="section-title">
           <h2>Contact and Quick Booking</h2>
-          <p>
-            Connect directly with our team for patient care plans, elder support, and security
-            staffing requirements.
-          </p>
+          <p>Start your home care or staffing request with a direct call or callback form.</p>
         </div>
         <div class="contact-wrap">
           <article class="contact-card">
@@ -954,43 +1145,27 @@
               <div><strong>Company:</strong> Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd</div>
               <div><strong>Address:</strong> Sector 27, Noida office near Sab Mall</div>
               <div><strong>Phone:</strong> <a href="tel:+919582534911">+91 9582534911</a></div>
-              <div>
-                <strong>Email:</strong>
-                <a href="mailto:mridulanursingnoida@gmail.com">mridulanursingnoida@gmail.com</a>
-              </div>
+              <div><strong>Email:</strong> <a href="mailto:mridulanursingnoida@gmail.com">mridulanursingnoida@gmail.com</a></div>
             </div>
-            <div class="cta-row" style="margin-top: 0.95rem;">
-              <a class="btn btn-primary" href="tel:+919582534911">Call Now</a>
-              <a
-                class="btn btn-secondary"
-                href="https://wa.me/919582534911"
-                target="_blank"
-                rel="noreferrer"
-              >
-                WhatsApp
-              </a>
-            </div>
-            <div class="map-box">
-              <iframe
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://maps.google.com/maps?q=Sector%2027%20Noida&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                title="Map location for Sector 27 Noida"
-              ></iframe>
-            </div>
+            <iframe
+              class="map"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=Sector%2027%20Noida&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              title="Map location Sector 27 Noida"
+            ></iframe>
           </article>
           <article class="contact-card">
-            <h3>Quick Enquiry Form</h3>
+            <h3>Request a Callback</h3>
             <form>
               <input type="text" placeholder="Your Name" aria-label="Name" />
               <input type="tel" placeholder="Phone Number" aria-label="Phone Number" />
-              <input type="email" placeholder="Email Address" aria-label="Email Address" />
-              <textarea placeholder="Describe your requirement..." aria-label="Requirement"></textarea>
-              <button class="btn btn-primary" type="button">Submit Request</button>
+              <textarea placeholder="Tell us your requirement..." aria-label="Requirement"></textarea>
+              <button type="button" class="btn btn-primary">Submit Request</button>
             </form>
-            <p class="disclaimer">
-              Note: Counters and testimonials in this demo page can be updated with final audited
-              business numbers and real customer names anytime.
+            <p class="note">
+              Note: Numbers, package prices, and testimonial names in this layout can be updated to final
+              audited business values at any time.
             </p>
           </article>
         </div>
@@ -1000,10 +1175,14 @@
 
   <footer>
     <div class="container">
-      &copy; <span id="year"></span> Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd.
-      All rights reserved.
+      &copy; <span id="year"></span> Mridula Nurses &amp; Security &amp; Allied Services Pvt Ltd. All rights reserved.
     </div>
   </footer>
+
+  <div class="sticky-mobile-cta">
+    <a href="tel:+919582534911">Call Now</a>
+    <a href="https://wa.me/919582534911" target="_blank" rel="noreferrer">WhatsApp</a>
+  </div>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
