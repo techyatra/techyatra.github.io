@@ -58,24 +58,6 @@
       margin: 0 auto;
     }
 
-    .topbar {
-      background: #e7effa;
-      border-bottom: 1px solid #cddff5;
-      color: #1e3a8a;
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    .topbar .container {
-      min-height: 42px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem 1rem;
-      padding: 0.2rem 0;
-    }
-
     header {
       position: sticky;
       top: 0;
@@ -161,11 +143,23 @@
     .nav-links a {
       padding: 0.38rem 0.45rem;
       border-radius: 8px;
+      transition: background 0.2s ease;
     }
 
     .nav-links a:hover {
       background: #e2ebf8;
       color: #1e3a8a;
+    }
+
+    @keyframes menuDrop {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .hero {
@@ -738,14 +732,11 @@
     }
 
     @media (max-width: 700px) {
-      .topbar .container {
-        justify-content: flex-start;
-      }
-
       nav {
         position: relative;
         min-height: 66px;
         padding: 0.62rem 0;
+        align-items: center;
       }
 
       .brand-name {
@@ -772,23 +763,43 @@
         transform: translateY(-50%);
       }
 
+      .brand {
+        max-width: calc(100% - 54px);
+      }
+
       .nav-links {
         display: none;
         width: 100%;
+        position: absolute;
+        top: calc(100% + 0.35rem);
+        left: 0;
+        right: 0;
         flex-direction: column;
-        gap: 0.25rem;
-        margin-top: 0.42rem;
-        padding: 0.35rem 0.25rem 0.1rem;
-        border-top: 1px solid #dbe5f0;
+        gap: 0.4rem;
+        padding: 0.75rem;
+        border: 1px solid #d9e6f2;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 14px 24px rgba(30, 58, 138, 0.12);
+        z-index: 30;
       }
 
       header.menu-open .nav-links {
         display: flex;
+        animation: menuDrop 0.2s ease;
+      }
+
+      header.menu-open .hamburger {
+        background: #1e3a8a;
+        color: #fff;
+        border-color: #1e3a8a;
       }
 
       .nav-links a {
         width: 100%;
-        padding: 0.58rem 0.45rem;
+        padding: 0.62rem 0.62rem;
+        border-radius: 10px;
+        background: #f5f9ff;
       }
 
       .services-grid,
@@ -811,14 +822,6 @@
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="container">
-      <span>24x7 Home Nursing and Attendant Services in Noida</span>
-      <span>Phone: <a href="tel:+919582534911">+91 9582534911</a></span>
-      <span>Email: <a href="mailto:mridulanursingnoida@gmail.com">mridulanursingnoida@gmail.com</a></span>
-    </div>
-  </div>
-
   <header>
     <div class="container">
       <nav>
@@ -1249,6 +1252,18 @@
             closeMobileNav();
           }
         });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (window.innerWidth <= 700 && !header.contains(event.target)) {
+          closeMobileNav();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMobileNav();
+        }
       });
 
       window.addEventListener("resize", () => {
